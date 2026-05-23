@@ -1,5 +1,5 @@
 extends CharacterBody2D
 
 func _ready() -> void:
-	print(global_position)
+	global_position = Vector2(200, 350)
 	pass

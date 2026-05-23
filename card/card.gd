@@ -12,16 +12,16 @@ var default_texture = preload("res://assets/placeholder.jpg")
 var tween: Tween
 var world
 
-signal pressed(value, axis)
+signal card_pressed(value, axis)
 
 func setup(data):
 	card_data = data
 	custom_minimum_size = Vector2(100, 200)
 	size = Vector2(100, 200)
-	
+
 	if card_data.has("texture"):
-		texture_rect.texture = card_data.texture
-	else: 
+		texture_rect.texture = card_data["texture"]
+	else:
 		texture_rect.texture = default_texture
 
 	button.pressed.connect(_on_pressed)
@@ -29,7 +29,7 @@ func setup(data):
 func _on_pressed():
 	var value = card_data["value"]
 	var axis = card_data["axis"]
-	pressed.emit(value, axis)
+	card_pressed.emit(value, axis)
 
 func _on_hover():
 	z_index = 10

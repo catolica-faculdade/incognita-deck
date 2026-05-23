@@ -8,7 +8,6 @@ const card_scene = preload("res://card/card.tscn")
 func _ready():
 	pass
 
-
 func _on_button_pressed():
 
 	var new_points = []

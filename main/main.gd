@@ -6,5 +6,6 @@ func _ready():
 
 	var ui = preload("res://interface/interface.tscn").instantiate()
 	add_child(ui)
-
+	
 	ui.set_world(world)
+	GameSettings.set_fullscreen(true)

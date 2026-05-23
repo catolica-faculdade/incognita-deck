@@ -30,6 +30,5 @@ grow_horizontal = 2
 grow_vertical = 2
 flat = true
 
-[connection signal="pressed" from="." to="." method="_on_pressed"]
 [connection signal="mouse_entered" from="Button" to="." method="_on_hover"]
 [connection signal="mouse_exited" from="Button" to="." method="_on_exit"]
