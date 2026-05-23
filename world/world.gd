@@ -1,22 +1,12 @@
 extends Node2D
 
-@onready var trajectory = $Trajectory
-
 const CARDS = preload("res://card/card_database.gd").CARDS
 const card_scene = preload("res://card/card.tscn")
 
+@onready var trajectory = $Trajectory
+
 func _ready():
-
-	create_card(CARDS[0], Vector2(100, 300))
-	create_card(CARDS[1], Vector2(300, 300))
-	create_card(CARDS[2], Vector2(500, 300))
-
-func create_card(data, pos):
-
-	var card = card_scene.instantiate()
-	add_child(card)
-	card.setup(data)
-	card.position = pos
+	pass
 
 
 func _on_button_pressed():
