@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cqysw44j2pc5h"]
 
-[ext_resource type="Script" uid="uid://djhv3uogaonss" path="res://player.gd" id="1_2ba6h"]
-[ext_resource type="Script" uid="uid://chg5p28dchyw0" path="res://main.level.gd" id="1_jj1i1"]
-[ext_resource type="Texture2D" uid="uid://b0vwqgpqp2w7w" path="res://assets/einstein.png" id="1_rcebc"]
-[ext_resource type="Texture2D" uid="uid://bffnwj8jbm7hm" path="res://assets/wall.jpg" id="3_ddu0s"]
-[ext_resource type="Script" uid="uid://dx27duyy8jgd" path="res://trajectory.gd" id="5_5x3fl"]
+[ext_resource type="Script" uid="uid://chg5p28dchyw0" path="res://main/main.level.gd" id="1_i6sog"]
+[ext_resource type="Script" uid="uid://djhv3uogaonss" path="res://player.gd" id="2_a6dor"]
+[ext_resource type="Texture2D" uid="uid://b0vwqgpqp2w7w" path="res://assets/einstein.png" id="3_eqmjq"]
+[ext_resource type="Texture2D" uid="uid://bffnwj8jbm7hm" path="res://assets/wall.jpg" id="4_5g6un"]
+[ext_resource type="Script" uid="uid://dx27duyy8jgd" path="res://trajectory.gd" id="5_jyn77"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2ba6h"]
 size = Vector2(57, 82)
@@ -13,15 +13,15 @@ size = Vector2(57, 82)
 size = Vector2(64, 58)
 
 [node name="Node2D" type="Node2D" unique_id=146818457]
-script = ExtResource("1_jj1i1")
+script = ExtResource("1_i6sog")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=748844058]
-script = ExtResource("1_2ba6h")
+script = ExtResource("2_a6dor")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=379766451]
 position = Vector2(0.9999695, -4.0000153)
 scale = Vector2(0.26944444, 0.2611111)
-texture = ExtResource("1_rcebc")
+texture = ExtResource("3_eqmjq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1501303019]
 position = Vector2(1, -2)
@@ -32,18 +32,11 @@ shape = SubResource("RectangleShape2D_2ba6h")
 [node name="Sprite2D" type="Sprite2D" parent="Wall" unique_id=551933309]
 position = Vector2(316, 114.000015)
 scale = Vector2(0.10666667, 0.1425)
-texture = ExtResource("3_ddu0s")
+texture = ExtResource("4_5g6un")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" unique_id=323779314]
 position = Vector2(316, 114)
 shape = SubResource("RectangleShape2D_386er")
 
 [node name="Trajectory" type="Line2D" parent="." unique_id=1459209314]
-script = ExtResource("5_5x3fl")
-
-[node name="FakeCard" type="Button" parent="." unique_id=450308799]
-offset_right = 8.0
-offset_bottom = 8.0
-text = "+1y"
-
-[connection signal="pressed" from="FakeCard" to="." method="_on_button_pressed"]
+script = ExtResource("5_jyn77")
