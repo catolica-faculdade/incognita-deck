@@ -2,11 +2,16 @@ extends Node2D
 
 const CARDS = preload("res://card/card_database.gd").CARDS
 const card_scene = preload("res://card/card.tscn")
+const player_scene = preload("res://world/player/player.tscn")
 
 @onready var trajectory = $Trajectory
+@onready var camera = $Camera2D
 
 func _ready():
-	pass
+	var player = player_scene.instantiate()
+	add_child(player)
+	player.global_position = Vector2.ZERO
+	camera.global_position = Vector2(500, 0)
 
 func _on_button_pressed():
 
