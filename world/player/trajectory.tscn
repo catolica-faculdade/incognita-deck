@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cxnpbm0lqqrb4"]
+
+[ext_resource type="Texture2D" uid="uid://de2omnnk26row" path="res://assets/dashed_texture.png" id="1_kexay"]
+[ext_resource type="Script" uid="uid://bh0vyog2snx5q" path="res://world/player/trajectory.gd" id="1_ynsod"]
+
+[node name="TrajectoryNode" type="Node2D" unique_id=15843582]
+
+[node name="Trajectory" type="Line2D" parent="." unique_id=1687478219]
+texture_repeat = 2
+points = PackedVector2Array(1153, 519)
+texture = ExtResource("1_kexay")
+texture_mode = 1
+begin_cap_mode = 1
+script = ExtResource("1_ynsod")
