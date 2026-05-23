@@ -4,40 +4,37 @@ const CARDS = preload("res://card/card_database.gd").CARDS
 const card_scene = preload("res://card/card.tscn")
 const player_scene = preload("res://world/player/player.tscn")
 
-@onready var trajectory = $Trajectory
-@onready var camera = $Camera2D
+@onready var camera = $Camera
+
+var player_instance: Node2D
+var trajectory: Node2D
+
+var current_math_x: float = 0.0
+var current_math_y: float = 0.0
 
 func _ready():
-	var player = player_scene.instantiate()
-	add_child(player)
-	player.global_position = Vector2.ZERO
+	player_instance = player_scene.instantiate()
+	add_child(player_instance)
+	player_instance.global_position = Vector2.ZERO
 	camera.global_position = Vector2(500, 0)
-
-func _on_button_pressed():
-
-	var new_points = []
-
-	for point in trajectory.points:
-		new_points.append(point + Vector2(0, -50))
-
-	trajectory.points = new_points
+	trajectory = player_instance.get_node("Player/TrajectoryNode/Trajectory")
 
 func apply_card(value: int, axis: String):
+	if not trajectory:
+		print("trajectory line doesn't exists!")
+		return
 	
 	print("values: ", value)
 	print("axis: ", axis)
-
-	var offset = Vector2.ZERO
-
+	
 	if axis == "x":
-		offset.x += value * 50
-
+		current_math_x += value
+		
 	if axis == "y":
-		offset.y -= value * 50
+		current_math_y += value
+		
+	if axis != "x" && axis != "y":
+		print("invalid axis move!")
+		return
 
-	var new_points = []
-
-	for point in trajectory.points:
-		new_points.append(point + offset)
-
-	trajectory.points = new_points
+	trajectory.update_straight_line(current_math_x, current_math_y)

@@ -7,7 +7,7 @@
 radius = 35.0
 height = 110.0
 
-[node name="Node2D" type="Node2D" unique_id=1988582892]
+[node name="PlayerNode" type="Node2D" unique_id=1988582892]
 metadata/_edit_lock_ = true
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1573215106]

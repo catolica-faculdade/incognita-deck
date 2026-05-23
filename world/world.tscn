@@ -1,12 +1,8 @@
 [gd_scene format=3 uid="uid://cqysw44j2pc5h"]
 
 [ext_resource type="Script" uid="uid://chg5p28dchyw0" path="res://world/world.gd" id="1_mmdvd"]
-[ext_resource type="Script" uid="uid://dx27duyy8jgd" path="res://trajectory.gd" id="5_4papg"]
 
-[node name="Node2D" type="Node2D" unique_id=146818457]
+[node name="CameraNode" type="Node2D" unique_id=146818457]
 script = ExtResource("1_mmdvd")
 
-[node name="Trajectory" type="Line2D" parent="." unique_id=1459209314]
-script = ExtResource("5_4papg")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1782047795]
+[node name="Camera" type="Camera2D" parent="." unique_id=1782047795]
