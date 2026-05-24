@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dclll1cfxlmk8"]
+
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_fdnmr"]
+[ext_resource type="PackedScene" uid="uid://dyexiav100inq" path="res://world/enemy/enemy_combat/teacher/teacher_combat.tscn" id="2_r36wi"]
+
+[node name="Combat4" type="Node2D" unique_id=1384717141]
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_fdnmr")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=2060548793]
+position = Vector2(476, -224)
+
+[node name="TeacherCombat" parent="." unique_id=304323779 instance=ExtResource("2_r36wi")]
+position = Vector2(661, -123)

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://m7gj8uh48rs7"]
 
 [ext_resource type="Texture2D" uid="uid://vews1eowor7m" path="res://assets/map/rest_map_icon.png" id="1_488f7"]
+[ext_resource type="Script" uid="uid://dbkpyxiowxkw0" path="res://world/map/map_option.gd" id="2_qbht7"]
 
 [node name="RestMapIcon" type="Node2D" unique_id=358850607]
 
@@ -12,3 +13,4 @@ grow_horizontal = 2
 grow_vertical = 2
 texture_normal = ExtResource("1_488f7")
 stretch_mode = 3
+script = ExtResource("2_qbht7")
