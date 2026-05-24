@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://b4385jmk5c8v8"]
+
+[ext_resource type="Texture2D" uid="uid://c5qfrw80hpll7" path="res://assets/enemies/slime.png" id="1_gkdhw"]
+[ext_resource type="Script" uid="uid://bsqqw43w66uhv" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.gd" id="1_x2eej"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x2eej"]
+size = Vector2(136, 103)
+
+[node name="SlimeCombat" type="Node2D" unique_id=941781988]
+script = ExtResource("1_x2eej")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=233153952]
+texture = ExtResource("1_gkdhw")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=736217336]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1050821035]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_x2eej")

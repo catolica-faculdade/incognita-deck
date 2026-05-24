@@ -8,10 +8,10 @@ radius = 32.0
 height = 84.0
 
 [node name="PlayerNode" type="Node2D" unique_id=1988582892]
+script = ExtResource("1_yynsy")
 metadata/_edit_lock_ = true
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1573215106]
-script = ExtResource("1_yynsy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=694156914]
 position = Vector2(5, 4)

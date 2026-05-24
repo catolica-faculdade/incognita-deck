@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cnldsbu4rdcuc"]
+
+[ext_resource type="Texture2D" uid="uid://l80qd34kkj3" path="res://assets/enemies/cube.png" id="1_2p54o"]
+[ext_resource type="Script" uid="uid://b8tve3o8qovwp" path="res://world/enemy/enemy_combat/cube/cube_combat.gd" id="1_np583"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_np583"]
+size = Vector2(127.5, 116)
+
+[node name="CubeCombat" type="Node2D" unique_id=2077977886]
+script = ExtResource("1_np583")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=120421882]
+texture = ExtResource("1_2p54o")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=743298132]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=815665896]
+position = Vector2(-7.75, 0)
+shape = SubResource("RectangleShape2D_np583")
