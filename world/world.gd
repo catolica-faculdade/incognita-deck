@@ -25,8 +25,10 @@ func apply_card(value: int, axis: String):
 		return
 	
 	if axis == "x":
-		if (current_math_x <= 0 && value < 0):
-			current_math_x += 0
+		print(value)
+		print(current_math_x)
+		if (current_math_x <= 1 && value < 0):
+			current_math_x = 0
 		else:
 			current_math_x += value
 		
