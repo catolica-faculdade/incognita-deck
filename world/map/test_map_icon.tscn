@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bplc0pvst6yhp"]
+
+[ext_resource type="Texture2D" uid="uid://dnbdij3r64io4" path="res://assets/map/test_map_icon.png" id="1_n5344"]
+
+[node name="TestMapIcon" type="Node2D" unique_id=351517410]
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1775020699]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("1_n5344")
+stretch_mode = 3

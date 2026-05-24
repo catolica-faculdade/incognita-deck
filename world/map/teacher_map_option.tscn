@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cdcsg86apmkqr"]
+
+[ext_resource type="Texture2D" uid="uid://c21d5vh1lren6" path="res://assets/map/teacher_map_icon.png" id="1_3qmrd"]
+
+[node name="TeacherMapOption" type="Node2D" unique_id=740394240]
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1116865759]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("1_3qmrd")
+stretch_mode = 3

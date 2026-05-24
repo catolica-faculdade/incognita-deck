@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://m7gj8uh48rs7"]
+
+[ext_resource type="Texture2D" uid="uid://vews1eowor7m" path="res://assets/map/rest_map_icon.png" id="1_488f7"]
+
+[node name="RestMapIcon" type="Node2D" unique_id=358850607]
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1119176316]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("1_488f7")
+stretch_mode = 3

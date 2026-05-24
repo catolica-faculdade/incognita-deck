@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://licl610pd8et"]
+
+[ext_resource type="Texture2D" uid="uid://c0ow66r1vgb58" path="res://assets/backgrounds/background_map.png" id="1_lbedj"]
+[ext_resource type="Texture2D" uid="uid://b3lmkv7ufx1si" path="res://assets/backgrounds/map/map_variation_1.png" id="2_rpytk"]
+[ext_resource type="PackedScene" uid="uid://c8lnqpwhcp05p" path="res://world/map/combat_map_option.tscn" id="3_yk43s"]
+[ext_resource type="PackedScene" uid="uid://e6lnm4l814p5" path="res://world/map/question_map_option.tscn" id="4_28p05"]
+[ext_resource type="PackedScene" uid="uid://bplc0pvst6yhp" path="res://world/map/test_map_icon.tscn" id="5_nyu07"]
+[ext_resource type="PackedScene" uid="uid://cdcsg86apmkqr" path="res://world/map/teacher_map_option.tscn" id="6_i8ahg"]
+[ext_resource type="PackedScene" uid="uid://m7gj8uh48rs7" path="res://world/map/rest_map_icon.tscn" id="7_qmuab"]
+
+[node name="Node2D" type="Node2D" unique_id=1279866639]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=150122187]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1509314376]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -620.0
+offset_top = -334.0
+offset_right = 1158.5713
+offset_bottom = 690.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("1_lbedj")
+
+[node name="path" type="TextureRect" parent="." unique_id=805023475]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -571.00006
+offset_top = -360.0
+offset_right = 978.9998
+offset_bottom = 664.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("2_rpytk")
+
+[node name="MapOption" parent="." unique_id=2028028161 instance=ExtResource("3_yk43s")]
+position = Vector2(-273, 3)
+scale = Vector2(0.2, 0.2)
+
+[node name="MapOption2" parent="." unique_id=1845010649 instance=ExtResource("3_yk43s")]
+position = Vector2(45.99997, -79.99999)
+scale = Vector2(0.2, 0.2)
+
+[node name="MapOption3" parent="." unique_id=527048448 instance=ExtResource("3_yk43s")]
+position = Vector2(-130.00002, 78.99999)
+scale = Vector2(0.2, 0.2)
+
+[node name="MapOption4" parent="." unique_id=676530860 instance=ExtResource("3_yk43s")]
+position = Vector2(-136.00002, 3)
+scale = Vector2(0.2, 0.2)
+
+[node name="MapOption5" parent="." unique_id=1050773298 instance=ExtResource("3_yk43s")]
+position = Vector2(203.99997, 4)
+scale = Vector2(0.2, 0.2)
+
+[node name="MapOption6" parent="." unique_id=683542424 instance=ExtResource("3_yk43s")]
+position = Vector2(217.99997, 75.99999)
+scale = Vector2(0.2, 0.2)
+
+[node name="QuestionMapOption" parent="." unique_id=1083583709 instance=ExtResource("4_28p05")]
+position = Vector2(41, 77)
+scale = Vector2(0.2, 0.2)
+
+[node name="QuestionMapOption2" parent="." unique_id=787865318 instance=ExtResource("4_28p05")]
+position = Vector2(-131.00002, -80)
+scale = Vector2(0.2, 0.2)
+
+[node name="TestMapIcon2" parent="." unique_id=351517410 instance=ExtResource("5_nyu07")]
+position = Vector2(213.99998, -76.99999)
+scale = Vector2(0.1, 0.1)
+
+[node name="TeacherMapOption" parent="." unique_id=740394240 instance=ExtResource("6_i8ahg")]
+position = Vector2(404, 13)
+scale = Vector2(0.15, 0.15)
+
+[node name="RestMapIcon" parent="." unique_id=358850607 instance=ExtResource("7_qmuab")]
+position = Vector2(33, 6)
+scale = Vector2(0.18, 0.18)
