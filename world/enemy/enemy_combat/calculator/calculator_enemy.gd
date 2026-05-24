@@ -18,13 +18,12 @@ var apply_defend := 7
 var heal_amount := 3
 var self_heal_amount := 5
 
-
-
 var start_position: Vector2
 var is_attacking := false
 
 func _ready():
 	start_position = position
+	print('ready position: ', start_position)
 
 func choose_action():
 	shield = 0
@@ -46,7 +45,6 @@ func _process(delta):
 
 func heal():
 	health += self_heal_amount
-	
 	
 func apply_heal():
 	var enemy = get_tree().get_first_node_in_group("enemies")
@@ -122,23 +120,32 @@ func check_is_alive():
 		get_tree().change_scene_to_file("res://world/map_1.tscn")
 	
 func take_damage(amount):
+	is_attacking = true
 	var tween := create_tween()
-
-	tween.tween_property(self, "position", start_position + Vector2(40, 0), 0.15)
-	tween.tween_property(self, "position", start_position + Vector2(80, 0), 0.12)
-
+	
+	tween.set_trans(Tween.TRANS_QUAD)
+	
+	var posicao_recuo = start_position + Vector2(100, 0)
+	
+	tween.tween_property(self, "position", posicao_recuo, 0.07).set_ease(Tween.EASE_OUT)
+	
 	tween.tween_callback(func():
-		if(shield > 0):
-			amount - shield
-			if(amount > 0):
+		if shield > 0:
+			if amount >= shield:
+				amount -= shield
 				shield = 0
+			else:
+				shield -= amount
+				amount = 0
 			
-		if(amount > 0):
+		if amount > 0:
 			health -= amount
+			print(name, " recebeu ", amount, " de dano. Vida restante: ", health)
 			
 		check_is_alive()
 	)
 
-	tween.tween_property(self, "position", start_position, 0.15)
+	tween.tween_property(self, "position", start_position, 0.20).set_ease(Tween.EASE_IN_OUT)
 
 	await tween.finished
+	is_attacking = false

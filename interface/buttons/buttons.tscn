@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://360jo30uifs2" path="res://assets/empty_paper.png" id="1_paw45"]
 [ext_resource type="Texture2D" uid="uid://8ednp6hhoftm" path="res://assets/button.png" id="2_0r5lu"]
+[ext_resource type="Script" uid="uid://yynl7usa1q7m" path="res://interface/buttons/buttons.gd" id="3_arv1u"]
 
 [node name="Control" type="Control" unique_id=251126185]
 layout_mode = 3
@@ -46,3 +47,4 @@ grow_vertical = 2
 scale = Vector2(0.2, 0.2)
 texture_normal = ExtResource("2_0r5lu")
 ignore_texture_size = true
+script = ExtResource("3_arv1u")

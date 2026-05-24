@@ -1,20 +1,22 @@
 extends Node
 
 @export var lock_distance = 75
+@onready var trajectory = $"../PlayerNode/TrajectoryNode/Trajectory"
 
-var current_enemy = null
+var current_enemies = []
 
 func _ready() -> void:
 	pass
 	
 func clear_target():
-	if current_enemy:
-		current_enemy.unlock()
-	current_enemy = null
+	for enemy in current_enemies:
+		if is_instance_valid(enemy) and enemy.has_method("unlock"):
+			enemy.unlock()
+	
+	current_enemies = []
 	
 func lock_target(enemy):
-	current_enemy = enemy
-	enemy.lock()
+	current_enemies.push_back(enemy)
 
 func evaluate_trajectory(points: Array):
 	clear_target()
@@ -23,12 +25,8 @@ func evaluate_trajectory(points: Array):
 
 	for enemy in enemies:
 
-		if trajectory_hits_enemy(
-			points,
-			enemy.position
-		):
+		if trajectory_hits_enemy(points, enemy.position):
 			lock_target(enemy)
-			return
 
 
 func trajectory_hits_enemy(points: PackedVector2Array, enemy_position: Vector2) -> bool:
@@ -42,9 +40,27 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_position: Vector2) 
 		)
 
 		var distance = closest_point.distance_to(enemy_position)
-		print("validando...", distance)
 		print(lock_distance)
 		if distance <= lock_distance:
 			return true
 
 	return false
+
+func execute_turn_actions() -> void:
+	if current_enemies.size() > 0:
+		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
+		
+		if trajectory:
+			trajectory.clear_points()
+			
+		var enemies_to_attack = current_enemies.duplicate()
+		
+		var player_damage = 5
+		for enemy in enemies_to_attack:
+			if is_instance_valid(enemy) and enemy.health > 0:
+				await enemy.take_damage(player_damage)
+		clear_target()
+	else:
+		print("Nenhum inimigo selecionado na trajetória.")
+		if trajectory:
+			trajectory.clear_points()

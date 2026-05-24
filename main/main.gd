@@ -9,3 +9,9 @@ func _ready():
 	
 	ui.set_world(world)
 	GameSettings.set_fullscreen(true)
+	
+	var hud = ui.find_child("TextureButton", true, false)
+	var battle_system = world.find_child("BattleSystemNode", true, false)
+	
+	if hud and battle_system:
+		hud.end_turn.connect(battle_system.execute_turn_actions)
