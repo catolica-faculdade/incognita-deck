@@ -38,46 +38,46 @@ grow_vertical = 2
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("2_rpytk")
 
-[node name="MapOption" parent="." unique_id=2028028161 instance=ExtResource("3_yk43s")]
+[node name="combat_r2_1" parent="." unique_id=2028028161 instance=ExtResource("3_yk43s")]
 position = Vector2(-273, 3)
 scale = Vector2(0.2, 0.2)
 
-[node name="MapOption2" parent="." unique_id=1845010649 instance=ExtResource("3_yk43s")]
+[node name="combate_r1" parent="." unique_id=1845010649 instance=ExtResource("3_yk43s")]
 position = Vector2(45.99997, -79.99999)
 scale = Vector2(0.2, 0.2)
 
-[node name="MapOption3" parent="." unique_id=527048448 instance=ExtResource("3_yk43s")]
+[node name="combat_r3_1" parent="." unique_id=527048448 instance=ExtResource("3_yk43s")]
 position = Vector2(-130.00002, 78.99999)
 scale = Vector2(0.2, 0.2)
 
-[node name="MapOption4" parent="." unique_id=676530860 instance=ExtResource("3_yk43s")]
+[node name="combat_r2_2" parent="." unique_id=676530860 instance=ExtResource("3_yk43s")]
 position = Vector2(-136.00002, 3)
 scale = Vector2(0.2, 0.2)
 
-[node name="MapOption5" parent="." unique_id=1050773298 instance=ExtResource("3_yk43s")]
+[node name="combat_r2_3" parent="." unique_id=1050773298 instance=ExtResource("3_yk43s")]
 position = Vector2(203.99997, 4)
 scale = Vector2(0.2, 0.2)
 
-[node name="MapOption6" parent="." unique_id=683542424 instance=ExtResource("3_yk43s")]
+[node name="combat_r3_2" parent="." unique_id=683542424 instance=ExtResource("3_yk43s")]
 position = Vector2(217.99997, 75.99999)
 scale = Vector2(0.2, 0.2)
 
-[node name="QuestionMapOption" parent="." unique_id=1083583709 instance=ExtResource("4_28p05")]
+[node name="question_r3" parent="." unique_id=1083583709 instance=ExtResource("4_28p05")]
 position = Vector2(41, 77)
 scale = Vector2(0.2, 0.2)
 
-[node name="QuestionMapOption2" parent="." unique_id=787865318 instance=ExtResource("4_28p05")]
+[node name="question_r1" parent="." unique_id=787865318 instance=ExtResource("4_28p05")]
 position = Vector2(-131.00002, -80)
 scale = Vector2(0.2, 0.2)
 
-[node name="TestMapIcon2" parent="." unique_id=351517410 instance=ExtResource("5_nyu07")]
+[node name="test_r1" parent="." unique_id=351517410 instance=ExtResource("5_nyu07")]
 position = Vector2(213.99998, -76.99999)
 scale = Vector2(0.1, 0.1)
 
-[node name="TeacherMapOption" parent="." unique_id=740394240 instance=ExtResource("6_i8ahg")]
+[node name="boss" parent="." unique_id=740394240 instance=ExtResource("6_i8ahg")]
 position = Vector2(404, 13)
 scale = Vector2(0.15, 0.15)
 
-[node name="RestMapIcon" parent="." unique_id=358850607 instance=ExtResource("7_qmuab")]
+[node name="rest_r2" parent="." unique_id=358850607 instance=ExtResource("7_qmuab")]
 position = Vector2(33, 6)
 scale = Vector2(0.18, 0.18)
