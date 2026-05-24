@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://y0tdtljpvb1d"]
+
+[ext_resource type="Script" uid="uid://bteb6kk7a7s8a" path="res://world/enemy/enemy_combat/ghost/ghost_combat.gd" id="1_4xlxf"]
+[ext_resource type="Texture2D" uid="uid://bb6kvjplc0020" path="res://assets/enemies/ghost.png" id="1_ep74i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4xlxf"]
+size = Vector2(110, 131)
+
+[node name="GhostCombat" type="Node2D" unique_id=817626321]
+script = ExtResource("1_4xlxf")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=508135581]
+texture = ExtResource("1_ep74i")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1035925976]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=704948058]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_4xlxf")

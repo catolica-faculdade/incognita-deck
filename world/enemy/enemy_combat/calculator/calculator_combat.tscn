@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://q2xd7gdpfp3m"]
+
+[ext_resource type="Script" uid="uid://bij30vy2242fg" path="res://world/enemy/enemy_combat/calculator/calculator_enemy.gd" id="1_1ooa0"]
+[ext_resource type="Texture2D" uid="uid://4lpkkq3dxsnd" path="res://assets/enemies/calculator.png" id="1_85bm5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_85bm5"]
+size = Vector2(111, 134)
+
+[node name="CalculatorCombat" type="Node2D" unique_id=56075531 groups=["enemies"]]
+script = ExtResource("1_1ooa0")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1266272855]
+texture = ExtResource("1_85bm5")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=478019840]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=319625994]
+position = Vector2(-0.5, 2)
+shape = SubResource("RectangleShape2D_85bm5")

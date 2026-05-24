@@ -1,3 +1,17 @@
 [gd_scene format=3 uid="uid://c6f2jsihexkux"]
 
+[ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="2_apxka"]
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="3_r3fwo"]
+
 [node name="Combat1" type="Node2D" unique_id=81679987]
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("3_r3fwo")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=949057933]
+position = Vector2(476, -224)
+
+[node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("2_apxka")]
+position = Vector2(843, -213)
+rotation = -0.12217305
+scale = Vector2(0.7, 0.7)

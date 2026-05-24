@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dyexiav100inq"]
+
+[ext_resource type="Texture2D" uid="uid://caipfb426ompc" path="res://assets/enemies/teacher.png" id="1_o7jmy"]
+[ext_resource type="Script" uid="uid://cfmdpswckyd8u" path="res://world/enemy/enemy_combat/teacher/teacher_combat.gd" id="1_t8peg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t8peg"]
+size = Vector2(171, 213)
+
+[node name="TeacherCombat" type="Node2D" unique_id=304323779]
+script = ExtResource("1_t8peg")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1839858510]
+texture = ExtResource("1_o7jmy")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1145073351]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1374964679]
+position = Vector2(4.5, 11.5)
+shape = SubResource("RectangleShape2D_t8peg")
