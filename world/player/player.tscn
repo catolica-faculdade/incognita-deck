@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://vvyq6orywab5"]
 
 [ext_resource type="Script" uid="uid://djhv3uogaonss" path="res://world/player/player.gd" id="1_yynsy"]
-[ext_resource type="Texture2D" uid="uid://b0vwqgpqp2w7w" path="res://assets/einstein.png" id="2_bvkkv"]
+[ext_resource type="Texture2D" uid="uid://caipfb426ompc" path="res://assets/enemies/teacher.png" id="2_bvkkv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ccwxv"]
-radius = 35.0
-height = 110.0
+radius = 32.0
+height = 84.0
 
 [node name="PlayerNode" type="Node2D" unique_id=1988582892]
 metadata/_edit_lock_ = true
@@ -18,6 +18,6 @@ position = Vector2(5, 4)
 shape = SubResource("CapsuleShape2D_ccwxv")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=231718088]
-position = Vector2(0, -9.536743e-07)
+position = Vector2(4, 0)
 scale = Vector2(0.33472222, 0.3420139)
 texture = ExtResource("2_bvkkv")
