@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b3m06rd3avcnb"]
+
+[ext_resource type="Texture2D" uid="uid://caipfb426ompc" path="res://assets/enemies/teacher.png" id="1_u5u4r"]
+
+[node name="Enemy" type="Node2D" unique_id=1058535472]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1153895183]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_u5u4r")
