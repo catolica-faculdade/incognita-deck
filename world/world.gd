@@ -24,11 +24,11 @@ func apply_card(value: int, axis: String):
 		print("trajectory line doesn't exists!")
 		return
 	
-	print("values: ", value)
-	print("axis: ", axis)
-	
 	if axis == "x":
-		current_math_x += value
+		if (current_math_x <= 0 && value < 0):
+			current_math_x += 0
+		else:
+			current_math_x += value
 		
 	if axis == "y":
 		current_math_y += value

@@ -10,6 +10,11 @@ func _ready() -> void:
 	create_card(CARDS[0])
 	create_card(CARDS[1])
 	create_card(CARDS[2])
+	create_card(CARDS[3])
+	create_card(CARDS[4])
+	create_card(CARDS[5])
+	create_card(CARDS[6])
+	create_card(CARDS[7])
 
 func create_card(data):
 	var card = card_scene.instantiate()
