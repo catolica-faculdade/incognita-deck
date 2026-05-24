@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bs2n8u0bor8gk"]
+
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_fnp1x"]
+[ext_resource type="PackedScene" uid="uid://cnldsbu4rdcuc" path="res://world/enemy/enemy_combat/cube/cube_combat.tscn" id="2_fac3r"]
+[ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="3_i8n2g"]
+
+[node name="Combat2" type="Node2D" unique_id=1170762193]
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_fnp1x")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1464432832]
+position = Vector2(476, -224)
+
+[node name="CubeCombat" parent="." unique_id=2077977886 instance=ExtResource("2_fac3r")]
+position = Vector2(537, -348)
+
+[node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("3_i8n2g")]
+position = Vector2(885, -122)
+scale = Vector2(0.6, 0.6)

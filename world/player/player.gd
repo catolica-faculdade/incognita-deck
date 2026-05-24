@@ -1,5 +1,6 @@
 extends Node2D
-var health := 100
+var total_health := 80
+var health := total_health
 var poisoned := false
 var poison_amount := 0
 

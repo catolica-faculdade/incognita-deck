@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://24jjng23du7l"]
+
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_l2242"]
+[ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="2_sm10b"]
+[ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="3_m218y"]
+[ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="4_351ct"]
+
+[node name="Test3" type="Node2D" unique_id=1839820528]
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_l2242")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1906341143]
+position = Vector2(476, -224)
+
+[node name="SlimeCombat3" parent="." unique_id=941781988 instance=ExtResource("2_sm10b")]
+position = Vector2(912, -47)
+scale = Vector2(0.4, 0.4)
+
+[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("3_m218y")]
+position = Vector2(806, -319)
+scale = Vector2(0.7, 0.7)
+
+[node name="GhostCombat2" parent="." unique_id=1771335524 instance=ExtResource("3_m218y")]
+position = Vector2(483, -407.00003)
+scale = Vector2(0.7, 0.7)
+
+[node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("4_351ct")]
+position = Vector2(396, -160)

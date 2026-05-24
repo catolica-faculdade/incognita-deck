@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://e6lnm4l814p5"]
 
 [ext_resource type="Texture2D" uid="uid://33t2at4i5tgy" path="res://assets/map/question_mark_map_icon.png" id="1_smwu2"]
+[ext_resource type="Script" uid="uid://dbkpyxiowxkw0" path="res://world/map/map_option.gd" id="2_1302o"]
 
 [node name="QuestionMapOption" type="Node2D" unique_id=1083583709]
 
-[node name="TextureButton" type="TextureButton" parent="." unique_id=334766006]
+[node name="TextureButton" type="TextureButton" parent="." unique_id=334766006 groups=["question_mark"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,3 +13,4 @@ grow_horizontal = 2
 grow_vertical = 2
 texture_normal = ExtResource("1_smwu2")
 stretch_mode = 3
+script = ExtResource("2_1302o")

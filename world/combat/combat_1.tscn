@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="2_apxka"]
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="3_r3fwo"]
+[ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="4_cmddj"]
 
 [node name="Combat1" type="Node2D" unique_id=81679987]
 
@@ -12,6 +13,10 @@ position = Vector2(2, -2)
 position = Vector2(476, -224)
 
 [node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("2_apxka")]
-position = Vector2(843, -213)
+position = Vector2(756, -227)
 rotation = -0.12217305
 scale = Vector2(0.7, 0.7)
+
+[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("4_cmddj")]
+position = Vector2(447, -137)
+scale = Vector2(0.8, 0.8)

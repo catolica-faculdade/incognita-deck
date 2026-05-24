@@ -28,6 +28,11 @@ window/stretch/aspect="expand"
 [global_group]
 
 Player="Jogador"
+question_mark=""
+combat=""
+boss=""
+rest=""
+test=""
 
 [input]
 

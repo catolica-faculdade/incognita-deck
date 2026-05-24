@@ -1,6 +1,67 @@
 [gd_scene format=3 uid="uid://dsfahu6pi11su"]
 
 [ext_resource type="Script" uid="uid://cahptxeslsc6v" path="res://main/main.gd" id="1_53q0u"]
+[ext_resource type="Texture2D" uid="uid://krbuebrq5axf" path="res://assets/backgrounds/background_menu.png" id="2_67ri8"]
+[ext_resource type="Texture2D" uid="uid://cymtga8s1qyck" path="res://assets/texts/title_incognita_deck.png" id="3_grrlh"]
+[ext_resource type="Texture2D" uid="uid://cythn05irdkn0" path="res://assets/buttons/button_start_menu.png" id="4_0i4oc"]
+[ext_resource type="Texture2D" uid="uid://pq5wsqfwioai" path="res://assets/buttons/button_start_hover_menu.png" id="5_bsumw"]
+[ext_resource type="Script" uid="uid://d3xhww0ep8llq" path="res://world/main_menu.gd" id="6_fwcvl"]
+[ext_resource type="Texture2D" uid="uid://en54wtgxiu0e" path="res://assets/buttons/button_leave_menu.png" id="7_na0o7"]
+[ext_resource type="Texture2D" uid="uid://dceevelauoaxt" path="res://assets/buttons/button_leave_hover_menu.png" id="8_73k8k"]
 
 [node name="main" type="Node" unique_id=1804686851]
 script = ExtResource("1_53q0u")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1031232392]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -620.0
+offset_top = -350.0
+offset_right = -485.1687
+offset_bottom = -290.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_67ri8")
+expand_mode = 2
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1530064745]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=134149129]
+position = Vector2(0, -161)
+scale = Vector2(0.5249023, 0.55029297)
+texture = ExtResource("3_grrlh")
+
+[node name="StartButton" type="TextureButton" parent="." unique_id=94474674 groups=["start"]]
+clip_contents = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -212.99998
+offset_top = -82.0
+offset_right = -834.0
+offset_bottom = -502.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.7, 0.7)
+texture_normal = ExtResource("4_0i4oc")
+texture_hover = ExtResource("5_bsumw")
+stretch_mode = 0
+script = ExtResource("6_fwcvl")
+
+[node name="LeaveButton" type="TextureButton" parent="." unique_id=1453540130 groups=["leave"]]
+clip_contents = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -154.0
+offset_top = 93.0
+offset_right = -767.0
+offset_bottom = -349.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("7_na0o7")
+texture_hover = ExtResource("8_73k8k")
+stretch_mode = 0
+script = ExtResource("6_fwcvl")

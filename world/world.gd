@@ -24,7 +24,6 @@ func _ready():
 	player_instance.global_position = Vector2.ZERO
 	camera.global_position = Vector2(500, 0)
 	trajectory = player_instance.get_node("TrajectoryNode/Trajectory")
-	spawn_mock_enemy()
 
 func apply_card(value: int, axis: String):
 	if not trajectory:

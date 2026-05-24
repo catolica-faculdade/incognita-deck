@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://c8lnqpwhcp05p"]
 
 [ext_resource type="Texture2D" uid="uid://ctuhi657mahdm" path="res://assets/map/combat_map_icon.png" id="1_ly16k"]
+[ext_resource type="Script" uid="uid://dbkpyxiowxkw0" path="res://world/map/map_option.gd" id="2_wfn5b"]
 
 [node name="MapOption" type="Node2D" unique_id=2028028161]
 
-[node name="TextureButton" type="TextureButton" parent="." unique_id=2018878306]
+[node name="TextureButton" type="TextureButton" parent="." unique_id=2018878306 groups=["combat"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,3 +13,4 @@ grow_horizontal = 2
 grow_vertical = 2
 texture_normal = ExtResource("1_ly16k")
 stretch_mode = 3
+script = ExtResource("2_wfn5b")

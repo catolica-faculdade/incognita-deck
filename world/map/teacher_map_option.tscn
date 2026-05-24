@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cdcsg86apmkqr"]
 
 [ext_resource type="Texture2D" uid="uid://c21d5vh1lren6" path="res://assets/map/teacher_map_icon.png" id="1_3qmrd"]
+[ext_resource type="Script" uid="uid://dbkpyxiowxkw0" path="res://world/map/map_option.gd" id="2_e2nsy"]
 
 [node name="TeacherMapOption" type="Node2D" unique_id=740394240]
 
@@ -12,3 +13,4 @@ grow_horizontal = 2
 grow_vertical = 2
 texture_normal = ExtResource("1_3qmrd")
 stretch_mode = 3
+script = ExtResource("2_e2nsy")
