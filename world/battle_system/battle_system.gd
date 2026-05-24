@@ -1,7 +1,6 @@
 extends Node
 
-@onready var battle_system = $BattleSystem
-@export var lock_distance = 40
+@export var lock_distance = 75
 
 var current_enemy = null
 
@@ -31,7 +30,21 @@ func evaluate_trajectory(points: Array):
 			lock_target(enemy)
 			return
 
-func trajectory_hits_enemy(points: Array[float], position: Array[float]):
-	if position == points:
-		return true
+
+func trajectory_hits_enemy(points: PackedVector2Array, enemy_position: Vector2) -> bool:
+	for i in range(points.size() - 1):
+		var a = points[i]
+		var b = points[i + 1]
+		var closest_point = Geometry2D.get_closest_point_to_segment(
+			enemy_position,
+			a,
+			b
+		)
+
+		var distance = closest_point.distance_to(enemy_position)
+		print("validando...", distance)
+		print(lock_distance)
+		if distance <= lock_distance:
+			return true
+
 	return false

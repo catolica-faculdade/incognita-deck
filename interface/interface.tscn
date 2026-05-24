@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bekie8wc02qgb"]
 
 [ext_resource type="Script" uid="uid://kn15ldbmc68h" path="res://interface/interface.gd" id="1_6nxxo"]
+[ext_resource type="PackedScene" uid="uid://cacwc8ih5dwrk" path="res://interface/buttons/buttons.tscn" id="2_0c05b"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1260764440]
 script = ExtResource("1_6nxxo")
@@ -27,3 +28,7 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="Buttons" parent="MarginContainer" unique_id=1522302423 instance=ExtResource("2_0c05b")]
+layout_mode = 2
+mouse_force_pass_scroll_events = true

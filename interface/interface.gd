@@ -8,19 +8,20 @@ var world
 
 func _ready() -> void:
 	create_card(CARDS[0])
-	create_card(CARDS[1])
+	#create_card(CARDS[1])
 	create_card(CARDS[2])
-	create_card(CARDS[3])
+	#create_card(CARDS[3])
 	create_card(CARDS[4])
-	create_card(CARDS[5])
+	#create_card(CARDS[5])
 	create_card(CARDS[6])
-	create_card(CARDS[7])
+	#create_card(CARDS[7])
 
 func create_card(data):
 	var card = card_scene.instantiate()
 	card_container.add_child(card)
 	card.setup(data)
 	card.card_pressed.connect(_on_card_pressed)
+	
 
 func set_world(w):
 	world = w

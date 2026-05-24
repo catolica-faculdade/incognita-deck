@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://cacwc8ih5dwrk"]
+
+[ext_resource type="Texture2D" uid="uid://360jo30uifs2" path="res://assets/empty_paper.png" id="1_paw45"]
+[ext_resource type="Texture2D" uid="uid://8ednp6hhoftm" path="res://assets/button.png" id="2_0r5lu"]
+
+[node name="Control" type="Control" unique_id=251126185]
+layout_mode = 3
+anchor_left = 0.822
+anchor_top = 0.81000006
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -946.94403
+offset_top = -524.88007
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+mouse_force_pass_scroll_events = false
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=160636558]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 826.0
+offset_top = 489.0
+offset_right = -53.0
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_paw45")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=102642846]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 892.0
+offset_top = 503.99997
+offset_right = 439.9995
+offset_bottom = 50.999756
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("2_0r5lu")
+ignore_texture_size = true

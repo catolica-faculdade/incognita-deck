@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://cqysw44j2pc5h"]
 
 [ext_resource type="Script" uid="uid://chg5p28dchyw0" path="res://world/world.gd" id="1_mmdvd"]
+[ext_resource type="PackedScene" uid="uid://dallp0cnoaay6" path="res://world/battle_system/battle_system_node.tscn" id="2_tcf2h"]
 
 [node name="CameraNode" type="Node2D" unique_id=146818457]
 script = ExtResource("1_mmdvd")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1782047795]
+
+[node name="BattleSystemNode" parent="." unique_id=1791428483 instance=ExtResource("2_tcf2h")]

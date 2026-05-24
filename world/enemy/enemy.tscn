@@ -1,10 +1,22 @@
 [gd_scene format=3 uid="uid://b3m06rd3avcnb"]
 
+[ext_resource type="Script" uid="uid://mjnese414rce" path="res://world/enemy/enemy.gd" id="1_68tpa"]
 [ext_resource type="Texture2D" uid="uid://caipfb426ompc" path="res://assets/enemies/teacher.png" id="1_u5u4r"]
 
-[node name="Enemy" type="Node2D" unique_id=1058535472]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u5u4r"]
+radius = 5.0
+height = 14.799999
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1153895183]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Enemy" type="Node2D" unique_id=1058535472]
+script = ExtResource("1_68tpa")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=2074787130]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1651672463]
+position = Vector2(1, 4.0000005)
+scale = Vector2(5, 5)
+shape = SubResource("CapsuleShape2D_u5u4r")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1036033371]
+scale = Vector2(0.275, 0.275)
 texture = ExtResource("1_u5u4r")
