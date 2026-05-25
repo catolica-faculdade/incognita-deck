@@ -59,12 +59,16 @@ func lock_target(enemy):
 
 func evaluate_trajectory(points: Array):
 	clear_target()
-
 	var enemies = get_tree().get_nodes_in_group("enemies")
+	print("enemies? ", enemies)
+	
+	var global_points := PackedVector2Array()
+	if trajectory:
+		for point in points:
+			global_points.append(trajectory.to_global(point))
 
 	for enemy in enemies:
-
-		if trajectory_hits_enemy(points, enemy.global_position):
+		if trajectory_hits_enemy(global_points, enemy.global_position):
 			lock_target(enemy)
 
 

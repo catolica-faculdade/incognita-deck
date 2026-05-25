@@ -78,7 +78,7 @@ func take_damage(amount):
 
 	tween.tween_callback(func():
 		if(shield > 0):
-			amount - shield
+			amount -= shield
 			if(amount > 0):
 				shield = 0
 			

@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://c6f2jsihexkux"]
 
 [ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_hm76p"]
-[ext_resource type="Script" uid="uid://bcfakb1orse5d" path="res://world/combat/combat_1.gd" id="1_r3fwo"]
 [ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="2_apxka"]
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="3_r3fwo"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="4_cmddj"]
@@ -16,7 +15,6 @@ offset_right = 1301.0
 offset_bottom = 260.99994
 scale = Vector2(0.895, 0.895)
 texture = ExtResource("1_hm76p")
-script = ExtResource("1_r3fwo")
 
 [node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("3_r3fwo")]
 position = Vector2(2, -2)
@@ -29,7 +27,7 @@ position = Vector2(756, -227)
 rotation = -0.12217305
 scale = Vector2(0.7, 0.7)
 
-[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("4_cmddj")]
+[node name="GhostCombat" parent="." unique_id=817626321 groups=["enemies"] instance=ExtResource("4_cmddj")]
 position = Vector2(447, -137)
 scale = Vector2(0.8, 0.8)
 
