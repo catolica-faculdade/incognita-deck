@@ -5,13 +5,14 @@ var current_map_level := 1
 
 func _ready():
 	pressed.connect(_on_pressed)
+	print(name, " botão level:", level, " GameManager:", GameManager.level)
 	validate_level()
 
 func validate_level():
 	disabled = level != GameManager.level
 
 	if disabled:
-		modulate.a = 0.35
+		modulate.a = 0.5
 	else:
 		modulate.a = 1.0
 

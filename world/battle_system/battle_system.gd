@@ -130,3 +130,12 @@ func apply_card(value: int, axis: String):
 	trajectory.update_straight_line(current_math_x, current_math_y)
 	
 	evaluate_trajectory(trajectory.points)
+
+func is_end_combat():
+	if (current_enemies.size() <= 0):
+		win_combat()
+
+
+func win_combat():
+	GameManager.level += 1
+	GameManager.end_game()
