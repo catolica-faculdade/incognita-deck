@@ -6,7 +6,7 @@ extends Node
 signal card_pressed(card_data: Dictionary)
 
 var data: Dictionary
-
+var is_turn_running := false
 
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
@@ -118,6 +118,37 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 	return false
 
 func execute_turn_actions() -> void:
+	if not GameManager.is_player_turn or is_turn_running:
+		return
+		
+	is_turn_running = true
+	GameManager.is_player_turn = false
+
+	await player_attack_phase()
+	await enemy_turn_phase()
+
+	start_player_turn()
+	
+func start_player_turn() -> void:
+	print("Turno do jogador!")
+
+	GameManager.is_player_turn = true
+	is_turn_running = false
+
+	clear_trajectory()
+	
+func enemy_turn_phase() -> void:
+	print("Turno dos inimigos!")
+
+	var enemies = get_tree().get_nodes_in_group("enemies")
+
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.health > 0:
+			if enemy.has_method("choose_action"):
+				await enemy.choose_action()
+				await get_tree().create_timer(1.0).timeout
+	
+func player_attack_phase() -> void:
 	if current_enemies.size() > 0:
 		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
 
@@ -141,7 +172,14 @@ func execute_turn_actions() -> void:
 
 		reset_math()
 
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation("y = 0")
+
 func apply_card(card: Dictionary):
+	if not GameManager.is_player_turn or is_turn_running:
+		print("Não é turno do jogador!")
+		return
+	
 	if not trajectory:
 		print("trajectory line doesn't exist!")
 		return
