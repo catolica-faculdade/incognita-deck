@@ -6,7 +6,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x2eej"]
 size = Vector2(136, 103)
 
-[node name="SlimeCombat" type="Node2D" unique_id=941781988]
+[node name="SlimeCombat" type="Node2D" unique_id=941781988 groups=["enemies"]]
 script = ExtResource("1_x2eej")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=233153952]

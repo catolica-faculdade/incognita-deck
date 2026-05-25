@@ -16,7 +16,7 @@ func take_damage(amount):
 	check_is_alive()
 	
 func receive_poison(amount):
-	var poisoned := true
+	poisoned = true
 	poison_amount += amount
 	
 func on_end_turn():
@@ -26,7 +26,7 @@ func on_end_turn():
 			poison_amount -= 1
 			check_is_alive()
 		else:
-			var poisoned := false
+			poisoned = false
 			poison_amount = 0
 
 func check_is_alive():

@@ -132,10 +132,13 @@ func take_damage(amount):
 	tween.tween_property(self, "position", start_position + Vector2(80, 0), 0.12)
 
 	tween.tween_callback(func():
-		if(shield > 0):
-			amount - shield
-			if(amount > 0):
+		if shield > 0:
+			if amount >= shield:
+				amount -= shield
 				shield = 0
+			else:
+				shield -= amount
+				amount = 0
 			
 		if(amount > 0):
 			health -= amount

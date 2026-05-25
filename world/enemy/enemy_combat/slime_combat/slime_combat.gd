@@ -6,20 +6,13 @@ extends Node2D
 @export var attack_time := 0.15
 
 var base_damage := 10
-
 var health := 30
 var shield := 0
-
 var poison := 3
-
 var apply_block := 3
 var apply_defend := 7
-
 var heal_amount := 3
 var self_heal_amount := 5
-
-
-
 var start_position: Vector2
 var is_attacking := false
 
@@ -104,10 +97,13 @@ func take_damage(amount):
 	tween.tween_property(self, "position", start_position + Vector2(80, 0), 0.12)
 
 	tween.tween_callback(func():
-		if(shield > 0):
-			amount - shield
-			if(amount > 0):
+		if shield > 0:
+			if amount >= shield:
+				amount -= shield
 				shield = 0
+			else:
+				shield -= amount
+				amount = 0
 			
 		if(amount > 0):
 			health -= amount

@@ -6,24 +6,19 @@ extends Node2D
 @export var attack_time := 0.15
 
 var base_damage := 10
-
 var health := 20
 var shield := 0
-
 var poison := 2
-
 var apply_block := 3
 var apply_defend := 7
-
 var heal_amount := 3
 var self_heal_amount := 5
-
 var start_position: Vector2
 var is_attacking := false
 
 func _ready():
 	start_position = position
-	print('ready position: ', start_position)
+	print('ready position: ', start_position) 
 
 func choose_action():
 	shield = 0

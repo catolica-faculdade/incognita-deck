@@ -22,10 +22,10 @@ position = Vector2(2, -2)
 [node name="Camera" type="Camera2D" parent="." unique_id=1464432832]
 position = Vector2(476, -224)
 
-[node name="CubeCombat" parent="." unique_id=2077977886 instance=ExtResource("2_fac3r")]
+[node name="CubeCombat" parent="." unique_id=2077977886 groups=["enemies"] instance=ExtResource("2_fac3r")]
 position = Vector2(537, -348)
 
-[node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("3_i8n2g")]
+[node name="SlimeCombat" parent="." unique_id=941781988 groups=["enemies"] instance=ExtResource("3_i8n2g")]
 position = Vector2(885, -122)
 scale = Vector2(0.6, 0.6)
 
