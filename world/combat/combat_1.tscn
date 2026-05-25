@@ -9,6 +9,15 @@
 
 [node name="Combat1" type="Node2D" unique_id=81679987]
 
+[node name="TextureRect" type="TextureRect" parent="." unique_id=2067014219]
+offset_left = -147.00002
+offset_top = -825.00006
+offset_right = 1301.0
+offset_bottom = 260.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_hm76p")
+script = ExtResource("1_r3fwo")
+
 [node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("3_r3fwo")]
 position = Vector2(2, -2)
 
