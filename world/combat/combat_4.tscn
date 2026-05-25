@@ -1,11 +1,21 @@
 [gd_scene format=3 uid="uid://ckl0wwo4tnuqx"]
 
+[ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_8aeu4"]
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_fdnmr"]
 [ext_resource type="PackedScene" uid="uid://cnldsbu4rdcuc" path="res://world/enemy/enemy_combat/cube/cube_combat.tscn" id="2_p5883"]
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="3_8aeu4"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="4_behuj"]
+[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="6_behuj"]
 
 [node name="Combat4" type="Node2D" unique_id=1222342240]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=898402646]
+offset_left = -152.00002
+offset_top = -825.00006
+offset_right = 1296.0
+offset_bottom = 260.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_8aeu4")
 
 [node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_fdnmr")]
 position = Vector2(2, -2)
@@ -23,3 +33,11 @@ scale = Vector2(0.6, 0.6)
 [node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("4_behuj")]
 position = Vector2(814, -391)
 scale = Vector2(0.5, 0.5)
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=582884506]
+offset_left = -182.0
+offset_top = -245.0
+offset_right = 2074.6665
+offset_bottom = 578.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("6_behuj")

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bn3rptnig61hm"
+path="res://.godot/imported/Ideia johann 2025.mp3-452dc45985e21309b2bb39fbab8ac1bc.mp3str"
+
+[deps]
+
+source_file="res://assets/music/Ideia johann 2025.mp3"
+dest_files=["res://.godot/imported/Ideia johann 2025.mp3-452dc45985e21309b2bb39fbab8ac1bc.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
