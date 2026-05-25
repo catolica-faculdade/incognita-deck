@@ -7,7 +7,6 @@ const card_scene = preload("res://card/card.tscn")
 const player_scene = preload("res://world/player/player.tscn")
 const enemy_scene = preload("res://world/enemy/enemy.tscn")
 const calculator_scene = preload("res://world/enemy/enemy_combat/calculator/calculator_combat.tscn")
-const battle_system_scene = preload("res://world/battle_system/battle_system_node.tscn")
 
 @onready var battle_system = $BattleSystemNode
 @onready var camera = $Camera
@@ -31,10 +30,7 @@ func apply_card(value: int, axis: String):
 		return
 	
 	if axis == "x":
-		if (current_math_x <= 1 && value < 0):
-			current_math_x = 0
-		else:
-			current_math_x += value
+		current_math_x += value
 		
 	if axis == "y":
 		current_math_y += value
