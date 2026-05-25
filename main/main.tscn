@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://d3xhww0ep8llq" path="res://world/main_menu.gd" id="6_fwcvl"]
 [ext_resource type="Texture2D" uid="uid://en54wtgxiu0e" path="res://assets/buttons/button_leave_menu.png" id="7_na0o7"]
 [ext_resource type="Texture2D" uid="uid://dceevelauoaxt" path="res://assets/buttons/button_leave_hover_menu.png" id="8_73k8k"]
+[ext_resource type="AudioStream" uid="uid://dp2u8nejdhfct" path="res://assets/music/incognita_deck_menu.mp3" id="9_grrlh"]
 
 [node name="main" type="Node" unique_id=1804686851]
 script = ExtResource("1_53q0u")
@@ -65,3 +66,8 @@ texture_normal = ExtResource("7_na0o7")
 texture_hover = ExtResource("8_73k8k")
 stretch_mode = 0
 script = ExtResource("6_fwcvl")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1350635343]
+stream = ExtResource("9_grrlh")
+volume_db = -11.859
+autoplay = true
