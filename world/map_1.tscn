@@ -46,38 +46,80 @@ scale = Vector2(0.2, 0.2)
 position = Vector2(45.99997, -79.99999)
 scale = Vector2(0.2, 0.2)
 
+[node name="TextureButton" parent="combat_r1" index="0" unique_id=2018878306]
+level = 3
+
 [node name="combat_r3_1" parent="." unique_id=527048448 groups=["combat"] instance=ExtResource("3_yk43s")]
 position = Vector2(-130.00002, 78.99999)
 scale = Vector2(0.2, 0.2)
+
+[node name="TextureButton" parent="combat_r3_1" index="0" unique_id=2018878306]
+level = 2
 
 [node name="combat_r2_2" parent="." unique_id=676530860 groups=["combat"] instance=ExtResource("3_yk43s")]
 position = Vector2(-136.00002, 3)
 scale = Vector2(0.2, 0.2)
 
+[node name="TextureButton" parent="combat_r2_2" index="0" unique_id=2018878306]
+level = 2
+
 [node name="combat_r2_3" parent="." unique_id=1050773298 groups=["combat"] instance=ExtResource("3_yk43s")]
 position = Vector2(203.99997, 4)
 scale = Vector2(0.2, 0.2)
+
+[node name="TextureButton" parent="combat_r2_3" index="0" unique_id=2018878306]
+level = 4
 
 [node name="combat_r3_2" parent="." unique_id=683542424 groups=["combat"] instance=ExtResource("3_yk43s")]
 position = Vector2(217.99997, 75.99999)
 scale = Vector2(0.2, 0.2)
 
+[node name="TextureButton" parent="combat_r3_2" index="0" unique_id=2018878306]
+level = 4
+
 [node name="question_r3" parent="." unique_id=1083583709 groups=["question"] instance=ExtResource("4_28p05")]
 position = Vector2(41, 77)
 scale = Vector2(0.2, 0.2)
+
+[node name="TextureButton" parent="question_r3" index="0" unique_id=334766006]
+level = 3
 
 [node name="question_r1" parent="." unique_id=787865318 groups=["question"] instance=ExtResource("4_28p05")]
 position = Vector2(-131.00002, -80)
 scale = Vector2(0.2, 0.2)
 
+[node name="TextureButton" parent="question_r1" index="0" unique_id=334766006]
+level = 2
+
 [node name="test_r1" parent="." unique_id=351517410 groups=["test"] instance=ExtResource("5_nyu07")]
 position = Vector2(213.99998, -76.99999)
 scale = Vector2(0.1, 0.1)
+
+[node name="TextureButton" parent="test_r1" index="0" unique_id=1775020699]
+level = 4
 
 [node name="boss" parent="." unique_id=740394240 groups=["boss"] instance=ExtResource("6_i8ahg")]
 position = Vector2(404, 13)
 scale = Vector2(0.15, 0.15)
 
+[node name="TextureButton" parent="boss" index="0" unique_id=1116865759]
+level = 5
+
 [node name="rest_r2" parent="." unique_id=358850607 groups=["rest"] instance=ExtResource("7_qmuab")]
 position = Vector2(33, 6)
 scale = Vector2(0.18, 0.18)
+
+[node name="TextureButton" parent="rest_r2" index="0" unique_id=1119176316]
+level = 3
+
+[editable path="combat_r2_1"]
+[editable path="combat_r1"]
+[editable path="combat_r3_1"]
+[editable path="combat_r2_2"]
+[editable path="combat_r2_3"]
+[editable path="combat_r3_2"]
+[editable path="question_r3"]
+[editable path="question_r1"]
+[editable path="test_r1"]
+[editable path="boss"]
+[editable path="rest_r2"]

@@ -6,6 +6,7 @@ extends Node
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
 var trajectory: Node2D
+var player_damage = 5
 
 var current_enemies = []
 
@@ -93,7 +94,6 @@ func execute_turn_actions() -> void:
 			
 		var enemies_to_attack = current_enemies.duplicate()
 		
-		var player_damage = 20
 		for enemy in enemies_to_attack:
 			if is_instance_valid(enemy) and enemy.health > 0:
 				await enemy.take_damage(player_damage)

@@ -1,11 +1,23 @@
 extends TextureButton
 
+var current_map_level := 1
+@export var level := 0
+
 func _ready():
 	pressed.connect(_on_pressed)
+	validate_level()
+
+func validate_level():
+	disabled = level != GameManager.level
+
+	if disabled:
+		modulate.a = 0.35
+	else:
+		modulate.a = 1.0
 
 func _on_pressed():
-	print("Botão clicado:", name)
-	print("Grupos:", get_groups())
+	if disabled:
+		return
 	var scenario_path: String = ""
 	
 	var tree = get_tree()
