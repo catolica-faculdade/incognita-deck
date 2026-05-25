@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://dclll1cfxlmk8"]
+
+[ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_331dr"]
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_fdnmr"]
+[ext_resource type="PackedScene" uid="uid://dyexiav100inq" path="res://world/enemy/enemy_combat/teacher/teacher_combat.tscn" id="2_r36wi"]
+[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="4_gd65k"]
+
+[node name="Combat4" type="Node2D" unique_id=1384717141]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1334355830]
+offset_left = -143.00002
+offset_top = -821.00006
+offset_right = 1305.0
+offset_bottom = 264.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_331dr")
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_fdnmr")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=2060548793]
+position = Vector2(476, -224)
+
+[node name="TeacherCombat" parent="." unique_id=304323779 instance=ExtResource("2_r36wi")]
+position = Vector2(661, -123)
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=1252991511]
+offset_left = -183.0
+offset_top = -245.0
+offset_right = 2073.6665
+offset_bottom = 578.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("4_gd65k")

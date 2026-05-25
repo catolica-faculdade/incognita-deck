@@ -1,9 +1,20 @@
 [gd_scene format=3 uid="uid://c6f2jsihexkux"]
 
+[ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_hm76p"]
 [ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="2_apxka"]
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="3_r3fwo"]
+[ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="4_cmddj"]
+[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="5_w5lil"]
 
 [node name="Combat1" type="Node2D" unique_id=81679987]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=2067014219]
+offset_left = -147.00002
+offset_top = -825.00006
+offset_right = 1301.0
+offset_bottom = 260.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_hm76p")
 
 [node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("3_r3fwo")]
 position = Vector2(2, -2)
@@ -12,6 +23,18 @@ position = Vector2(2, -2)
 position = Vector2(476, -224)
 
 [node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("2_apxka")]
-position = Vector2(843, -213)
+position = Vector2(756, -227)
 rotation = -0.12217305
 scale = Vector2(0.7, 0.7)
+
+[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("4_cmddj")]
+position = Vector2(447, -137)
+scale = Vector2(0.8, 0.8)
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=1491597665]
+offset_left = -194.0
+offset_top = -246.0
+offset_right = 2062.6665
+offset_bottom = 577.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("5_w5lil")

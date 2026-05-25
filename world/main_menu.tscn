@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://cythn05irdkn0" path="res://assets/buttons/button_start_menu.png" id="3_ugk75"]
 [ext_resource type="Texture2D" uid="uid://pq5wsqfwioai" path="res://assets/buttons/button_start_hover_menu.png" id="4_lmief"]
 [ext_resource type="Texture2D" uid="uid://en54wtgxiu0e" path="res://assets/buttons/button_leave_menu.png" id="5_37y8g"]
+[ext_resource type="Script" uid="uid://d3xhww0ep8llq" path="res://world/main_menu.gd" id="5_lmief"]
 [ext_resource type="Texture2D" uid="uid://dceevelauoaxt" path="res://assets/buttons/button_leave_hover_menu.png" id="6_5hsri"]
+[ext_resource type="AudioStream" uid="uid://dp2u8nejdhfct" path="res://assets/music/incognita_deck_menu.mp3" id="8_37y8g"]
 
 [node name="MainMenu" type="Node2D" unique_id=1174143033]
 
@@ -29,7 +31,7 @@ position = Vector2(0, -161)
 scale = Vector2(0.5249023, 0.55029297)
 texture = ExtResource("2_p6djx")
 
-[node name="StartButton" type="TextureButton" parent="." unique_id=1440794159]
+[node name="StartButton" type="TextureButton" parent="." unique_id=1440794159 groups=["start"]]
 clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,8 +46,9 @@ scale = Vector2(0.7, 0.7)
 texture_normal = ExtResource("3_ugk75")
 texture_hover = ExtResource("4_lmief")
 stretch_mode = 0
+script = ExtResource("5_lmief")
 
-[node name="LeaveButton" type="TextureButton" parent="." unique_id=2049330426]
+[node name="LeaveButton" type="TextureButton" parent="." unique_id=2049330426 groups=["leave"]]
 clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,3 +63,9 @@ scale = Vector2(0.5, 0.5)
 texture_normal = ExtResource("5_37y8g")
 texture_hover = ExtResource("6_5hsri")
 stretch_mode = 0
+script = ExtResource("5_lmief")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=778732418]
+stream = ExtResource("8_37y8g")
+volume_db = -11.859
+autoplay = true

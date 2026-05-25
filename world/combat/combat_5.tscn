@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://b60i3x0t20uu6"]
+
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_1a3ey"]
+[ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_v7usp"]
+[ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="2_v7usp"]
+[ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="3_liajh"]
+[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="5_liajh"]
+
+[node name="Combat5" type="Node2D" unique_id=2067518437]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1279996712]
+offset_left = -138.00002
+offset_top = -833.00006
+offset_right = 1310.0
+offset_bottom = 252.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_v7usp")
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_1a3ey")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1584878681]
+position = Vector2(476, -224)
+
+[node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("2_v7usp")]
+position = Vector2(440.00006, -58)
+scale = Vector2(0.6, 0.6)
+
+[node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("3_liajh")]
+position = Vector2(559, -285)
+scale = Vector2(0.8, 0.8)
+
+[node name="CalculatorCombat2" parent="." unique_id=1553845150 instance=ExtResource("3_liajh")]
+position = Vector2(730, -157)
+scale = Vector2(0.5, 0.5)
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=1458912005]
+offset_left = -181.0
+offset_top = -245.0
+offset_right = 2075.6665
+offset_bottom = 578.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("5_liajh")

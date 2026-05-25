@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://tuq50ebla12b"]
+
+[ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_tf08c"]
+[ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_xr51r"]
+[ext_resource type="PackedScene" uid="uid://cnldsbu4rdcuc" path="res://world/enemy/enemy_combat/cube/cube_combat.tscn" id="2_xr51r"]
+[ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="3_r8c6r"]
+[ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="4_l7fgc"]
+[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="6_r8c6r"]
+
+[node name="Test1" type="Node2D" unique_id=1641077473]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1311035639]
+offset_left = -144.00002
+offset_top = -846.00006
+offset_right = 1304.0
+offset_bottom = 239.99994
+scale = Vector2(0.895, 0.895)
+texture = ExtResource("1_xr51r")
+
+[node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_tf08c")]
+position = Vector2(2, -2)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1922163025]
+position = Vector2(476, -224)
+
+[node name="CubeCombat" parent="." unique_id=2077977886 instance=ExtResource("2_xr51r")]
+position = Vector2(386, -197)
+
+[node name="CubeCombat2" parent="." unique_id=618515956 instance=ExtResource("2_xr51r")]
+position = Vector2(691, -434)
+
+[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("3_r8c6r")]
+position = Vector2(976, -49)
+scale = Vector2(0.6, 0.6)
+
+[node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("4_l7fgc")]
+position = Vector2(732, -182)
+scale = Vector2(0.4, 0.4)
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=1240354339]
+offset_left = -181.0
+offset_top = -245.0
+offset_right = 2075.6665
+offset_bottom = 578.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("6_r8c6r")
