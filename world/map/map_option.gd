@@ -50,6 +50,10 @@ func _on_pressed():
 		var random_map = randi_range(1, 3)
 		scenario_path = "res://world/combat/test_%d.tscn" % random_map
 		
+	elif is_in_group("boss"):
+		scenario_path = "res://world/combat/combat_boss.tscn"
+		
+		
 	if scenario_path != "":
 		GameManager.scenario_to_load = scenario_path
 		tree.change_scene_to_file("res://world/battle_system/battle_system.tscn")

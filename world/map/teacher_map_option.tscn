@@ -5,7 +5,7 @@
 
 [node name="TeacherMapOption" type="Node2D" unique_id=740394240]
 
-[node name="TextureButton" type="TextureButton" parent="." unique_id=1116865759]
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1116865759 groups=["boss"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
