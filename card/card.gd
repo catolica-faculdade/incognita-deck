@@ -3,33 +3,27 @@ extends Control
 @export var scale_hover: Vector2 = Vector2(1.1, 1.1)
 @export var scale_default: Vector2 = Vector2(1.0, 1.0)
 @export var animation_duration: float = 0.15
+
 @onready var texture_rect = $TextureRect
 @onready var button = $Button
 
-var card_data = {}
+var card_data: Dictionary = {}
 var default_texture = preload("res://assets/placeholder.jpg")
-
 var tween: Tween
-var world
 
-signal card_pressed(value, axis)
+signal card_pressed(card_data: Dictionary)
 
-func setup(data):
+func setup(data: Dictionary):
 	card_data = data
 	custom_minimum_size = Vector2(100, 200)
 	size = Vector2(100, 200)
 
-	if card_data.has("texture"):
-		texture_rect.texture = card_data["texture"]
-	else:
-		texture_rect.texture = default_texture
+	texture_rect.texture = card_data.get("texture", default_texture)
 
 	button.pressed.connect(_on_pressed)
 
 func _on_pressed():
-	var value = card_data["value"]
-	var axis = card_data["axis"]
-	card_pressed.emit(value, axis)
+	card_pressed.emit(card_data)
 
 func _on_hover():
 	z_index = 10

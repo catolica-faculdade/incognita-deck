@@ -3,6 +3,11 @@ extends Node
 @export var lock_distance = 75
 @export var combat_ui_scene = preload("res://interface/interface.tscn")
 
+signal card_pressed(card_data: Dictionary)
+
+var data: Dictionary
+
+
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
 var trajectory: Node2D
@@ -12,6 +17,10 @@ var current_enemies = []
 
 var current_math_x: float = 0.0
 var current_math_y: float = 0.0
+
+var quadratic_a: float = 0.0
+var quadratic_b: float = 0.0
+var quadratic_c: float = 0.0
 
 func _ready() -> void:
 	scenario_container = Node2D.new()
@@ -46,6 +55,25 @@ func _ready() -> void:
 		else:
 			print("Aviso: Botão 'TextureButton' não foi encontrado na cena de interface.")
 		print("BattleSystem: Interface carregada com sucesso!")
+	
+	var end_turn_button = combat_ui.find_child("EndTurnButton", true, false)
+	var clear_button = combat_ui.find_child("ClearTrajectoryButton", true, false)
+
+	if end_turn_button:
+		end_turn_button.end_turn.connect(execute_turn_actions)
+		print("EndTurn conectado!")
+
+	if clear_button:
+		clear_button.clear_trajectory.connect(clear_trajectory)
+		print("ClearTrajectory conectado!")
+
+
+func setup(card_data: Dictionary):
+	data = card_data
+	
+
+func _on_pressed():
+	card_pressed.emit(data)
 	
 func clear_target():
 	for enemy in current_enemies:
@@ -92,44 +120,46 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 func execute_turn_actions() -> void:
 	if current_enemies.size() > 0:
 		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
-		
+
+		var enemies_to_attack = current_enemies.duplicate()
+
 		if trajectory:
 			trajectory.clear_points()
-			
-		var enemies_to_attack = current_enemies.duplicate()
-		
+
+		reset_math()
+
 		for enemy in enemies_to_attack:
 			if is_instance_valid(enemy) and enemy.health > 0:
 				await enemy.take_damage(player_damage)
+
 		clear_target()
 	else:
 		print("Nenhum inimigo selecionado na trajetória.")
+
 		if trajectory:
 			trajectory.clear_points()
-			current_math_x = 0.0
-			current_math_y = 0.0
-			
-func apply_card(value: int, axis: String):
+
+		reset_math()
+
+func apply_card(card: Dictionary):
 	if not trajectory:
 		print("trajectory line doesn't exist!")
 		return
 	
-	if axis == "x":
-		if (current_math_x <= 1 && value < 0):
-			current_math_x = 0
-		else:
-			current_math_x += value
-		
-	if axis == "y":
-		current_math_y += value
-		
-	if axis != "x" && axis != "y":
-		print("invalid axis move!")
-		return
-
-	trajectory.update_straight_line(current_math_x, current_math_y)
+	var type: String = card.get("type", "linear")
 	
+	if type == "linear":
+		apply_linear_card(card)
+	elif type == "quadratic":
+		apply_quadratic_card(card)
+	else:
+		print("invalid card type!")
+		return
+	
+	update_trajectory()
 	evaluate_trajectory(trajectory.points)
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation(get_equation_text())
 
 func is_end_combat():
 	if (current_enemies.size() <= 0):
@@ -139,3 +169,93 @@ func is_end_combat():
 func win_combat():
 	GameManager.level += 1
 	GameManager.end_game()
+
+
+func apply_linear_card(card: Dictionary):
+	var axis: String = card.get("axis", "")
+	var value: float = float(card.get("value", 0))
+	
+	if axis == "x":
+		if current_math_x <= 1 and value < 0:
+			current_math_x = 0
+		else:
+			current_math_x += value
+	
+	elif axis == "y":
+		current_math_y += value
+	
+	else:
+		print("invalid axis move!")
+
+
+func apply_quadratic_card(card: Dictionary):
+	var coefficient: String = card.get("coefficient", "")
+	var value: float = float(card.get("value", 0))
+	
+	if coefficient == "a":
+		quadratic_a += value
+	elif coefficient == "b":
+		quadratic_b += value
+	elif coefficient == "c":
+		quadratic_c += value
+	else:
+		print("invalid quadratic coefficient!")
+
+
+func update_trajectory():
+	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0 or quadratic_c != 0.0
+	
+	var end_x := current_math_x
+	
+	if has_quadratic and end_x <= 0:
+		end_x = 8.0 # alcance padrão para visualizar curva
+	
+	if has_quadratic:
+		trajectory.update_quadratic_line(
+			quadratic_a,
+			quadratic_b,
+			quadratic_c + current_math_y,
+			0.0,
+			end_x
+		)
+	else:
+		trajectory.update_straight_line(current_math_x, current_math_y)
+
+func reset_math():
+	current_math_x = 0.0
+	current_math_y = 0.0
+	quadratic_a = 0.0
+	quadratic_b = 0.0
+	quadratic_c = 0.0
+	
+func get_equation_text() -> String:
+	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0
+	
+	if has_quadratic:
+		return "y = %.1fx² + %.1fx + %.1f" % [
+			quadratic_a,
+			quadratic_b,
+			quadratic_c + current_math_y
+		]
+	
+	return "y = %.1f" % current_math_y
+	
+func clear_trajectory():
+	print("função: clear trajectory")
+	current_math_x = 0.0
+	current_math_y = 0.0
+
+	quadratic_a = 0.0
+	quadratic_b = 0.0
+	quadratic_c = 0.0
+
+	clear_target()
+
+	if trajectory:
+		trajectory.clear_points()
+		trajectory.add_point(Vector2.ZERO)
+	
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation("y = 0")
+
+	print("Trajetória limpa!")

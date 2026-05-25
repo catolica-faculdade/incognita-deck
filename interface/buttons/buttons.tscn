@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://360jo30uifs2" path="res://assets/empty_paper.png" id="1_paw45"]
 [ext_resource type="Texture2D" uid="uid://8ednp6hhoftm" path="res://assets/button.png" id="2_0r5lu"]
 [ext_resource type="Script" uid="uid://yynl7usa1q7m" path="res://interface/buttons/buttons.gd" id="3_arv1u"]
+[ext_resource type="Script" uid="uid://cbyse1fnfhdj3" path="res://interface/buttons/clear_trajectory.gd" id="3_jyw87"]
 
 [node name="Control" type="Control" unique_id=251126185]
 layout_mode = 3
@@ -16,6 +17,38 @@ grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 mouse_force_pass_scroll_events = false
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=2066903837]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 58.0
+offset_top = 480.0
+offset_right = -821.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_paw45")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ClearTrajectoryButton" type="TextureButton" parent="." unique_id=1178301712]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 124.0
+offset_top = 500.0
+offset_right = -328.0005
+offset_bottom = 46.999817
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("2_0r5lu")
+ignore_texture_size = true
+script = ExtResource("3_jyw87")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=160636558]
 layout_mode = 1
@@ -33,7 +66,7 @@ texture = ExtResource("1_paw45")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TextureButton" type="TextureButton" parent="." unique_id=102642846]
+[node name="EndTurnButton" type="TextureButton" parent="." unique_id=102642846]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,3 +81,13 @@ scale = Vector2(0.2, 0.2)
 texture_normal = ExtResource("2_0r5lu")
 ignore_texture_size = true
 script = ExtResource("3_arv1u")
+
+[node name="EquationLabel" type="Label" parent="." unique_id=1766878985]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 19.0
+offset_right = 62.5
+offset_bottom = 42.0
+scale = Vector2(2, 2)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "y = 0"

@@ -27,7 +27,7 @@ position = Vector2(756, -227)
 rotation = -0.12217305
 scale = Vector2(0.7, 0.7)
 
-[node name="GhostCombat" parent="." unique_id=817626321 groups=["enemies"] instance=ExtResource("4_cmddj")]
+[node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("4_cmddj")]
 position = Vector2(447, -137)
 scale = Vector2(0.8, 0.8)
 

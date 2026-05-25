@@ -71,6 +71,7 @@ func check_is_alive():
 		get_tree().change_scene_to_file("res://world/map_1.tscn")
 	
 func take_damage(amount):
+	print("total de dano", amount)
 	var tween := create_tween()
 
 	tween.tween_property(self, "position", start_position + Vector2(40, 0), 0.15)
