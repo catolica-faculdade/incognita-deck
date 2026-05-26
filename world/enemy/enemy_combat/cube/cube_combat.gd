@@ -61,6 +61,8 @@ func attack():
 	await tween.finished
 	is_attacking = false
 
+func apply_shield(amount):
+	shield += amount
 
 func defend():
 	shield += apply_defend

@@ -1,102 +1,46 @@
 extends Node
 
 const CARDS = [
-
-	# ========================================================
-	# POSIÇÕES 0 A 5: DESLOCAMENTO NOS EIXOS X E Y
-	# ========================================================
 	{
 		"id": 1,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": 1.0, # [Posição 0] Soma +1 no Eixo Y
+		"name": "Avanço",
+		"type": "linear",
+		"x": 4.0,
+		"y": 0.0,
+		"texture": preload("res://assets/cards/card_avanco.jpg")
 	},
 	{
 		"id": 2,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": 2.0, # [Posição 1] Soma +2 no Eixo Y
+		"name": "Elevar",
+		"type": "linear",
+		"x": 3.0,
+		"y": 2.0,
+		"texture": preload("res://assets/cards/card_eleva.jpg")
 	},
 	{
 		"id": 3,
+		"name": "Arco",
 		"type": "quadratic",
-		"coefficient": "b",
-		"value": -2.0, # [Posição 2] Move +1 no Eixo X (Forma canônica)
+		"coefficient": "a",
+		"value": 0.35,
+		"texture": preload("res://assets/cards/card_arc.jpg")
 	},
 	{
 		"id": 4,
+		"name": "Queda",
 		"type": "quadratic",
-		"coefficient": "b",
-		"value": -4.0, # [Posição 3] Move +2 no Eixo X (Forma canônica)
+		"coefficient": "a",
+		"value": -0.35,
+		"texture": preload("res://assets/cards/card_queda.jpg")
 	},
 	{
 		"id": 5,
-		"type": "quadratic",
-		"coefficient": "b",
-		"value": 1.0, # [Posição 4] Mantida da lista anterior
-	},
-	{
-		"id": 6,
-		"type": "quadratic",
-		"coefficient": "b",
-		"value": -1.0, # [Posição 5] Mantida da lista anterior
-	},
-
-	# ========================================================
-	# RESTANTE DO ARRAY (Mantendo os combos anteriores)
-	# ========================================================
-	{
-		"id": 7,
-		"type": "quadratic",
-		"coefficient": "b",
-		"value": 2.0,
-	},
-	{
-		"id": 8,
-		"type": "quadratic",
-		"coefficient": "b",
-		"value": 2.0,
-	},
-	{
-		"id": 9,
-		"type": "quadratic",
-		"coefficient": "b",
-		"value": -2.0,
-	},
-	{
-		"id": 10,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": 2.0,
-	},
-	{
-		"id": 11,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": -2.0,
-	},
-	{
-		"id": 12,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": 2.0,
-	},
-	{
-		"id": 13,
-		"type": "quadratic",
-		"coefficient": "c",
-		"value": -2.0,
-	},
-	{
-		"id": 14,
-		"type": "quadratic",
-		"coefficient": "a",
-		"value": 3.0,
-	},
-	{
-		"id": 15,
-		"type": "quadratic",
-		"coefficient": "a",
-		"value": -3.0,
-	},
+		"name": "Onda",
+		"type": "special",
+		"special_type": "wave",
+		"amplitude": 1.5,
+		"frequency": 2.0,
+		"length": 8.0,
+		"texture": preload("res://assets/cards/card_onda.jpg")
+	}
 ]

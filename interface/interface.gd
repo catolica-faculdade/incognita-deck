@@ -13,7 +13,7 @@ func _ready() -> void:
 	create_card(CARDS[1])
 	create_card(CARDS[2])
 	create_card(CARDS[3])
-	create_card(CARDS[9])
+	create_card(CARDS[4])
 
 func create_card(data):
 	var card = card_scene.instantiate()

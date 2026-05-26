@@ -43,10 +43,9 @@ func _on_pressed():
 			scenario_path = "res://world/combat/combat_%d.tscn" % random_combat
 
 		elif random_event <= 80:
-			var player = tree.get_first_node_in_group("Player")
-			if player:
-				player.health += player.total_health * 0.25
-				print("Player curado")
+			GameManager.player_health += GameManager.max_player_health * 0.25
+			GameManager.level += 1
+			GameManager.end_game()
 			return
 
 		else:
@@ -54,10 +53,8 @@ func _on_pressed():
 			scenario_path = "res://world/combat/test_%d.tscn" % random_test
 
 	elif is_in_group("rest"):
-		var player = tree.get_first_node_in_group("Player")
-		if player:
-			player.health += player.total_health * 0.25
-			print("Player descansou")
+		GameManager.level += 1
+		GameManager.end_game()
 		return
 
 	elif is_in_group("test"):

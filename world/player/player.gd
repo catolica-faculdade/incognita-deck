@@ -1,6 +1,5 @@
 extends Node2D
-var max_health := 80
-var health := max_health
+var health := GameManager.player_health
 var poisoned := false
 var poison_amount := 0
 var shield := false
@@ -18,6 +17,7 @@ func _ready() -> void:
 
 func take_damage(amount):
 	health -= amount
+	GameManager.player_health = health
 	check_is_alive()
 	status_changed.emit()
 	
@@ -46,7 +46,7 @@ func check_is_alive():
 func get_player_status() -> Dictionary:
 	return {
 		"health": health,
-		"max_health": max_health,
+		"max_health": GameManager.max_player_health,
 		"poison": poisoned,
 		"poison_amount": poison_amount,
 		"shield": shield,

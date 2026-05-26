@@ -8,6 +8,11 @@ signal card_pressed(card_data: Dictionary)
 var card_payload: Dictionary
 var is_turn_running := false
 
+var wave_enabled := false
+var wave_amplitude := 0.0
+var wave_frequency := 0.0
+var wave_length := 0.0
+
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
 var player_interface
@@ -229,11 +234,14 @@ func apply_card(card: Dictionary):
 		apply_linear_card(card)
 	elif type == "quadratic":
 		apply_quadratic_card(card)
+	elif type == "special":
+		apply_special_card(card)
 	else:
 		print("invalid card type!")
 		return
 	
 	update_trajectory()
+		
 	evaluate_trajectory(trajectory.points)
 	if combat_ui.has_method("update_equation"):
 		combat_ui.update_equation(get_equation_text())
@@ -271,21 +279,22 @@ func win_combat():
 	GameManager.end_game()
 
 func apply_linear_card(card: Dictionary):
-	var axis: String = card.get("axis", "")
-	var value: float = float(card.get("value", 0))
-	
-	if axis == "x":
-		if current_math_x <= 1 and value < 0:
-			current_math_x = 0
-		else:
-			current_math_x += value
-	
-	elif axis == "y":
-		current_math_y += value
-	
-	else:
-		print("invalid axis move!")
+	var x_value: float = float(card.get("x", 0))
+	var y_value: float = float(card.get("y", 0))
 
+	current_math_x += x_value
+	current_math_y += y_value
+
+func apply_special_card(card: Dictionary):
+	var special_type = card.get("special_type", "")
+
+	if special_type == "wave":
+		wave_enabled = true
+		wave_amplitude += float(card.get("amplitude", 2.0))
+		wave_frequency += float(card.get("frequency", 2.0))
+		wave_length = max(wave_length, float(card.get("length", 8.0)))
+	else:
+		print("invalid special card: ", special_type)
 
 func apply_quadratic_card(card: Dictionary):
 	var coefficient: String = card.get("coefficient", "")
@@ -303,13 +312,27 @@ func apply_quadratic_card(card: Dictionary):
 
 func update_trajectory():
 	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0 or quadratic_c != 0.0
+	var has_wave := wave_enabled
 	
 	var end_x := current_math_x
 	
-	if has_quadratic and end_x <= 0:
-		end_x = 8.0 # alcance padrão para visualizar curva
+	if end_x <= 0:
+		if has_wave:
+			end_x = wave_length
+		elif has_quadratic:
+			end_x = 8.0
 	
-	if has_quadratic:
+	if has_wave:
+		trajectory.update_mixed_line(
+			quadratic_a,
+			quadratic_b,
+			quadratic_c + current_math_y,
+			0.0,
+			end_x,
+			wave_amplitude,
+			wave_frequency
+		)
+	elif has_quadratic:
 		trajectory.update_quadratic_line(
 			quadratic_a,
 			quadratic_b,
@@ -319,13 +342,19 @@ func update_trajectory():
 		)
 	else:
 		trajectory.update_straight_line(current_math_x, current_math_y)
-
+		
+		
 func reset_math():
 	current_math_x = 0.0
 	current_math_y = 0.0
 	quadratic_a = 0.0
 	quadratic_b = 0.0
 	quadratic_c = 0.0
+
+	wave_enabled = false
+	wave_amplitude = 0.0
+	wave_frequency = 0.0
+	wave_length = 0.0
 	
 func get_equation_text() -> String:
 	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0
@@ -347,6 +376,11 @@ func clear_trajectory():
 	quadratic_a = 0.0
 	quadratic_b = 0.0
 	quadratic_c = 0.0
+
+	wave_enabled = false
+	wave_amplitude = 0.0
+	wave_frequency = 0.0
+	wave_length = 0.0
 
 	clear_target()
 

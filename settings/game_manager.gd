@@ -1,9 +1,11 @@
 extends Node
 var scenario_to_load: String = ""
 var map_to_load: String = "map_1"
-
+var max_player_health: int = 80
+var player_health: int = max_player_health
 var level := 0
 var is_player_turn := true
+
 
 func end_game():
 	is_player_turn = true
