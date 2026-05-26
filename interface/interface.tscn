@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kn15ldbmc68h" path="res://interface/interface.gd" id="1_6nxxo"]
 [ext_resource type="PackedScene" uid="uid://cacwc8ih5dwrk" path="res://interface/buttons/buttons.tscn" id="2_0c05b"]
+[ext_resource type="PackedScene" uid="uid://cy44hrstj418f" path="res://world/player/player_interface.tscn" id="3_athsf"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1260764440]
 script = ExtResource("1_6nxxo")
@@ -33,3 +34,6 @@ grow_vertical = 0
 [node name="Buttons" parent="MarginContainer" unique_id=1522302423 instance=ExtResource("2_0c05b")]
 layout_mode = 2
 mouse_force_pass_scroll_events = true
+
+[node name="PlayerInterface" parent="MarginContainer/Buttons" unique_id=1515655110 instance=ExtResource("3_athsf")]
+position = Vector2(475.46918, 62.548317)

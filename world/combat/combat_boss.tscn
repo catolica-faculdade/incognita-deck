@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_fdnmr"]
 [ext_resource type="PackedScene" uid="uid://dyexiav100inq" path="res://world/enemy/enemy_combat/teacher/teacher_combat.tscn" id="2_r36wi"]
 [ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="4_gd65k"]
+[ext_resource type="AudioStream" uid="uid://c5isumq3k0kb4" path="res://assets/music/musicaReduzida(1).mp3" id="5_7nyhr"]
 
 [node name="Combat4" type="Node2D" unique_id=1384717141]
 
@@ -31,3 +32,8 @@ offset_right = 2073.6665
 offset_bottom = 578.0
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("4_gd65k")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1462204589]
+stream = ExtResource("5_7nyhr")
+autoplay = true
+parameters/looping = true

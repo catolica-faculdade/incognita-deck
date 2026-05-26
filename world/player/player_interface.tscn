@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://cy44hrstj418f"]
+
+[ext_resource type="Script" uid="uid://ccgugyq025uby" path="res://world/player/player_interface.gd" id="1_vxkfa"]
+[ext_resource type="Texture2D" uid="uid://bjblgumfxvger" path="res://assets/interface/hearth_icon.png" id="2_upotv"]
+[ext_resource type="Texture2D" uid="uid://cdwy61s0i63e6" path="res://assets/interface/shield_icon.png" id="3_lcyvn"]
+[ext_resource type="Texture2D" uid="uid://6jms555l3qiy" path="res://assets/interface/poison_icon.png" id="4_o5oja"]
+
+[node name="PlayerInterface" type="Node2D" unique_id=1515655110]
+script = ExtResource("1_vxkfa")
+
+[node name="Control" type="Control" parent="." unique_id=1265373339]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 435.0
+offset_right = 719.0
+offset_bottom = 87.0
+
+[node name="Panel" type="Panel" parent="Control" unique_id=325949745]
+top_level = true
+layout_mode = 0
+offset_left = 363.0
+offset_top = 1.0
+offset_right = 791.0
+offset_bottom = 87.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Panel" unique_id=1491443799]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 21.0
+offset_right = 253.0
+offset_bottom = 107.0
+theme_override_constants/separation = 72
+
+[node name="HHeathContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer" unique_id=763401895]
+layout_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HHeathContainer" unique_id=1162661442]
+position = Vector2(10.000001, 21.000002)
+scale = Vector2(0.17468351, 0.17468351)
+texture = ExtResource("2_upotv")
+
+[node name="HealthLabel" type="Label" parent="Control/Panel/HBoxContainer/HHeathContainer" unique_id=307286426]
+layout_mode = 2
+text = "10 "
+
+[node name="HShieldContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer" unique_id=425531708]
+layout_mode = 2
+
+[node name="ShieldLabel" type="Label" parent="Control/Panel/HBoxContainer/HShieldContainer" unique_id=1561564244]
+layout_mode = 2
+text = "141"
+
+[node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HShieldContainer" unique_id=116505771]
+position = Vector2(15.000011, 14.000002)
+scale = Vector2(0.12664215, 0.12664215)
+texture = ExtResource("3_lcyvn")
+
+[node name="HPoisonContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer" unique_id=656387862]
+layout_mode = 2
+
+[node name="PoisonLabel" type="Label" parent="Control/Panel/HBoxContainer/HPoisonContainer" unique_id=744801617]
+layout_mode = 2
+text = "141"
+
+[node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HPoisonContainer" unique_id=1490763427]
+position = Vector2(14.000007, 17.000002)
+scale = Vector2(0.10313993, 0.103139944)
+texture = ExtResource("4_o5oja")

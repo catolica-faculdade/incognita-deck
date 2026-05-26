@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="2_v7usp"]
 [ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="3_liajh"]
 [ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="5_liajh"]
+[ext_resource type="AudioStream" uid="uid://c7kte22j8ubb7" path="res://assets/music/incognita_deck_combate.mp3" id="6_vdm4g"]
 
 [node name="Combat5" type="Node2D" unique_id=2067518437]
 
@@ -41,3 +42,8 @@ offset_right = 2075.6665
 offset_bottom = 578.0
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("5_liajh")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1339313762]
+stream = ExtResource("6_vdm4g")
+autoplay = true
+parameters/looping = true

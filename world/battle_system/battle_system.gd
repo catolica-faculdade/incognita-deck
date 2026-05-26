@@ -5,11 +5,13 @@ extends Node
 
 signal card_pressed(card_data: Dictionary)
 
-var data: Dictionary
-
+var card_payload: Dictionary
+var is_turn_running := false
 
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
+var player_interface
+
 var trajectory: Node2D
 var player_damage = 100
 
@@ -23,57 +25,81 @@ var quadratic_b: float = 0.0
 var quadratic_c: float = 0.0
 
 func _ready() -> void:
+	GameManager.is_player_turn = true
+	is_turn_running = false
 	scenario_container = Node2D.new()
 	scenario_container.name = "CenarioContainer"
 	add_child(scenario_container)
-	
+
 	var scenario_to_load = GameManager.scenario_to_load
+
 	if scenario_to_load != "":
 		print("BattleSystem: Carregando o cenário -> ", scenario_to_load)
+
 		var cenario_prefab = load(scenario_to_load)
 		var cenario_instancia = cenario_prefab.instantiate()
+
 		scenario_container.add_child(cenario_instancia)
+
 		trajectory = cenario_instancia.find_child("Trajectory", true, false)
-		
+
 		if trajectory:
-			print("BattleSystem: Trajetória encontrada e mapeada com sucesso!")
+			print("BattleSystem: Trajetória encontrada!")
 		else:
-			print("Erro crítico: Não foi possível encontrar o nó 'Trajectory' dentro do cenário!")
+			print("Erro: Trajectory não encontrada!")
 	else:
-		print("Aviso: Nenhum cenário foi especificado no GameManager!")
+		print("Aviso: Nenhum cenário foi especificado!")
 
 	if combat_ui_scene:
 		combat_ui = combat_ui_scene.instantiate() as CanvasLayer
 		add_child(combat_ui)
+		combat_ui.show()
+
 		if combat_ui.has_method("set_battle_system"):
 			combat_ui.set_battle_system(self)
-		combat_ui.show()
-		print("BattleSystem: Interface carregada com sucesso!")
-	
-	var end_turn_button = combat_ui.find_child("EndTurnButton", true, false)
-	var clear_button = combat_ui.find_child("ClearTrajectoryButton", true, false)
 
-	if end_turn_button:
-		if end_turn_button.end_turn.is_connected(execute_turn_actions):
-			end_turn_button.end_turn.disconnect(execute_turn_actions)
-		end_turn_button.end_turn.connect(execute_turn_actions)
-		print("BattleSystem: EndTurn conectado com sucesso!")
-	else:
-		print("Aviso: Botão 'EndTurnButton' não foi encontrado na cena de interface.")
+		player_interface = combat_ui.find_child("PlayerInterface", true, false)
 
-	if clear_button:
-		if clear_button.clear_trajectory.is_connected(clear_trajectory):
-			clear_button.clear_trajectory.disconnect(clear_trajectory)
+		if player_interface:
+			update_player_interface()
+		else:
+			print("PlayerInterface não encontrada!")
+
+		var player = get_tree().get_first_node_in_group("Player")
+
+		if player:
+			player.status_changed.connect(update_player_interface)
+			update_player_interface()
+		else:
+			print("Player não encontrado!")
+
+		var end_turn_button = combat_ui.find_child("EndTurnButton", true, false)
+		var clear_button = combat_ui.find_child("ClearTrajectoryButton", true, false)
+
+		if end_turn_button:
+			if end_turn_button.end_turn.is_connected(execute_turn_actions):
+				end_turn_button.end_turn.disconnect(execute_turn_actions)
+			end_turn_button.end_turn.connect(execute_turn_actions)
+			print("BattleSystem: EndTurn conectado com sucesso!")
+		else:
+			print("Aviso: Botão 'EndTurnButton' não foi encontrado na cena de interface.")
+
+		if clear_button:
+			if clear_button.clear_trajectory.is_connected(clear_trajectory):
+				clear_button.clear_trajectory.disconnect(clear_trajectory)
 			
-		clear_button.clear_trajectory.connect(clear_trajectory)
-		print("BattleSystem: ClearTrajectory conectado com sucesso!")
+			clear_button.clear_trajectory.connect(clear_trajectory)
+			print("BattleSystem: ClearTrajectory conectado com sucesso!")
+		else:
+			print("ClearTrajectoryButton não encontrado!")
 
+		print("BattleSystem: Interface carregada com sucesso!")
 
 func setup(card_data: Dictionary):
-	data = card_data
+	card_payload = card_data
 
 func _on_pressed():
-	card_pressed.emit(data)
+	card_pressed.emit(card_payload)
 	
 func clear_target():
 	for enemy in current_enemies:
@@ -117,6 +143,49 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 	return false
 
 func execute_turn_actions() -> void:
+	if not GameManager.is_player_turn or is_turn_running:
+		return
+		
+	is_turn_running = true
+	GameManager.is_player_turn = false
+
+	await player_attack_phase()
+
+	if is_end_combat():
+		return
+
+	await enemy_turn_phase()
+
+	if is_end_combat():
+		return
+
+	start_player_turn()
+	
+func start_player_turn() -> void:
+	print("Turno do jogador!")
+
+	
+
+	GameManager.is_player_turn = true
+	is_turn_running = false
+
+	clear_trajectory()
+	
+func enemy_turn_phase() -> void:
+	print("Turno dos inimigos!")
+
+	var enemies = get_tree().get_nodes_in_group("enemies")
+
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.health > 0:
+			if enemy.has_method("choose_action"):
+				await enemy.choose_action()
+				if not is_inside_tree(): return
+				await get_tree().create_timer(1.0).timeout
+				
+	is_end_combat()
+	
+func player_attack_phase() -> void:
 	if current_enemies.size() > 0:
 		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
 
@@ -132,6 +201,7 @@ func execute_turn_actions() -> void:
 				await enemy.take_damage(player_damage)
 
 		clear_target()
+		is_end_combat()
 	else:
 		print("Nenhum inimigo selecionado na trajetória.")
 
@@ -139,10 +209,16 @@ func execute_turn_actions() -> void:
 			trajectory.clear_points()
 
 		reset_math()
-	print("validando final da fase...")
-	is_end_combat()
 	
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation("y = 0")
+	is_end_combat()
+
 func apply_card(card: Dictionary):
+	if not GameManager.is_player_turn or is_turn_running:
+		print("Não é turno do jogador!")
+		return
+	
 	if not trajectory:
 		print("trajectory line doesn't exist!")
 		return
@@ -162,13 +238,34 @@ func apply_card(card: Dictionary):
 	if combat_ui.has_method("update_equation"):
 		combat_ui.update_equation(get_equation_text())
 
-func is_end_combat():
+func is_end_combat() -> bool:
+	if not is_inside_tree():
+		return true
+		
+	var player = get_tree().get_first_node_in_group("Player")
+
+	if player:
+		var status = player.get_player_status()
+		var player_is_alive = status["health"] > 0
+
+		if not player_is_alive:
+			is_turn_running = false
+			GameManager.is_player_turn = true
+			GameManager.level = -1
+			GameManager.end_game()
+			return true
+
 	var total_enemies = get_tree().get_nodes_in_group("enemies")
 	print("inimigos: ", total_enemies)
+
 	if (total_enemies.size() <= 0):
 		win_combat()
+		return true
+	return false
 
 func win_combat():
+	is_turn_running = false
+	GameManager.is_player_turn = true
 	print("winning combat!")
 	GameManager.level += 1
 	GameManager.end_game()
@@ -261,3 +358,25 @@ func clear_trajectory():
 		combat_ui.update_equation("y = 0")
 
 	print("Trajetória limpa!")
+
+
+func update_player_interface():
+	if not is_inside_tree():
+		return
+	
+	var player = get_tree().get_first_node_in_group("Player")
+
+	if not player:
+		return
+
+	if not player_interface:
+		return
+
+	var status = player.get_player_status()
+
+	player_interface.update_player_info(
+		status["health"],
+		status["max_health"],
+		status["poison"],
+		status["shield"]
+	)

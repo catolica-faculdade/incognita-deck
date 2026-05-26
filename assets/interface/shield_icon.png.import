@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0vwqgpqp2w7w"
-path="res://.godot/imported/einstein.png-88e0519ee4893a6c261b274763ec3279.ctex"
+uid="uid://cdwy61s0i63e6"
+path="res://.godot/imported/shield_icon.png-9776303c6840bd2136a50e04ea526419.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/einstein.png"
-dest_files=["res://.godot/imported/einstein.png-88e0519ee4893a6c261b274763ec3279.ctex"]
+source_file="res://assets/interface/shield_icon.png"
+dest_files=["res://.godot/imported/shield_icon.png-9776303c6840bd2136a50e04ea526419.ctex"]
 
 [params]
 

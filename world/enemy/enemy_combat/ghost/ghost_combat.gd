@@ -37,6 +37,7 @@ func _process(delta):
 
 func heal():
 	health = health
+	await play_effect_animation()
 	
 func attack():
 	var player = get_tree().get_first_node_in_group("Player")
@@ -64,13 +65,14 @@ func attack():
 
 func defend():
 	shield += apply_defend
+	await play_effect_animation()
 
 func apply_shield(amount):
 	shield += amount
 
 func defend_all():
 	var enemies = get_tree().get_nodes_in_group("enemies")
-
+	await play_effect_animation()
 	for enemy in enemies:
 		enemy.apply_shield(apply_block)
 
@@ -105,3 +107,39 @@ func take_damage(amount):
 	await tween.finished
 	
 	check_is_alive()
+
+
+func play_effect_animation():
+	var original_position = position
+	
+	var tween := create_tween()
+
+	tween.tween_property(
+		self,
+		"position",
+		original_position + Vector2(8, 0),
+		0.04
+	)
+
+	tween.tween_property(
+		self,
+		"position",
+		original_position + Vector2(-8, 0),
+		0.04
+	)
+
+	tween.tween_property(
+		self,
+		"position",
+		original_position + Vector2(6, 0),
+		0.03
+	)
+
+	tween.tween_property(
+		self,
+		"position",
+		original_position,
+		0.03
+	)
+
+	await tween.finished
