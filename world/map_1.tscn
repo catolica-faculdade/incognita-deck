@@ -16,10 +16,10 @@
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -620.0
-offset_top = -334.0
-offset_right = 1158.5713
-offset_bottom = 690.0
+offset_left = -636.2639
+offset_top = -358.0
+offset_right = 1186.9701
+offset_bottom = 691.71423
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.7, 0.7)

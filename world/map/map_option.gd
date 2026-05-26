@@ -43,7 +43,7 @@ func _on_pressed():
 			scenario_path = "res://world/combat/combat_%d.tscn" % random_combat
 
 		elif random_event <= 80:
-			GameManager.player_health += GameManager.max_player_health * 0.25
+			GameManager.player_health += GameManager.max_player_health * 0.5
 			GameManager.level += 1
 			GameManager.end_game()
 			return
@@ -54,6 +54,7 @@ func _on_pressed():
 
 	elif is_in_group("rest"):
 		GameManager.level += 1
+		GameManager.player_health += GameManager.max_player_health * 0.5
 		GameManager.end_game()
 		return
 

@@ -3,44 +3,35 @@
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_7gabi"]
 [ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_12hut"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="3_2ysqw"]
-[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="3_12hut"]
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="4_8sbnx"]
 
 [node name="Test2" type="Node2D" unique_id=24352859]
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1507681412]
-offset_left = -152.00002
-offset_top = -847.00006
-offset_right = 1296.0
-offset_bottom = 238.99994
+offset_left = -148.0
+offset_top = -824.0
+offset_right = 1300.0
+offset_bottom = 262.0
 scale = Vector2(0.895, 0.895)
 texture = ExtResource("1_12hut")
 
 [node name="player" parent="." unique_id=1988582892 groups=["Player"] instance=ExtResource("1_7gabi")]
 position = Vector2(2, -2)
 
-[node name="TextureRect2" type="TextureRect" parent="." unique_id=309694175]
-offset_left = -181.0
-offset_top = -246.0
-offset_right = 2075.6665
-offset_bottom = 577.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("3_12hut")
-
 [node name="Camera" type="Camera2D" parent="." unique_id=1190024032]
 position = Vector2(476, -224)
 
 [node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("4_8sbnx")]
-position = Vector2(381, -245)
+position = Vector2(385, -291)
 
 [node name="SlimeCombat2" parent="." unique_id=170799853 instance=ExtResource("4_8sbnx")]
 position = Vector2(685, -434)
 scale = Vector2(0.7, 0.7)
 
 [node name="SlimeCombat3" parent="." unique_id=2062406784 instance=ExtResource("4_8sbnx")]
-position = Vector2(912, -47)
+position = Vector2(889, -323.99997)
 scale = Vector2(0.4, 0.4)
 
 [node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("3_2ysqw")]
-position = Vector2(706, -239)
+position = Vector2(690, -212)
 scale = Vector2(0.7, 0.7)

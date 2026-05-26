@@ -18,7 +18,7 @@ var combat_ui: CanvasLayer
 var player_interface
 
 var trajectory: Node2D
-var player_damage = 100
+var player_damage = 15
 
 var current_enemies = []
 
@@ -263,12 +263,19 @@ func is_end_combat() -> bool:
 			GameManager.end_game()
 			return true
 
-	var total_enemies = get_tree().get_nodes_in_group("enemies")
-	print("inimigos: ", total_enemies)
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var alive_enemies := 0
 
-	if (total_enemies.size() <= 0):
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.health > 0:
+			alive_enemies += 1
+
+	print("Inimigos vivos:", alive_enemies)
+
+	if alive_enemies <= 0:
 		win_combat()
 		return true
+
 	return false
 
 func win_combat():

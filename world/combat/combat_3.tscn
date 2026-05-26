@@ -4,16 +4,15 @@
 [ext_resource type="PackedScene" uid="uid://vvyq6orywab5" path="res://world/player/player.tscn" id="1_qhuni"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="2_g4xgx"]
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="3_hxcl0"]
-[ext_resource type="Texture2D" uid="uid://c7wr37rgywko" path="res://assets/backgrounds/grass_background.png" id="5_hxcl0"]
 [ext_resource type="AudioStream" uid="uid://c7kte22j8ubb7" path="res://assets/music/incognita_deck_combate.mp3" id="6_e28wy"]
 
 [node name="Combat3" type="Node2D" unique_id=795192742]
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1492411357]
-offset_left = -143.00002
-offset_top = -856.00006
-offset_right = 1305.0
-offset_bottom = 229.99994
+offset_left = -177.00002
+offset_top = -850.00006
+offset_right = 1271.0
+offset_bottom = 235.99994
 scale = Vector2(0.895, 0.895)
 texture = ExtResource("1_g4xgx")
 
@@ -24,24 +23,16 @@ position = Vector2(2, -2)
 position = Vector2(476, -224)
 
 [node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("2_g4xgx")]
-position = Vector2(307, -185.00002)
+position = Vector2(415, -345)
 scale = Vector2(0.8, 0.8)
 
 [node name="SlimeCombat" parent="." unique_id=941781988 instance=ExtResource("3_hxcl0")]
-position = Vector2(630, -34)
+position = Vector2(650, -399)
 scale = Vector2(0.6, 0.6)
 
 [node name="SlimeCombat2" parent="." unique_id=415648018 instance=ExtResource("3_hxcl0")]
-position = Vector2(891, -29.000004)
+position = Vector2(800.00006, -483)
 scale = Vector2(0.6, 0.6)
-
-[node name="TextureRect2" type="TextureRect" parent="." unique_id=915071054]
-offset_left = -182.0
-offset_top = -244.0
-offset_right = 2074.6665
-offset_bottom = 579.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("5_hxcl0")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1707971032]
 stream = ExtResource("6_e28wy")

@@ -17,10 +17,10 @@ script = ExtResource("1_53q0u")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -620.0
-offset_top = -350.0
-offset_right = -485.1687
-offset_bottom = -290.0
+offset_left = -628.0
+offset_top = -349.99997
+offset_right = -493.1687
+offset_bottom = -289.99997
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_67ri8")
@@ -29,7 +29,7 @@ expand_mode = 2
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1530064745]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=134149129]
-position = Vector2(0, -161)
+position = Vector2(-8, -161)
 scale = Vector2(0.5249023, 0.55029297)
 texture = ExtResource("3_grrlh")
 
@@ -38,9 +38,9 @@ clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -212.99998
+offset_left = -221.0
 offset_top = -82.0
-offset_right = -834.0
+offset_right = -842.0
 offset_bottom = -502.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -55,9 +55,9 @@ clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -154.0
+offset_left = -162.0
 offset_top = 93.0
-offset_right = -767.0
+offset_right = -775.0
 offset_bottom = -349.0
 grow_horizontal = 2
 grow_vertical = 2
