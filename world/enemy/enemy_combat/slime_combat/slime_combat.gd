@@ -85,10 +85,11 @@ func applyPoison():
 	is_attacking = false
 
 func check_is_alive():
-	if(health > 0):
-		return true
-	else:
-		get_tree().change_scene_to_file("res://world/map_1.tscn")
+	if (health <= 0):
+		remove_from_group("enemies")
+		queue_free()
+		return false
+	return true
 	
 func take_damage(amount):
 	var tween := create_tween()
@@ -107,10 +108,11 @@ func take_damage(amount):
 			
 		if(amount > 0):
 			health -= amount
-			
-		check_is_alive()
+			print(name, " recebeu dano. Vida atual: ", health)
 	)
 
 	tween.tween_property(self, "position", start_position, 0.15)
 
 	await tween.finished
+	
+	check_is_alive()

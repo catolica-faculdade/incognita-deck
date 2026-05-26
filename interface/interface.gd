@@ -9,11 +9,11 @@ const card_scene = preload("res://card/card.tscn")
 var battle_system
 
 func _ready() -> void:
+	create_card(CARDS[0])
 	create_card(CARDS[1])
 	create_card(CARDS[2])
+	create_card(CARDS[3])
 	create_card(CARDS[9])
-	create_card(CARDS[11])
-	create_card(CARDS[13])
 
 func create_card(data):
 	var card = card_scene.instantiate()

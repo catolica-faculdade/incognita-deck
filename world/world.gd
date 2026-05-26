@@ -24,24 +24,6 @@ func _ready():
 	camera.global_position = Vector2(500, 0)
 	trajectory = player_instance.get_node("TrajectoryNode/Trajectory")
 
-func apply_card(value: int, axis: String):
-	if not trajectory:
-		print("trajectory line doesn't exists!")
-		return
-	
-	if axis == "x":
-		current_math_x += value
-		
-	if axis == "y":
-		current_math_y += value
-		
-	if axis != "x" && axis != "y":
-		print("invalid axis move!")
-		return
-
-	trajectory.update_straight_line(current_math_x, current_math_y)
-	battle_system.evaluate_trajectory(trajectory.points)
-
 func spawn_mock_enemy():
 	var enemy = calculator_scene.instantiate()
 	add_child(enemy)

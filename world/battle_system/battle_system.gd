@@ -11,7 +11,7 @@ var data: Dictionary
 var scenario_container: Node2D
 var combat_ui: CanvasLayer
 var trajectory: Node2D
-var player_damage = 5
+var player_damage = 100
 
 var current_enemies = []
 
@@ -47,30 +47,30 @@ func _ready() -> void:
 		add_child(combat_ui)
 		if combat_ui.has_method("set_battle_system"):
 			combat_ui.set_battle_system(self)
-		var end_turn_button = combat_ui.find_child("TextureButton", true, false)
 		combat_ui.show()
-		if end_turn_button:
-			end_turn_button.end_turn.connect(execute_turn_actions)
-			print("BattleSystem: Sinal de fim de turno conectado com sucesso!")
-		else:
-			print("Aviso: Botão 'TextureButton' não foi encontrado na cena de interface.")
 		print("BattleSystem: Interface carregada com sucesso!")
 	
 	var end_turn_button = combat_ui.find_child("EndTurnButton", true, false)
 	var clear_button = combat_ui.find_child("ClearTrajectoryButton", true, false)
 
 	if end_turn_button:
+		if end_turn_button.end_turn.is_connected(execute_turn_actions):
+			end_turn_button.end_turn.disconnect(execute_turn_actions)
 		end_turn_button.end_turn.connect(execute_turn_actions)
-		print("EndTurn conectado!")
+		print("BattleSystem: EndTurn conectado com sucesso!")
+	else:
+		print("Aviso: Botão 'EndTurnButton' não foi encontrado na cena de interface.")
 
 	if clear_button:
+		if clear_button.clear_trajectory.is_connected(clear_trajectory):
+			clear_button.clear_trajectory.disconnect(clear_trajectory)
+			
 		clear_button.clear_trajectory.connect(clear_trajectory)
-		print("ClearTrajectory conectado!")
+		print("BattleSystem: ClearTrajectory conectado com sucesso!")
 
 
 func setup(card_data: Dictionary):
 	data = card_data
-	
 
 func _on_pressed():
 	card_pressed.emit(data)
@@ -88,7 +88,6 @@ func lock_target(enemy):
 func evaluate_trajectory(points: Array):
 	clear_target()
 	var enemies = get_tree().get_nodes_in_group("enemies")
-	print("enemies? ", enemies)
 	
 	var global_points := PackedVector2Array()
 	if trajectory:
@@ -140,7 +139,9 @@ func execute_turn_actions() -> void:
 			trajectory.clear_points()
 
 		reset_math()
-
+	print("validando final da fase...")
+	is_end_combat()
+	
 func apply_card(card: Dictionary):
 	if not trajectory:
 		print("trajectory line doesn't exist!")
@@ -162,14 +163,15 @@ func apply_card(card: Dictionary):
 		combat_ui.update_equation(get_equation_text())
 
 func is_end_combat():
-	if (current_enemies.size() <= 0):
+	var total_enemies = get_tree().get_nodes_in_group("enemies")
+	print("inimigos: ", total_enemies)
+	if (total_enemies.size() <= 0):
 		win_combat()
 
-
 func win_combat():
+	print("winning combat!")
 	GameManager.level += 1
 	GameManager.end_game()
-
 
 func apply_linear_card(card: Dictionary):
 	var axis: String = card.get("axis", "")

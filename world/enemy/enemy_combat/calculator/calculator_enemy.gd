@@ -109,21 +109,18 @@ func applyPoison():
 	is_attacking = false
 
 func check_is_alive():
-	if(health > 0):
-		return true
-	else:
-		get_tree().change_scene_to_file("res://world/map_1.tscn")
+	if (health <= 0):
+		remove_from_group("enemies")
+		queue_free()
+		return false
+	return true
 	
 func take_damage(amount):
-	is_attacking = true
 	var tween := create_tween()
-	
-	tween.set_trans(Tween.TRANS_QUAD)
-	
-	var posicao_recuo = start_position + Vector2(100, 0)
-	
-	tween.tween_property(self, "position", posicao_recuo, 0.07).set_ease(Tween.EASE_OUT)
-	
+
+	tween.tween_property(self, "position", start_position + Vector2(40, 0), 0.15)
+	tween.tween_property(self, "position", start_position + Vector2(80, 0), 0.12)
+
 	tween.tween_callback(func():
 		if shield > 0:
 			if amount >= shield:
@@ -133,14 +130,13 @@ func take_damage(amount):
 				shield -= amount
 				amount = 0
 			
-		if amount > 0:
+		if(amount > 0):
 			health -= amount
-			print(name, " recebeu ", amount, " de dano. Vida restante: ", health)
 			
-		check_is_alive()
 	)
 
-	tween.tween_property(self, "position", start_position, 0.20).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "position", start_position, 0.15)
 
 	await tween.finished
-	is_attacking = false
+	
+	check_is_alive()

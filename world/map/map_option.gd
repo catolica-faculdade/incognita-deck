@@ -9,6 +9,7 @@ func _ready():
 	validate_level()
 
 func validate_level():
+	print(level)
 	disabled = level != GameManager.level
 
 	if disabled:
@@ -65,7 +66,6 @@ func _on_pressed():
 		
 	elif is_in_group("boss"):
 		scenario_path = "res://world/combat/combat_boss.tscn"
-		
 		
 	if scenario_path != "":
 		GameManager.scenario_to_load = scenario_path

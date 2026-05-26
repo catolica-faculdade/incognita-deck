@@ -65,30 +65,33 @@ func defend():
 	shield += apply_defend
 
 func check_is_alive():
-	if(health > 0):
-		return true
-	else:
-		get_tree().change_scene_to_file("res://world/map_1.tscn")
+	if (health <= 0):
+		remove_from_group("enemies")
+		queue_free()
+		return false
+	return true
 	
 func take_damage(amount):
-	print("total de dano", amount)
 	var tween := create_tween()
 
 	tween.tween_property(self, "position", start_position + Vector2(40, 0), 0.15)
 	tween.tween_property(self, "position", start_position + Vector2(80, 0), 0.12)
 
 	tween.tween_callback(func():
-		if(shield > 0):
-			amount -= shield
-			if(amount > 0):
+		if shield > 0:
+			if amount >= shield:
+				amount -= shield
 				shield = 0
+			else:
+				shield -= amount
+				amount = 0
 			
 		if(amount > 0):
 			health -= amount
-			
-		check_is_alive()
 	)
 
 	tween.tween_property(self, "position", start_position, 0.15)
 
 	await tween.finished
+	
+	check_is_alive()
