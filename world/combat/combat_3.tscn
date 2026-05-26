@@ -45,5 +45,6 @@ texture = ExtResource("5_hxcl0")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1707971032]
 stream = ExtResource("6_e28wy")
+volume_db = -10.0
 autoplay = true
 parameters/looping = true
