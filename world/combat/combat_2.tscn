@@ -38,7 +38,8 @@ offset_bottom = 578.0
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("5_i8n2g")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1053734735]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=57257542]
 stream = ExtResource("6_4j33r")
+volume_db = -10.0
 autoplay = true
 parameters/looping = true
