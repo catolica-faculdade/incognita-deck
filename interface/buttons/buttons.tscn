@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://360jo30uifs2" path="res://assets/empty_paper.png" id="1_paw45"]
 [ext_resource type="Texture2D" uid="uid://8ednp6hhoftm" path="res://assets/button.png" id="2_0r5lu"]
+[ext_resource type="Texture2D" uid="uid://c88j2qvekcv1d" path="res://assets/button_trajectory.png" id="2_jph5u"]
 [ext_resource type="Script" uid="uid://yynl7usa1q7m" path="res://interface/buttons/buttons.gd" id="3_arv1u"]
 [ext_resource type="Script" uid="uid://cbyse1fnfhdj3" path="res://interface/buttons/clear_trajectory.gd" id="3_jyw87"]
 
@@ -23,10 +24,10 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 58.0
-offset_top = 480.0
-offset_right = -821.0
-offset_bottom = -44.0
+offset_left = 15.0
+offset_top = 544.0
+offset_right = -864.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -39,14 +40,14 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 124.0
-offset_top = 500.0
-offset_right = -328.0005
-offset_bottom = 46.999817
+offset_left = 115.0
+offset_top = 561.0
+offset_right = 1123.0
+offset_bottom = 623.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.2, 0.2)
-texture_normal = ExtResource("2_0r5lu")
+scale = Vector2(0.06, 0.06)
+texture_normal = ExtResource("2_jph5u")
 ignore_texture_size = true
 script = ExtResource("3_jyw87")
 
@@ -55,10 +56,10 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 826.0
-offset_top = 489.0
-offset_right = -53.0
-offset_bottom = -35.0
+offset_left = 875.0
+offset_top = 551.0
+offset_right = -4.0
+offset_bottom = 27.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -71,10 +72,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 892.0
-offset_top = 503.99997
-offset_right = 439.9995
-offset_bottom = 50.999756
+offset_left = 984.0
+offset_top = 566.0
+offset_right = 531.9995
+offset_bottom = 112.99982
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.2, 0.2)
