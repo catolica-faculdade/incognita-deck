@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ba7wbuwk5yefc" path="res://assets/backgrounds/background_combat.png" id="1_12hut"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="3_2ysqw"]
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="4_8sbnx"]
+[ext_resource type="AudioStream" uid="uid://c7kte22j8ubb7" path="res://assets/music/incognita_deck_combate.mp3" id="5_12hut"]
 
 [node name="Test2" type="Node2D" unique_id=24352859]
 
@@ -35,3 +36,9 @@ scale = Vector2(0.4, 0.4)
 [node name="GhostCombat" parent="." unique_id=817626321 instance=ExtResource("3_2ysqw")]
 position = Vector2(690, -212)
 scale = Vector2(0.7, 0.7)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=886768692]
+stream = ExtResource("5_12hut")
+volume_db = -10.0
+autoplay = true
+parameters/looping = true

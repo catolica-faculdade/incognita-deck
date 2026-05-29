@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b4385jmk5c8v8" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.tscn" id="2_sm10b"]
 [ext_resource type="PackedScene" uid="uid://y0tdtljpvb1d" path="res://world/enemy/enemy_combat/ghost/ghost_combat.tscn" id="3_m218y"]
 [ext_resource type="PackedScene" uid="uid://q2xd7gdpfp3m" path="res://world/enemy/enemy_combat/calculator/calculator_combat.tscn" id="4_351ct"]
+[ext_resource type="AudioStream" uid="uid://c7kte22j8ubb7" path="res://assets/music/incognita_deck_combate.mp3" id="6_m218y"]
 
 [node name="Test3" type="Node2D" unique_id=1839820528]
 
@@ -36,3 +37,9 @@ scale = Vector2(0.7, 0.7)
 
 [node name="CalculatorCombat" parent="." unique_id=56075531 instance=ExtResource("4_351ct")]
 position = Vector2(296, -427)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=251611558]
+stream = ExtResource("6_m218y")
+volume_db = -10.0
+autoplay = true
+parameters/looping = true
