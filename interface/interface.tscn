@@ -31,6 +31,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="DropZone" type="Panel" parent="MarginContainer/Control" unique_id=202192291]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PlayedCards" type="Panel" parent="MarginContainer/Control" unique_id=1830104257]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
 [node name="Buttons" parent="MarginContainer" unique_id=1522302423 instance=ExtResource("2_0c05b")]
 layout_mode = 2
 mouse_force_pass_scroll_events = true
