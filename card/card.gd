@@ -30,7 +30,7 @@ func setup(data: Dictionary):
 
 
 func _gui_input(event):
-
+	print("Recebeu input")
 	if event is InputEventMouseButton:
 
 		if event.button_index == MOUSE_BUTTON_LEFT:
