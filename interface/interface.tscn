@@ -7,6 +7,14 @@
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1260764440]
 script = ExtResource("1_6nxxo")
 
+[node name="DropZone" type="ColorRect" parent="." unique_id=512673811 groups=["drop_zone"]]
+custom_minimum_size = Vector2(300, 200)
+offset_left = 318.0
+offset_top = 155.0
+offset_right = 847.0
+offset_bottom = 355.0
+color = Color(0.9372549, 0.22745098, 0.68235296, 0)
+
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=614692575]
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,10 +39,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="PlayedCards" type="Panel" parent="MarginContainer/Control" unique_id=1830104257]
+[node name="PlayedCards" type="HBoxContainer" parent="MarginContainer/Control" unique_id=281874012]
+custom_minimum_size = Vector2(500, 200)
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -280.0
+offset_top = -450.0
+offset_right = 301.0
+offset_bottom = -250.0
 
 [node name="Buttons" parent="MarginContainer" unique_id=1522302423 instance=ExtResource("2_0c05b")]
 layout_mode = 2
@@ -42,11 +53,3 @@ mouse_force_pass_scroll_events = true
 
 [node name="PlayerInterface" parent="MarginContainer/Buttons" unique_id=1515655110 instance=ExtResource("3_athsf")]
 position = Vector2(475.46918, 62.548317)
-
-[node name="DropZone" type="ColorRect" parent="." unique_id=512673811 groups=["drop_zone"]]
-custom_minimum_size = Vector2(400, 200)
-offset_left = 420.0
-offset_top = 193.0
-offset_right = 820.0
-offset_bottom = 443.0
-color = Color(0.9137255, 0.28627452, 0.64705884, 0)

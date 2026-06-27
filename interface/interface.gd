@@ -35,7 +35,10 @@ func _on_card_played(card):
 
 	played_container.add_child(card)
 
-	card.position = Vector2.ZERO
+	played_container.move_child(
+		card,
+		played_container.get_child_count() - 1
+	)
 
 	if battle_system:
 		battle_system.apply_card(card.card_data)
