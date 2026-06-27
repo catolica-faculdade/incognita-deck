@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://en54wtgxiu0e" path="res://assets/buttons/button_leave_menu.png" id="7_na0o7"]
 [ext_resource type="Texture2D" uid="uid://dceevelauoaxt" path="res://assets/buttons/button_leave_hover_menu.png" id="8_73k8k"]
 [ext_resource type="AudioStream" uid="uid://dp2u8nejdhfct" path="res://assets/music/incognita_deck_menu.mp3" id="9_grrlh"]
+[ext_resource type="Texture2D" uid="uid://i425cav0ru2q" path="res://assets/buttons/config_icon.png" id="10_0i4oc"]
 
 [node name="main" type="Node" unique_id=1804686851]
 script = ExtResource("1_53q0u")
@@ -71,4 +72,16 @@ script = ExtResource("6_fwcvl")
 stream = ExtResource("9_grrlh")
 volume_db = -11.859
 autoplay = true
+bus = &"Music"
 parameters/looping = true
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1948135352]
+anchors_preset = -1
+offset_left = 474.0
+offset_top = 216.0
+offset_right = 1728.0
+offset_bottom = 1470.0
+scale = Vector2(0.1, 0.1)
+texture_normal = ExtResource("10_0i4oc")
+
+[connection signal="pressed" from="TextureButton" to="." method="_on_config_pressed"]

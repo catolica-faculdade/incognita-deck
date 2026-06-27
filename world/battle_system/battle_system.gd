@@ -35,6 +35,7 @@ func _ready() -> void:
 	scenario_container = Node2D.new()
 	scenario_container.name = "CenarioContainer"
 	add_child(scenario_container)
+	GameManager.current_context = GameManager.Context.COMBAT
 
 	var scenario_to_load = GameManager.scenario_to_load
 

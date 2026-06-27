@@ -22,10 +22,11 @@ position = Vector2(2, -2)
 position = Vector2(476, -224)
 
 [node name="TeacherCombat" parent="." unique_id=304323779 instance=ExtResource("2_r36wi")]
-position = Vector2(336, -107)
+position = Vector2(550, -320)
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1462204589]
 stream = ExtResource("5_7nyhr")
 volume_db = -10.0
 autoplay = true
+bus = &"Music"
 parameters/looping = true

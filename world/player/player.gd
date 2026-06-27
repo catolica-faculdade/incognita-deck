@@ -27,7 +27,9 @@ func receive_poison(amount):
 	status_changed.emit()
 	
 func on_end_turn():
+	print("poisoned:", poisoned)
 	if(poisoned):
+		print("poisoned:", poison_amount)
 		if(poison_amount > 0):
 			take_damage(poison_amount)
 			poison_amount -= 1

@@ -1,19 +1,122 @@
 [gd_scene format=3 uid="uid://b4385jmk5c8v8"]
 
-[ext_resource type="Texture2D" uid="uid://c5qfrw80hpll7" path="res://assets/enemies/slime.png" id="1_gkdhw"]
 [ext_resource type="Script" uid="uid://bsqqw43w66uhv" path="res://world/enemy/enemy_combat/slime_combat/slime_combat.gd" id="1_x2eej"]
+[ext_resource type="Texture2D" uid="uid://cyu7atmihyirc" path="res://assets/enemies/slime_sprites_4.png" id="2_elarr"]
+[ext_resource type="Texture2D" uid="uid://cvgykf08vyblc" path="res://assets/enemies/slime_sprites_0.png" id="2_x5qb6"]
+[ext_resource type="Texture2D" uid="uid://dxmgb8mvo7l1s" path="res://assets/enemies/slime_sprites_1.png" id="3_f2lc8"]
+[ext_resource type="Texture2D" uid="uid://b4c6y5xdif8yw" path="res://assets/enemies/slime_sprites_5.png" id="3_nc2e6"]
+[ext_resource type="Texture2D" uid="uid://ctr1wsojmp3w2" path="res://assets/enemies/slime_sprites_6.png" id="4_fhnpk"]
+[ext_resource type="Texture2D" uid="uid://car8he6yowrnt" path="res://assets/enemies/slime_sprites_2.png" id="4_it6ke"]
+[ext_resource type="Texture2D" uid="uid://bkaoe8dqymxjf" path="res://assets/enemies/slime_sprites_7.png" id="5_043qd"]
+[ext_resource type="Texture2D" uid="uid://delvxxe0pvyc7" path="res://assets/enemies/slime_sprites_3.png" id="5_t240q"]
+[ext_resource type="Texture2D" uid="uid://co3l1mjhni8s1" path="res://assets/enemies/slime_sprites_8.png" id="6_ofjsg"]
+[ext_resource type="Texture2D" uid="uid://bgs2g5p10wc1i" path="res://assets/enemies/slime_sprites_9.png" id="7_3w7k1"]
+[ext_resource type="Texture2D" uid="uid://c88w0dhhbncku" path="res://assets/enemies/slime_sprites_10.png" id="8_5whe5"]
+[ext_resource type="Texture2D" uid="uid://csb4ai6ikvq3b" path="res://assets/enemies/slime_sprites_11.png" id="9_g80r8"]
+[ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="14_g80r8"]
+[ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="15_ev1ty"]
+[ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="16_dggs3"]
+[ext_resource type="AudioStream" uid="uid://dygbyc0ekhj3h" path="res://assets/sound/heal_sound.wav" id="17_t0f18"]
+[ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="18_pe4kr"]
+[ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="19_4b471"]
+[ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="20_33sql"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x2eej"]
-size = Vector2(136, 103)
+size = Vector2(259.5, 158.34375)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l3w24"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_elarr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_nc2e6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_fhnpk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_043qd")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_ofjsg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_3w7k1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_5whe5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_g80r8")
+}],
+"loop": true,
+"name": &"hit",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_x5qb6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_f2lc8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_it6ke")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_t240q")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 4.0
+}]
 
 [node name="SlimeCombat" type="Node2D" unique_id=941781988 groups=["enemies"]]
 script = ExtResource("1_x2eej")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=233153952]
-texture = ExtResource("1_gkdhw")
-
 [node name="Area2D" type="Area2D" parent="." unique_id=736217336]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1050821035]
-position = Vector2(-1, 0)
+position = Vector2(0, -1)
 shape = SubResource("RectangleShape2D_x2eej")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=780670372]
+position = Vector2(2.0000305, -1.0000038)
+scale = Vector2(0.8, 0.8)
+sprite_frames = SubResource("SpriteFrames_l3w24")
+animation = &"hit"
+
+[node name="AttackSound" type="AudioStreamPlayer" parent="." unique_id=1138604952]
+stream = ExtResource("14_g80r8")
+bus = &"SFX"
+
+[node name="HitSound" type="AudioStreamPlayer" parent="." unique_id=2037271120]
+stream = ExtResource("15_ev1ty")
+bus = &"SFX"
+
+[node name="HitShieldSound" type="AudioStreamPlayer" parent="." unique_id=1607879125]
+stream = ExtResource("16_dggs3")
+bus = &"SFX"
+
+[node name="HealSound" type="AudioStreamPlayer" parent="." unique_id=1938015430]
+stream = ExtResource("17_t0f18")
+bus = &"SFX"
+
+[node name="PoisonSound" type="AudioStreamPlayer" parent="." unique_id=2013763583]
+stream = ExtResource("18_pe4kr")
+bus = &"SFX"
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=400151700]
+stream = ExtResource("19_4b471")
+bus = &"SFX"
+
+[node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=1055490590]
+stream = ExtResource("20_33sql")
+bus = &"SFX"

@@ -15,3 +15,9 @@ extends Node
 	
 	#if hud and battle_system:
 		#hud.end_turn.connect(battle_system.execute_turn_actions)
+		
+	#GameManager.current_context = GameManager.Context.MAIN_MENU
+
+
+func _on_config_pressed() -> void:
+	PauseMenu.pause()

@@ -6,6 +6,8 @@ var player_health: int = max_player_health
 var level := 0
 var is_player_turn := true
 
+enum Context { MAIN_MENU, MAP, COMBAT }
+var current_context := Context.MAIN_MENU
 
 func end_game():
 	print("end_game:",level)

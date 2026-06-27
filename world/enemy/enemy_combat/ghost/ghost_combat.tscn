@@ -1,19 +1,142 @@
 [gd_scene format=3 uid="uid://y0tdtljpvb1d"]
 
 [ext_resource type="Script" uid="uid://bteb6kk7a7s8a" path="res://world/enemy/enemy_combat/ghost/ghost_combat.gd" id="1_4xlxf"]
-[ext_resource type="Texture2D" uid="uid://bb6kvjplc0020" path="res://assets/enemies/ghost.png" id="1_ep74i"]
+[ext_resource type="Texture2D" uid="uid://3r0fbopgddc1" path="res://assets/enemies/ghost_sprites_attack.png" id="2_62erh"]
+[ext_resource type="Texture2D" uid="uid://cslf4exo0guqh" path="res://assets/enemies/ghost_sprites_hit.png" id="3_k5c8m"]
+[ext_resource type="Texture2D" uid="uid://xe3hai5ymj1o" path="res://assets/enemies/ghost_sprites_0.png" id="4_pakd0"]
+[ext_resource type="Texture2D" uid="uid://cmjdn10n74pbv" path="res://assets/enemies/ghost_sprites_1.png" id="5_gduqh"]
+[ext_resource type="Texture2D" uid="uid://dojwx0g2rqy0p" path="res://assets/enemies/ghost_sprites_2.png" id="6_ghhxq"]
+[ext_resource type="Texture2D" uid="uid://buxwhs7fb172o" path="res://assets/enemies/ghost_sprites_3.png" id="7_oirf7"]
+[ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="8_grcwt"]
+[ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="9_hxvwc"]
+[ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="10_fenk2"]
+[ext_resource type="AudioStream" uid="uid://dygbyc0ekhj3h" path="res://assets/sound/heal_sound.wav" id="11_4ajan"]
+[ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="12_83hpn"]
+[ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="13_0go4k"]
+[ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="14_dkv04"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4xlxf"]
-size = Vector2(110, 131)
+size = Vector2(160.25, 172.25)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7h6vh"]
+atlas = ExtResource("2_62erh")
+region = Rect2(0, 0, 373, 331)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_grcwt"]
+atlas = ExtResource("2_62erh")
+region = Rect2(373, 0, 373, 331)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hxvwc"]
+atlas = ExtResource("2_62erh")
+region = Rect2(746, 0, 373, 331)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fenk2"]
+atlas = ExtResource("3_k5c8m")
+region = Rect2(0, 0, 370, 299)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ajan"]
+atlas = ExtResource("3_k5c8m")
+region = Rect2(370, 0, 370, 299)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83hpn"]
+atlas = ExtResource("3_k5c8m")
+region = Rect2(740, 0, 370, 299)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0go4k"]
+atlas = ExtResource("3_k5c8m")
+region = Rect2(1110, 0, 370, 299)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ep74i"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7h6vh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_grcwt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hxvwc")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fenk2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ajan")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_83hpn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0go4k")
+}],
+"loop": true,
+"name": &"hit",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_pakd0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_gduqh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_ghhxq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_oirf7")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 4.0
+}]
 
 [node name="GhostCombat" type="Node2D" unique_id=817626321 groups=["enemies"]]
 script = ExtResource("1_4xlxf")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=508135581]
-texture = ExtResource("1_ep74i")
-
 [node name="Area2D" type="Area2D" parent="." unique_id=1035925976]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=704948058]
-position = Vector2(0, -4)
+position = Vector2(4.875, 6.875)
 shape = SubResource("RectangleShape2D_4xlxf")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1641362239]
+position = Vector2(1.0000305, 2.9999962)
+scale = Vector2(0.8, 0.8)
+sprite_frames = SubResource("SpriteFrames_ep74i")
+animation = &"hit"
+speed_scale = 0.8
+
+[node name="AttackSound" type="AudioStreamPlayer" parent="." unique_id=236010267]
+stream = ExtResource("8_grcwt")
+bus = &"SFX"
+
+[node name="HitSound" type="AudioStreamPlayer" parent="." unique_id=1639393685]
+stream = ExtResource("9_hxvwc")
+bus = &"SFX"
+
+[node name="HitShieldSound" type="AudioStreamPlayer" parent="." unique_id=2136353694]
+stream = ExtResource("10_fenk2")
+bus = &"SFX"
+
+[node name="HealSound" type="AudioStreamPlayer" parent="." unique_id=1072523408]
+stream = ExtResource("11_4ajan")
+bus = &"SFX"
+
+[node name="PoisonSound" type="AudioStreamPlayer" parent="." unique_id=2089196972]
+stream = ExtResource("12_83hpn")
+bus = &"SFX"
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=1354126762]
+stream = ExtResource("13_0go4k")
+bus = &"SFX"
+
+[node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=927256908]
+stream = ExtResource("14_dkv04")
+bus = &"SFX"

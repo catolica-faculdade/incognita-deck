@@ -42,4 +42,5 @@ position = Vector2(296, -427)
 stream = ExtResource("6_m218y")
 volume_db = -10.0
 autoplay = true
+bus = &"Music"
 parameters/looping = true

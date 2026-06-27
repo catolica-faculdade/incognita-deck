@@ -35,4 +35,5 @@ scale = Vector2(0.8, 0.8)
 stream = ExtResource("6_yih2n")
 volume_db = -10.0
 autoplay = true
+bus = &"Music"
 parameters/looping = true

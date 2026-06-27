@@ -2,6 +2,7 @@ extends TextureButton
 
 func _ready():
 	pressed.connect(_on_pressed)
+	GameManager.current_context = GameManager.Context.MAIN_MENU
 
 func _on_pressed():
 	if is_in_group("start"):

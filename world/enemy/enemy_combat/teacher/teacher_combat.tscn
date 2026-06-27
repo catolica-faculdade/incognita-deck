@@ -1,19 +1,159 @@
 [gd_scene format=3 uid="uid://dyexiav100inq"]
 
-[ext_resource type="Texture2D" uid="uid://caipfb426ompc" path="res://assets/enemies/teacher.png" id="1_o7jmy"]
 [ext_resource type="Script" uid="uid://cfmdpswckyd8u" path="res://world/enemy/enemy_combat/teacher/teacher_combat.gd" id="1_t8peg"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_1.png" id="2_ul2dx"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_4.png" id="3_wp4u7"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_2.png" id="4_0i0uq"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_hit.png" id="5_ll3gp"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_0.png" id="6_g4jwu"]
+[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_teleport.png" id="7_nytb8"]
+[ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="8_e77kl"]
+[ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="9_u3yuj"]
+[ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="10_hqsau"]
+[ext_resource type="AudioStream" uid="uid://dygbyc0ekhj3h" path="res://assets/sound/heal_sound.wav" id="11_8qe7k"]
+[ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="12_uq4c4"]
+[ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="13_ppjlk"]
+[ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="14_61scw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t8peg"]
-size = Vector2(171, 213)
+size = Vector2(182.5, 178.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f3333"]
+atlas = ExtResource("5_ll3gp")
+region = Rect2(0, 0, 313, 295)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e77kl"]
+atlas = ExtResource("5_ll3gp")
+region = Rect2(313, 0, 313, 295)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u3yuj"]
+atlas = ExtResource("5_ll3gp")
+region = Rect2(626, 0, 313, 295)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hqsau"]
+atlas = ExtResource("5_ll3gp")
+region = Rect2(939, 0, 313, 295)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qe7k"]
+atlas = ExtResource("7_nytb8")
+region = Rect2(0, 0, 313, 281)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uq4c4"]
+atlas = ExtResource("7_nytb8")
+region = Rect2(313, 0, 313, 281)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ppjlk"]
+atlas = ExtResource("7_nytb8")
+region = Rect2(626, 0, 313, 281)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_61scw"]
+atlas = ExtResource("7_nytb8")
+region = Rect2(939, 0, 313, 281)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_03yl5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ul2dx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_wp4u7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_0i0uq")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f3333")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e77kl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u3yuj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hqsau")
+}],
+"loop": true,
+"name": &"hit",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_g4jwu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ul2dx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_0i0uq")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qe7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uq4c4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ppjlk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_61scw")
+}],
+"loop": true,
+"name": &"teleport",
+"speed": 4.0
+}]
 
 [node name="TeacherCombat" type="Node2D" unique_id=304323779 groups=["enemies"]]
 script = ExtResource("1_t8peg")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1839858510]
-texture = ExtResource("1_o7jmy")
-
 [node name="Area2D" type="Area2D" parent="." unique_id=1145073351]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1374964679]
-position = Vector2(4.5, 11.5)
+position = Vector2(1, -1)
 shape = SubResource("RectangleShape2D_t8peg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1360748169]
+position = Vector2(6.1035156e-05, 6.000002)
+scale = Vector2(0.8, 0.8)
+sprite_frames = SubResource("SpriteFrames_03yl5")
+animation = &"teleport"
+
+[node name="AttackSound" type="AudioStreamPlayer" parent="." unique_id=998965195]
+stream = ExtResource("8_e77kl")
+bus = &"SFX"
+
+[node name="HitSound" type="AudioStreamPlayer" parent="." unique_id=1944828747]
+stream = ExtResource("9_u3yuj")
+bus = &"SFX"
+
+[node name="HitShieldSound" type="AudioStreamPlayer" parent="." unique_id=1771959750]
+stream = ExtResource("10_hqsau")
+bus = &"SFX"
+
+[node name="HealSound" type="AudioStreamPlayer" parent="." unique_id=1090368248]
+stream = ExtResource("11_8qe7k")
+bus = &"SFX"
+
+[node name="PoisonSound" type="AudioStreamPlayer" parent="." unique_id=63338278]
+stream = ExtResource("12_uq4c4")
+bus = &"SFX"
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=1626367977]
+stream = ExtResource("13_ppjlk")
+bus = &"SFX"
+
+[node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=977613902]
+stream = ExtResource("14_61scw")
+bus = &"SFX"
