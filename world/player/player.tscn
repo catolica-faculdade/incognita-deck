@@ -1,11 +1,75 @@
 [gd_scene format=3 uid="uid://vvyq6orywab5"]
 
 [ext_resource type="Script" uid="uid://djhv3uogaonss" path="res://world/player/player.gd" id="1_yynsy"]
-[ext_resource type="Texture2D" uid="uid://q7m52kn465on" path="res://assets/player.png" id="2_bvkkv"]
+[ext_resource type="Texture2D" uid="uid://cq7brrpk77mmu" path="res://assets/player/player_attack_01.png" id="2_ljdef"]
+[ext_resource type="Texture2D" uid="uid://ovmj6vlbbqos" path="res://assets/player/player_attack_02.png" id="3_2x47q"]
+[ext_resource type="Texture2D" uid="uid://btexnpti7xsyt" path="res://assets/player/player_attack_03.png" id="4_3n4qb"]
+[ext_resource type="Texture2D" uid="uid://bge3hvf2n6jry" path="res://assets/player/player_choosing_card.png" id="5_myh4x"]
+[ext_resource type="Texture2D" uid="uid://bdh0mnggveav7" path="res://assets/player/player_idle_01.png" id="6_80mbn"]
+[ext_resource type="Texture2D" uid="uid://dqg0dfri3so8g" path="res://assets/player/player_hit.png" id="7_lbm61"]
+[ext_resource type="Texture2D" uid="uid://bsp4oviuaclo3" path="res://assets/player/player_idle_02.png" id="8_jrep8"]
+[ext_resource type="Texture2D" uid="uid://7g7rplxl0ds0" path="res://assets/player/player_idle_03.png" id="9_q1k4r"]
+[ext_resource type="Texture2D" uid="uid://76022t7pt5bm" path="res://assets/player/player_idle_04.png" id="10_scey4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ccwxv"]
-radius = 32.0
-height = 84.0
+radius = 42.0
+height = 136.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_yynsy"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ljdef")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_2x47q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_3n4qb")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_myh4x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_80mbn")
+}],
+"loop": true,
+"name": &"card",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_80mbn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_lbm61")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_80mbn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_jrep8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_q1k4r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_scey4")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [node name="PlayerNode" type="Node2D" unique_id=1988582892]
 script = ExtResource("1_yynsy")
@@ -14,10 +78,10 @@ metadata/_edit_lock_ = true
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1573215106]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=694156914]
-position = Vector2(5, 4)
 shape = SubResource("CapsuleShape2D_ccwxv")
 
-[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=231718088]
-position = Vector2(8, 7)
-scale = Vector2(0.13, 0.133)
-texture = ExtResource("2_bvkkv")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=1314945981]
+position = Vector2(7.6293945e-06, -10)
+scale = Vector2(0.049730387, 0.041504007)
+sprite_frames = SubResource("SpriteFrames_yynsy")
+animation = &"card"

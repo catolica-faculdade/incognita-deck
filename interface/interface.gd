@@ -21,6 +21,17 @@ func create_card(data):
 	card.setup(data)
 	card.card_pressed.connect(_on_card_pressed)
 	
+func _on_card_hovered():
+	print("sinal card_hovered recebido no interface")
+	var player = get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("on_card_hovered"):
+		player.on_card_hovered()
+
+func _on_card_exited():
+	var player = get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("on_card_exited"):
+		player.on_card_exited()
+	
 func _on_card_pressed(card_data: Dictionary):
 	battle_system.apply_card(card_data)
 	

@@ -193,7 +193,9 @@ func enemy_turn_phase() -> void:
 	
 func player_attack_phase() -> void:
 	if current_enemies.size() > 0:
-		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
+		var player = get_tree().get_first_node_in_group("Player")
+		if player and player.has_method("play_attack"):
+			await player.play_attack()
 
 		var enemies_to_attack = current_enemies.duplicate()
 
@@ -210,15 +212,6 @@ func player_attack_phase() -> void:
 		is_end_combat()
 	else:
 		print("Nenhum inimigo selecionado na trajetória.")
-
-		if trajectory:
-			trajectory.clear_points()
-
-		reset_math()
-	
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation("y = 0")
-	is_end_combat()
 
 func apply_card(card: Dictionary):
 	if not GameManager.is_player_turn or is_turn_running:
