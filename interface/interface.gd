@@ -9,6 +9,8 @@ const card_scene = preload("res://card/card.tscn")
 
 var battle_system
 
+var played_cards: Array = []
+
 
 func _ready() -> void:
 	create_card(CARDS[0])
@@ -27,11 +29,16 @@ func create_card(data):
 	card.setup(data)
 
 	card.card_played.connect(_on_card_played)
+	card.card_removed.connect(_on_card_removed)
 
 
 func _on_card_played(card):
 
-	card_container.remove_child(card)
+	if played_cards.has(card):
+		return
+
+	if card.get_parent():
+		card.get_parent().remove_child(card)
 
 	played_container.add_child(card)
 
@@ -40,7 +47,32 @@ func _on_card_played(card):
 		played_container.get_child_count() - 1
 	)
 
-	if battle_system:
+	played_cards.append(card)
+
+	recalculate_cards()
+
+
+func _on_card_removed(card):
+
+	if played_cards.has(card):
+		played_cards.erase(card)
+
+	if card.get_parent():
+		card.get_parent().remove_child(card)
+
+	card_container.add_child(card)
+
+	recalculate_cards()
+
+
+func recalculate_cards():
+
+	if not battle_system:
+		return
+
+	battle_system.clear_trajectory()
+
+	for card in played_cards:
 		battle_system.apply_card(card.card_data)
 
 

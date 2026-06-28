@@ -29,9 +29,11 @@ var quadratic_a: float = 0.0
 var quadratic_b: float = 0.0
 var quadratic_c: float = 0.0
 
+
 func _ready() -> void:
 	GameManager.is_player_turn = true
 	is_turn_running = false
+
 	scenario_container = Node2D.new()
 	scenario_container.name = "CenarioContainer"
 	add_child(scenario_container)
@@ -84,6 +86,7 @@ func _ready() -> void:
 		if end_turn_button:
 			if end_turn_button.end_turn.is_connected(execute_turn_actions):
 				end_turn_button.end_turn.disconnect(execute_turn_actions)
+
 			end_turn_button.end_turn.connect(execute_turn_actions)
 			print("BattleSystem: EndTurn conectado com sucesso!")
 		else:
@@ -92,7 +95,7 @@ func _ready() -> void:
 		if clear_button:
 			if clear_button.clear_trajectory.is_connected(clear_trajectory):
 				clear_button.clear_trajectory.disconnect(clear_trajectory)
-			
+
 			clear_button.clear_trajectory.connect(clear_trajectory)
 			print("BattleSystem: ClearTrajectory conectado com sucesso!")
 		else:
@@ -100,27 +103,34 @@ func _ready() -> void:
 
 		print("BattleSystem: Interface carregada com sucesso!")
 
+
 func setup(card_data: Dictionary):
 	card_payload = card_data
 
+
 func _on_pressed():
 	card_pressed.emit(card_payload)
-	
+
+
 func clear_target():
 	for enemy in current_enemies:
 		if is_instance_valid(enemy) and enemy.has_method("unlock"):
 			enemy.unlock()
-	
+
 	current_enemies = []
-	
+
+
 func lock_target(enemy):
 	current_enemies.push_back(enemy)
 
-func evaluate_trajectory(points: Array):
+
+func evaluate_trajectory(points):
 	clear_target()
+
 	var enemies = get_tree().get_nodes_in_group("enemies")
-	
+
 	var global_points := PackedVector2Array()
+
 	if trajectory:
 		for point in points:
 			global_points.append(trajectory.to_global(point))
@@ -134,6 +144,7 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 	for i in range(points.size() - 1):
 		var a = points[i]
 		var b = points[i + 1]
+
 		var closest_point = Geometry2D.get_closest_point_to_segment(
 			enemy_global_position,
 			a,
@@ -141,16 +152,17 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 		)
 
 		var distance = closest_point.distance_to(enemy_global_position)
-		
+
 		if distance <= lock_distance:
 			return true
 
 	return false
 
+
 func execute_turn_actions() -> void:
 	if not GameManager.is_player_turn or is_turn_running:
 		return
-		
+
 	is_turn_running = true
 	GameManager.is_player_turn = false
 
@@ -165,17 +177,17 @@ func execute_turn_actions() -> void:
 		return
 
 	start_player_turn()
-	
+
+
 func start_player_turn() -> void:
 	print("Turno do jogador!")
-
-	
 
 	GameManager.is_player_turn = true
 	is_turn_running = false
 
 	clear_trajectory()
-	
+
+
 func enemy_turn_phase() -> void:
 	print("Turno dos inimigos!")
 
@@ -185,11 +197,15 @@ func enemy_turn_phase() -> void:
 		if is_instance_valid(enemy) and enemy.health > 0:
 			if enemy.has_method("choose_action"):
 				await enemy.choose_action()
-				if not is_inside_tree(): return
+
+				if not is_inside_tree():
+					return
+
 				await get_tree().create_timer(1.0).timeout
-				
+
 	is_end_combat()
-	
+
+
 func player_attack_phase() -> void:
 	if current_enemies.size() > 0:
 		print("Iniciando ataque aos inimigos selecionados: ", current_enemies.size())
@@ -214,22 +230,74 @@ func player_attack_phase() -> void:
 			trajectory.clear_points()
 
 		reset_math()
-	
+
 	if combat_ui.has_method("update_equation"):
 		combat_ui.update_equation("y = 0")
+
 	is_end_combat()
+
 
 func apply_card(card: Dictionary):
 	if not GameManager.is_player_turn or is_turn_running:
 		print("Não é turno do jogador!")
 		return
-	
+
 	if not trajectory:
 		print("trajectory line doesn't exist!")
 		return
-	
+
+	var applied := _apply_card_math(card)
+
+	if not applied:
+		return
+
+	update_trajectory()
+
+	if trajectory:
+		evaluate_trajectory(trajectory.points)
+
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation(get_equation_text())
+
+
+func rebuild_cards_formula(cards: Array):
+	if not GameManager.is_player_turn or is_turn_running:
+		print("Não é turno do jogador!")
+		return
+
+	if not trajectory:
+		print("trajectory line doesn't exist!")
+		return
+
+	reset_math()
+	clear_target()
+
+	if trajectory:
+		trajectory.clear_points()
+		trajectory.add_point(Vector2.ZERO)
+
+	for card in cards:
+		_apply_card_math(card)
+
+	if cards.size() > 0:
+		update_trajectory()
+
+		if trajectory:
+			evaluate_trajectory(trajectory.points)
+	else:
+		clear_target()
+
+		if trajectory:
+			trajectory.clear_points()
+			trajectory.add_point(Vector2.ZERO)
+
+	if combat_ui.has_method("update_equation"):
+		combat_ui.update_equation(get_equation_text())
+
+
+func _apply_card_math(card: Dictionary) -> bool:
 	var type: String = card.get("type", "linear")
-	
+
 	if type == "linear":
 		apply_linear_card(card)
 	elif type == "quadratic":
@@ -238,18 +306,15 @@ func apply_card(card: Dictionary):
 		apply_special_card(card)
 	else:
 		print("invalid card type!")
-		return
-	
-	update_trajectory()
-		
-	evaluate_trajectory(trajectory.points)
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation(get_equation_text())
+		return false
+
+	return true
+
 
 func is_end_combat() -> bool:
 	if not is_inside_tree():
 		return true
-		
+
 	var player = get_tree().get_first_node_in_group("Player")
 
 	if player:
@@ -278,6 +343,7 @@ func is_end_combat() -> bool:
 
 	return false
 
+
 func win_combat():
 	is_turn_running = false
 	GameManager.is_player_turn = true
@@ -285,12 +351,14 @@ func win_combat():
 	GameManager.level += 1
 	GameManager.end_game()
 
+
 func apply_linear_card(card: Dictionary):
 	var x_value: float = float(card.get("x", 0))
 	var y_value: float = float(card.get("y", 0))
 
 	current_math_x += x_value
 	current_math_y += y_value
+
 
 func apply_special_card(card: Dictionary):
 	var special_type = card.get("special_type", "")
@@ -303,10 +371,11 @@ func apply_special_card(card: Dictionary):
 	else:
 		print("invalid special card: ", special_type)
 
+
 func apply_quadratic_card(card: Dictionary):
 	var coefficient: String = card.get("coefficient", "")
 	var value: float = float(card.get("value", 0))
-	
+
 	if coefficient == "a":
 		quadratic_a += value
 	elif coefficient == "b":
@@ -320,15 +389,15 @@ func apply_quadratic_card(card: Dictionary):
 func update_trajectory():
 	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0 or quadratic_c != 0.0
 	var has_wave := wave_enabled
-	
+
 	var end_x := current_math_x
-	
+
 	if end_x <= 0:
 		if has_wave:
 			end_x = wave_length
 		elif has_quadratic:
 			end_x = 8.0
-	
+
 	if has_wave:
 		trajectory.update_mixed_line(
 			quadratic_a,
@@ -349,11 +418,12 @@ func update_trajectory():
 		)
 	else:
 		trajectory.update_straight_line(current_math_x, current_math_y)
-		
-		
+
+
 func reset_math():
 	current_math_x = 0.0
 	current_math_y = 0.0
+
 	quadratic_a = 0.0
 	quadratic_b = 0.0
 	quadratic_c = 0.0
@@ -362,39 +432,31 @@ func reset_math():
 	wave_amplitude = 0.0
 	wave_frequency = 0.0
 	wave_length = 0.0
-	
+
+
 func get_equation_text() -> String:
 	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0
-	
+
 	if has_quadratic:
 		return "y = %.1fx² + %.1fx + %.1f" % [
 			quadratic_a,
 			quadratic_b,
 			quadratic_c + current_math_y
 		]
-	
+
 	return "y = %.1f" % current_math_y
-	
+
+
 func clear_trajectory():
 	print("função: clear trajectory")
-	current_math_x = 0.0
-	current_math_y = 0.0
 
-	quadratic_a = 0.0
-	quadratic_b = 0.0
-	quadratic_c = 0.0
-
-	wave_enabled = false
-	wave_amplitude = 0.0
-	wave_frequency = 0.0
-	wave_length = 0.0
-
+	reset_math()
 	clear_target()
 
 	if trajectory:
 		trajectory.clear_points()
 		trajectory.add_point(Vector2.ZERO)
-	
+
 	if combat_ui.has_method("update_equation"):
 		combat_ui.update_equation("y = 0")
 
@@ -404,7 +466,7 @@ func clear_trajectory():
 func update_player_interface():
 	if not is_inside_tree():
 		return
-	
+
 	var player = get_tree().get_first_node_in_group("Player")
 
 	if not player:

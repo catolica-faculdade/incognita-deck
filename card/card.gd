@@ -17,25 +17,30 @@ var drag_offset := Vector2()
 var original_position: Vector2
 var original_parent
 
+var is_played := false
+
 signal card_played(card)
+signal card_removed(card)
 
 
 func setup(data: Dictionary):
 
 	card_data = data
 
-	custom_minimum_size = Vector2(100,200)
-	size = Vector2(100,200)
+	custom_minimum_size = Vector2(100, 200)
+	size = Vector2(100, 200)
 
 	original_parent = get_parent()
 	original_position = position
 	
 	texture_rect.texture = card_data.get("texture", default_texture)
 
+	texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _gui_input(event):
+
 	if event is InputEventMouseButton:
 
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -62,15 +67,38 @@ func check_drop():
 
 	var drop_zone = get_tree().get_first_node_in_group("drop_zone")
 
-	if drop_zone:
+	if not drop_zone:
+		return_to_hand()
+		return
 
-		if drop_zone.get_global_rect().has_point(get_global_mouse_position()):
+	var is_inside_dropzone = drop_zone.get_global_rect().has_point(get_global_mouse_position())
 
+	if is_inside_dropzone:
+
+		if not is_played:
+			is_played = true
 			card_played.emit(self)
 
-		else:
+	else:
 
+		if is_played:
+			is_played = false
+			card_removed.emit(self)
+		else:
 			return_to_hand()
+
+
+func return_to_hand():
+
+	if not original_parent:
+		return
+
+	if get_parent():
+		get_parent().remove_child(self)
+
+	original_parent.add_child(self)
+
+	position = original_position
 
 
 func _on_hover():
@@ -93,10 +121,3 @@ func _animate_scale(target_scale: Vector2) -> void:
 	tween.tween_property(self, "scale", target_scale, animation_duration)\
 		.set_trans(Tween.TRANS_QUAD)\
 		.set_ease(Tween.EASE_OUT)
-		
-func return_to_hand():
-	get_parent().remove_child(self)
-
-	original_parent.add_child(self)
-
-	position = original_position
