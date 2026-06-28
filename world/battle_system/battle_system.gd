@@ -358,6 +358,7 @@ func win_combat():
 	combat_ended = true
 	is_turn_running = false
 	GameManager.is_player_turn = true
+	GameManager.player_health += GameManager.max_player_health / 4;
 	if not is_boss_fight:
 		GameManager.level += 1
 	else:

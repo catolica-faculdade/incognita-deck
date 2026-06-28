@@ -9,11 +9,6 @@ func _ready():
 	GameManager.current_context = GameManager.Context.MAP
 
 func validate_level():
-	if is_in_group("boss"):
-		disabled = false
-		modulate.a = 1.0
-		return
-
 	disabled = level != GameManager.level
 
 	if disabled:

@@ -123,8 +123,6 @@ func _on_exit():
 	_animate_scale(scale_default)
 	card_exited.emit()
 
-
-
 func _animate_scale(target_scale: Vector2) -> void:
 
 	if tween and tween.is_running():

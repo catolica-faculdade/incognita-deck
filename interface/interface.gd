@@ -46,6 +46,15 @@ func _ready() -> void:
 	create_card(CARDS[4])
 	set_turn_indicator(true)
 
+func set_turn_indicator(is_player_turn: bool) -> void:
+	if is_player_turn:
+		turn_label.text = "✦ SEU TURNO"
+		turn_label.modulate = Color(0.2, 0.8, 0.2)
+		turn_counter_label.text = "Turno %d" % turn_count
+		turn_count += 1
+	else:
+		turn_label.text = "⚔ TURNO INIMIGO"
+		turn_label.modulate = Color(0.9, 0.2, 0.2)
 
 func create_card(data: Dictionary):
 
@@ -163,6 +172,17 @@ func _on_card_removed(card):
 	print("Energia atual: ", current_energy)
 
 	recalculate_cards()
+
+
+func _on_card_hovered():
+	var player = get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("on_card_hovered"):
+		player.on_card_hovered()
+
+func _on_card_exited():
+	var player = get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("on_card_exited"):
+		player.on_card_exited()
 
 
 func update_energy_ui():
