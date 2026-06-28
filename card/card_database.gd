@@ -9,17 +9,15 @@ const CARDS = [
 		"y": 0.0,
 		"energy_cost": 1,
 		"draw_chance": 70,
-		"texture": preload("res://assets/cards/card_avanco.jpg")
 	},
 	{
 		"id": 2,
 		"name": "Elevar",
-		"type": "linear",
+		"type": "diagonal",
 		"x": 5.0,
 		"y": 2.0,
 		"energy_cost": 1,
 		"draw_chance": 15,
-		"texture": preload("res://assets/cards/card_eleva.jpg")
 	},
 	{
 		"id": 3,
@@ -29,7 +27,6 @@ const CARDS = [
 		"value": 0.35,
 		"energy_cost": 1,
 		"draw_chance": 5,
-		"texture": preload("res://assets/cards/card_arc.jpg")
 	},
 	{
 		"id": 4,
@@ -39,7 +36,6 @@ const CARDS = [
 		"value": -0.35,
 		"energy_cost": 1,
 		"draw_chance": 5,
-		"texture": preload("res://assets/cards/card_queda.jpg")
 	},
 	{
 		"id": 5,
@@ -51,7 +47,6 @@ const CARDS = [
 		"length": 12.0,
 		"energy_cost": 2,
 		"draw_chance": 10,
-		"texture": preload("res://assets/cards/card_onda.jpg")
 	},
 	{
 		"id": 6,
@@ -74,7 +69,7 @@ const CARDS = [
 	{
 		"id": 8,
 		"name": "Impulso",
-		"type": "linear",
+		"type": "diagonal",
 		"x": 4.0,
 		"y": 2.0,
 		"energy_cost": 1,
@@ -123,7 +118,7 @@ const CARDS = [
 	{
 		"id": 13,
 		"name": "Ascensão",
-		"type": "linear",
+		"type": "diagonal",
 		"x": 3.0,
 		"y": 2.0,
 		"energy_cost": 1,

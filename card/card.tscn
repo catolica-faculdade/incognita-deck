@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dis5fhlaywki5"]
 
 [ext_resource type="Script" uid="uid://0khpxl8yje0r" path="res://card/card.gd" id="1_fjcud"]
+[ext_resource type="Texture2D" uid="uid://by35hitxhcar7" path="res://assets/cards/general/card_default.jpeg" id="2_trrkg"]
 
 [node name="Card" type="Control" unique_id=603163865]
 layout_mode = 3
@@ -10,21 +11,51 @@ script = ExtResource("1_fjcud")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1959942833]
 layout_mode = 0
+offset_left = 3.0
+offset_top = 38.0
+offset_right = 80.0
+offset_bottom = 147.0
+texture = ExtResource("2_trrkg")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="Button" type="Button" parent="." unique_id=431229367]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -4.0
-offset_top = -4.0
-offset_right = 4.0
-offset_bottom = 4.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 5.0
+offset_top = 39.0
+offset_right = 80.0
+offset_bottom = 147.0
 flat = true
+
+[node name="Title" type="Label" parent="." unique_id=1387971619]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 39.0
+offset_right = 73.0
+offset_bottom = 62.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 171
+
+[node name="Value" type="Label" parent="." unique_id=566193018]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 102.0
+offset_right = 49.0
+offset_bottom = 125.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Symbol" type="TextureRect" parent="." unique_id=621260812]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 67.0
+offset_right = 64.0
+offset_bottom = 104.0
+expand_mode = 3
+stretch_mode = 5
 
 [connection signal="mouse_entered" from="Button" to="." method="_on_hover"]
 [connection signal="mouse_exited" from="Button" to="." method="_on_exit"]

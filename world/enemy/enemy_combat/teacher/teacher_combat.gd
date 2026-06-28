@@ -15,17 +15,18 @@ var teleport_positions := [
 	Vector2(650, -280)
 ]
 
-var base_damage := 10
-var health := 50
+var base_damage := 13
+var health := 70
+var max_health := 70
 var shield := 0
-var poison := 2
+var poison := 5
 var apply_block := 3
 var apply_defend := 7
-var heal_amount := 3
-var self_heal_amount := 5
+var heal_amount := max_health / 10
+var self_heal_amount := max_health / 15
 var start_position: Vector2
 var is_attacking := false
-var max_health := 50
+
 
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_sound: AudioStreamPlayer = $AttackSound

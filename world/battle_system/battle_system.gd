@@ -303,7 +303,7 @@ func rebuild_cards_formula(cards: Array):
 func _apply_card_math(card: Dictionary) -> bool:
 	var type: String = card.get("type", "linear")
 
-	if type == "linear":
+	if type == "linear" || type == "diagonal":
 		apply_linear_card(card)
 	elif type == "quadratic":
 		apply_quadratic_card(card)

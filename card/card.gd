@@ -8,7 +8,7 @@ extends Control
 @onready var button = $Button
 
 var card_data: Dictionary = {}
-var default_texture = preload("res://assets/placeholder.jpg")
+var default_texture = preload("res://assets/cards/general/card_default.jpeg")
 var tween: Tween
 
 var dragging := false
@@ -25,9 +25,39 @@ signal card_removed(card)
 signal card_hovered
 signal card_exited
 
-func setup(data: Dictionary):
+@onready var title = $Title
+@onready var symbol: TextureRect = $Symbol
+@onready var value = $Value
 
+const SYMBOLS = {
+	"linear": {
+		"texture": preload("res://assets/cards/general/symbol_forward.png"),
+		"position": Vector2(10, 65),
+		"size": Vector2(20, 30)
+	},
+	"diagonal": {
+		"texture": preload("res://assets/cards/general/symbol_up.png"),
+		"position": Vector2(20, 65),
+		"size": Vector2(20, 30)
+	},
+	"quadratic": {
+		"texture": preload("res://assets/cards/general/symbol_arc.png"),
+		"position": Vector2(20, 65),
+		"size": Vector2(40, 40)
+	},
+	"special": {
+		"texture": preload("res://assets/cards/general/symbol_wave.png"),
+		"position": Vector2(-10, 70),
+		"size": Vector2(50, 25)
+	}
+}
+
+
+func setup(data: Dictionary):
 	card_data = data
+	
+	build_card()
+
 
 	custom_minimum_size = Vector2(100, 200)
 	size = Vector2(100, 200)
@@ -131,3 +161,87 @@ func _animate_scale(target_scale: Vector2) -> void:
 	tween.tween_property(self, "scale", target_scale, animation_duration) \
 		.set_trans(Tween.TRANS_QUAD) \
 		.set_ease(Tween.EASE_OUT)
+
+
+func build_card():
+
+	title.text = card_data.name
+
+	match card_data.type:
+
+		"linear":
+			build_linear()
+			
+		"diagonal":
+			build_diagonal()
+
+		"quadratic":
+			build_quadratic()
+
+		"special":
+			build_special()
+			
+			
+			
+func build_linear():
+
+	setup_symbol(card_data.type)
+
+	var x = card_data.x
+	var y = card_data.y
+
+	if y == 0:
+		value.text = "x + %d" % int(x)
+
+	elif x == 0:
+		value.text = "y + %d" % int(y)
+
+	else:
+		value.text = "(%d, %d)" % [int(x), int(y)]
+		
+func build_diagonal():
+
+	setup_symbol(card_data.type)
+
+	var x = card_data.x
+	var y = card_data.y
+
+	if y == 0:
+		value.text = "x + %d" % int(x)
+
+	elif x == 0:
+		value.text = "y + %d" % int(y)
+
+	else:
+		value.text = "(%d, %d)" % [int(x), int(y)]
+		
+
+func build_quadratic():
+
+	setup_symbol(card_data.type)
+
+	var a = card_data.value
+
+	if a > 0:
+		value.text = "a = %.2f" % a
+	else:
+		value.text = "a = %.2f" % a
+		
+func build_special():
+	match card_data.special_type:
+		"wave":
+			setup_symbol(card_data.type)
+
+			value.text = "A %.1f\nF %.1f" % [
+				card_data.amplitude,
+				card_data.frequency
+			]
+
+
+func setup_symbol(type: String):
+	var info = SYMBOLS[type]
+
+	symbol.texture = info.texture
+	symbol.position = info.position
+	symbol.custom_minimum_size = info.size
+	symbol.size = info.size
