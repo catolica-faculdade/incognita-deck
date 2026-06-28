@@ -78,12 +78,11 @@ func discard_played_cards():
 
 func recover_energy():
 
-	current_energy += energy_recovery_per_round
-	current_energy = min(current_energy, max_energy)
+	current_energy = max_energy
 
 	update_energy_ui()
 
-	print("Energia recuperada. Energia atual: ", current_energy)
+	print("Energia resetada. Energia atual: ", current_energy)
 
 
 func start_new_player_round():
