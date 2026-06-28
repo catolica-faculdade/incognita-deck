@@ -24,6 +24,7 @@ buses/default_bus_layout="uid://cxk57hdgvae7l"
 GameSettings="*uid://43tunbmxs8pn"
 GameManager="*uid://d13oini5aob7j"
 PauseMenu="*uid://cr85wvmfbic0l"
+DamageNumberSpawner="*uid://oohsd37tvpnm"
 
 [display]
 

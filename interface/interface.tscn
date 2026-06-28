@@ -35,5 +35,31 @@ grow_vertical = 0
 layout_mode = 2
 mouse_force_pass_scroll_events = true
 
+[node name="TurnLabel" type="Label" parent="MarginContainer/Buttons" unique_id=1111725855]
+layout_mode = 0
+offset_left = 476.0
+offset_top = 501.0
+offset_right = 1628.0
+offset_bottom = 527.0
+theme_override_colors/font_color = Color(0.48677072, 0.9063318, 0.48452926, 1)
+theme_override_font_sizes/font_size = 18
+text = "✦ SEU TURNO"
+horizontal_alignment = 1
+
 [node name="PlayerInterface" parent="MarginContainer/Buttons" unique_id=1515655110 instance=ExtResource("3_athsf")]
 position = Vector2(475.46918, 62.548317)
+
+[node name="TurnCounterLabel" type="Label" parent="MarginContainer/Buttons" unique_id=1460741236]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -78.0
+offset_top = 16.0
+offset_right = -18.0
+offset_bottom = 39.0
+grow_horizontal = 0
+pivot_offset = Vector2(20, 20)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+text = "Turno 1"

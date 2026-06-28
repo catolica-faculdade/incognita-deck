@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://q2xd7gdpfp3m"]
 
 [ext_resource type="Script" uid="uid://bij30vy2242fg" path="res://world/enemy/enemy_combat/calculator/calculator_enemy.gd" id="1_1ooa0"]
-[ext_resource type="Texture2D" uid="uid://dlypwmnqrobo" path="res://assets/enemies/calc_sprites.png" id="3_w7arp"]
-[ext_resource type="Texture2D" uid="uid://dd0uym7xu8ckb" path="res://assets/enemies/calc_sprites_0.png" id="3_x4fcy"]
-[ext_resource type="Texture2D" uid="uid://d1u36obkegrvx" path="res://assets/enemies/calc_sprites_1.png" id="4_fwwu5"]
-[ext_resource type="Texture2D" uid="uid://v4cs2jsh5m5t" path="res://assets/enemies/calc_sprites_2.png" id="5_n0prp"]
-[ext_resource type="Texture2D" uid="uid://cbyeic7fwqbak" path="res://assets/enemies/calc_sprites_3.png" id="6_5mvpy"]
+[ext_resource type="Texture2D" uid="uid://dlypwmnqrobo" path="res://assets/enemies/calculator/calc_sprites.png" id="2_vidvv"]
+[ext_resource type="Texture2D" uid="uid://dd0uym7xu8ckb" path="res://assets/enemies/calculator/calc_sprites_0.png" id="3_81518"]
+[ext_resource type="Texture2D" uid="uid://d1u36obkegrvx" path="res://assets/enemies/calculator/calc_sprites_1.png" id="4_y33e2"]
+[ext_resource type="Texture2D" uid="uid://v4cs2jsh5m5t" path="res://assets/enemies/calculator/calc_sprites_2.png" id="5_1vurj"]
+[ext_resource type="Texture2D" uid="uid://cbyeic7fwqbak" path="res://assets/enemies/calculator/calc_sprites_3.png" id="6_l7enm"]
 [ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="7_1hmex"]
 [ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="8_vidvv"]
 [ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="9_81518"]
@@ -13,56 +13,57 @@
 [ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="11_1vurj"]
 [ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="12_l7enm"]
 [ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="13_al3tw"]
+[ext_resource type="PackedScene" uid="uid://noxivihsp6u" path="res://world/enemy/enemy_combat/enemy_hud.tscn" id="14_vidvv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_85bm5"]
 size = Vector2(200, 295)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_tieep"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_al3tw"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(0, 418, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_11652"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_scpgq"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(313, 418, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_x4fcy"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_smjfx"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(626, 418, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_fwwu5"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ppva"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(939, 418, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_n0prp"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_et5ho"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(0, 836, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_5mvpy"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_6sq57"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(313, 836, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_gtxtv"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_b6xu2"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(626, 836, 313, 418)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_xq6bw"]
-atlas = ExtResource("3_w7arp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_kpa7o"]
+atlas = ExtResource("2_vidvv")
 region = Rect2(939, 836, 313, 418)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_y33e2"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_tieep")
+"texture": SubResource("AtlasTexture_al3tw")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_11652")
+"texture": SubResource("AtlasTexture_scpgq")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_x4fcy")
+"texture": SubResource("AtlasTexture_smjfx")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_fwwu5")
+"texture": SubResource("AtlasTexture_4ppva")
 }],
 "loop": false,
 "name": &"attack",
@@ -70,16 +71,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_n0prp")
+"texture": SubResource("AtlasTexture_et5ho")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5mvpy")
+"texture": SubResource("AtlasTexture_6sq57")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_gtxtv")
+"texture": SubResource("AtlasTexture_b6xu2")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_xq6bw")
+"texture": SubResource("AtlasTexture_kpa7o")
 }],
 "loop": false,
 "name": &"hit",
@@ -87,16 +88,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_x4fcy")
+"texture": ExtResource("3_81518")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_fwwu5")
+"texture": ExtResource("4_y33e2")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_n0prp")
+"texture": ExtResource("5_1vurj")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_5mvpy")
+"texture": ExtResource("6_l7enm")
 }],
 "loop": true,
 "name": &"idle",
@@ -145,3 +146,6 @@ bus = &"SFX"
 [node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=31134458]
 stream = ExtResource("13_al3tw")
 bus = &"SFX"
+
+[node name="EnemyHud" parent="." unique_id=1682186653 instance=ExtResource("14_vidvv")]
+position = Vector2(-33, -179)

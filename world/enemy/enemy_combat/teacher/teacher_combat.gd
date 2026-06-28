@@ -25,6 +25,7 @@ var heal_amount := 3
 var self_heal_amount := 5
 var start_position: Vector2
 var is_attacking := false
+var max_health := 50
 
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_sound: AudioStreamPlayer = $AttackSound
@@ -34,11 +35,13 @@ var is_attacking := false
 @onready var poison_sound: AudioStreamPlayer = $PoisonSound
 @onready var death_sound: AudioStreamPlayer = $DeathSound
 @onready var teleport_sound: AudioStreamPlayer = $TeleportSound
+@onready var hud: Node2D = $EnemyHud
 
 func _ready():
 	start_position = position
 	anim_sprite.flip_h = false
 	anim_sprite.play("idle")
+	hud.setup(health, max_health)
 
 func _process(_delta):
 	if not is_attacking:
@@ -46,6 +49,7 @@ func _process(_delta):
 
 func choose_action():
 	shield = 0
+	hud.update_shield(0)
 	var action = randi_range(0, 100)
 	if health <= 8 and action < 35:
 		await heal()
@@ -63,14 +67,17 @@ func choose_action():
 func heal(amount := self_heal_amount):
 	health += amount
 	heal_sound.play()
+	hud.update_hp(health)
 	await play_effect_animation()
 
 func apply_heal():
-	var enemy = get_tree().get_first_node_in_group("enemies")
 	heal_sound.play()
 	await play_effect_animation()
-	if enemy and enemy.has_method("heal"):
-		await enemy.heal(self_heal_amount)
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy != self and enemy.has_method("heal"):
+			await enemy.heal(self_heal_amount)
+			break
 
 func apply_all_heal():
 	var enemies = get_tree().get_nodes_in_group("enemies")
@@ -104,10 +111,12 @@ func attack():
 
 func defend():
 	shield += apply_defend
+	hud.update_shield(shield)
 	await play_effect_animation()
 
 func apply_shield(amount):
 	shield += amount
+	hud.update_shield(shield)
 	await play_effect_animation()
 
 func defend_all():
@@ -148,6 +157,7 @@ func take_damage(amount):
 		return
 	is_attacking = true
 	anim_sprite.play("hit")
+	var shield_was_hit := false
 
 	var cur_pos := position
 	var random_offset := Vector2(randf_range(-30, 10), randf_range(0, 50))
@@ -159,6 +169,7 @@ func take_damage(amount):
 	tween.parallel().tween_property(self, "position:x", cur_pos.x + random_offset.x, 0.15)
 	tween.tween_callback(func():
 		if shield > 0:
+			shield_was_hit = true 
 			if amount >= shield:
 				amount -= shield
 				shield = 0
@@ -170,6 +181,10 @@ func take_damage(amount):
 	)
 	await tween.finished
 
+	hud.update_hp(health)
+	hud.update_shield(shield)
+	DamageNumberSpawner.spawn(global_position + Vector2(0, -150), amount, DamageNumberSpawner.COLOR_ENEMY)
+
 	if health <= 0:
 		remove_from_group("enemies")
 		hit_sound.stop()
@@ -180,7 +195,7 @@ func take_damage(amount):
 		queue_free()
 		return
 
-	if shield > 0:
+	if shield_was_hit:                
 		hit_shield_sound.play()
 	else:
 		hit_sound.play()

@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://noxivihsp6u"]
+
+[ext_resource type="Script" uid="uid://gbqmogabfgl3" path="res://world/enemy/enemy_combat/enemy_hud.gd" id="1_lqfch"]
+
+[node name="EnemyHud" type="Node2D" unique_id=1682186653]
+script = ExtResource("1_lqfch")
+
+[node name="HpLabel" type="Label" parent="." unique_id=1882322777]
+offset_right = 53.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "❤ 20/20"
+horizontal_alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="." unique_id=2065472776]
+visible = false
+offset_left = 65.0
+offset_top = 1.0
+offset_right = 105.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0.735357, 0.9063318, 1, 1)

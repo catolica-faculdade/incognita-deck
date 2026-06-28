@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://y0tdtljpvb1d"]
 
 [ext_resource type="Script" uid="uid://bteb6kk7a7s8a" path="res://world/enemy/enemy_combat/ghost/ghost_combat.gd" id="1_4xlxf"]
-[ext_resource type="Texture2D" uid="uid://3r0fbopgddc1" path="res://assets/enemies/ghost_sprites_attack.png" id="2_62erh"]
-[ext_resource type="Texture2D" uid="uid://cslf4exo0guqh" path="res://assets/enemies/ghost_sprites_hit.png" id="3_k5c8m"]
-[ext_resource type="Texture2D" uid="uid://xe3hai5ymj1o" path="res://assets/enemies/ghost_sprites_0.png" id="4_pakd0"]
-[ext_resource type="Texture2D" uid="uid://cmjdn10n74pbv" path="res://assets/enemies/ghost_sprites_1.png" id="5_gduqh"]
-[ext_resource type="Texture2D" uid="uid://dojwx0g2rqy0p" path="res://assets/enemies/ghost_sprites_2.png" id="6_ghhxq"]
-[ext_resource type="Texture2D" uid="uid://buxwhs7fb172o" path="res://assets/enemies/ghost_sprites_3.png" id="7_oirf7"]
+[ext_resource type="Texture2D" uid="uid://3r0fbopgddc1" path="res://assets/enemies/ghost/ghost_sprites_attack.png" id="2_hxvwc"]
+[ext_resource type="Texture2D" uid="uid://cslf4exo0guqh" path="res://assets/enemies/ghost/ghost_sprites_hit.png" id="3_fenk2"]
+[ext_resource type="Texture2D" uid="uid://xe3hai5ymj1o" path="res://assets/enemies/ghost/ghost_sprites_0.png" id="4_4ajan"]
+[ext_resource type="Texture2D" uid="uid://cmjdn10n74pbv" path="res://assets/enemies/ghost/ghost_sprites_1.png" id="5_83hpn"]
+[ext_resource type="Texture2D" uid="uid://dojwx0g2rqy0p" path="res://assets/enemies/ghost/ghost_sprites_2.png" id="6_0go4k"]
+[ext_resource type="Texture2D" uid="uid://buxwhs7fb172o" path="res://assets/enemies/ghost/ghost_sprites_3.png" id="7_dkv04"]
 [ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="8_grcwt"]
 [ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="9_hxvwc"]
 [ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="10_fenk2"]
@@ -14,49 +14,50 @@
 [ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="12_83hpn"]
 [ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="13_0go4k"]
 [ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="14_dkv04"]
+[ext_resource type="PackedScene" uid="uid://noxivihsp6u" path="res://world/enemy/enemy_combat/enemy_hud.tscn" id="15_hxvwc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4xlxf"]
 size = Vector2(160.25, 172.25)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_7h6vh"]
-atlas = ExtResource("2_62erh")
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ahd2"]
+atlas = ExtResource("2_hxvwc")
 region = Rect2(0, 0, 373, 331)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_grcwt"]
-atlas = ExtResource("2_62erh")
+[sub_resource type="AtlasTexture" id="AtlasTexture_h1b1m"]
+atlas = ExtResource("2_hxvwc")
 region = Rect2(373, 0, 373, 331)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_hxvwc"]
-atlas = ExtResource("2_62erh")
+[sub_resource type="AtlasTexture" id="AtlasTexture_ak4ae"]
+atlas = ExtResource("2_hxvwc")
 region = Rect2(746, 0, 373, 331)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_fenk2"]
-atlas = ExtResource("3_k5c8m")
+[sub_resource type="AtlasTexture" id="AtlasTexture_3el4e"]
+atlas = ExtResource("3_fenk2")
 region = Rect2(0, 0, 370, 299)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_4ajan"]
-atlas = ExtResource("3_k5c8m")
+[sub_resource type="AtlasTexture" id="AtlasTexture_vesf7"]
+atlas = ExtResource("3_fenk2")
 region = Rect2(370, 0, 370, 299)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_83hpn"]
-atlas = ExtResource("3_k5c8m")
+[sub_resource type="AtlasTexture" id="AtlasTexture_fhu1a"]
+atlas = ExtResource("3_fenk2")
 region = Rect2(740, 0, 370, 299)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_0go4k"]
-atlas = ExtResource("3_k5c8m")
+[sub_resource type="AtlasTexture" id="AtlasTexture_v0dyg"]
+atlas = ExtResource("3_fenk2")
 region = Rect2(1110, 0, 370, 299)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ep74i"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_7h6vh")
+"texture": SubResource("AtlasTexture_7ahd2")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_grcwt")
+"texture": SubResource("AtlasTexture_h1b1m")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_hxvwc")
+"texture": SubResource("AtlasTexture_ak4ae")
 }],
 "loop": true,
 "name": &"attack",
@@ -64,16 +65,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_fenk2")
+"texture": SubResource("AtlasTexture_3el4e")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_4ajan")
+"texture": SubResource("AtlasTexture_vesf7")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_83hpn")
+"texture": SubResource("AtlasTexture_fhu1a")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_0go4k")
+"texture": SubResource("AtlasTexture_v0dyg")
 }],
 "loop": true,
 "name": &"hit",
@@ -81,16 +82,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4_pakd0")
+"texture": ExtResource("4_4ajan")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_gduqh")
+"texture": ExtResource("5_83hpn")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_ghhxq")
+"texture": ExtResource("6_0go4k")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_oirf7")
+"texture": ExtResource("7_dkv04")
 }],
 "loop": true,
 "name": &"idle",
@@ -110,7 +111,7 @@ shape = SubResource("RectangleShape2D_4xlxf")
 position = Vector2(1.0000305, 2.9999962)
 scale = Vector2(0.8, 0.8)
 sprite_frames = SubResource("SpriteFrames_ep74i")
-animation = &"hit"
+animation = &"attack"
 speed_scale = 0.8
 
 [node name="AttackSound" type="AudioStreamPlayer" parent="." unique_id=236010267]
@@ -140,3 +141,6 @@ bus = &"SFX"
 [node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=927256908]
 stream = ExtResource("14_dkv04")
 bus = &"SFX"
+
+[node name="EnemyHud" parent="." unique_id=1682186653 instance=ExtResource("15_hxvwc")]
+position = Vector2(-35, -114)

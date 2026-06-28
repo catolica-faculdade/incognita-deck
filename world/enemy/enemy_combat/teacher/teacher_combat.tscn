@@ -1,66 +1,67 @@
 [gd_scene format=3 uid="uid://dyexiav100inq"]
 
 [ext_resource type="Script" uid="uid://cfmdpswckyd8u" path="res://world/enemy/enemy_combat/teacher/teacher_combat.gd" id="1_t8peg"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_1.png" id="2_ul2dx"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_4.png" id="3_wp4u7"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_2.png" id="4_0i0uq"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_hit.png" id="5_ll3gp"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_0.png" id="6_g4jwu"]
-[ext_resource type="Texture2D" path="res://assets/enemies/teacher_sprites_teleport.png" id="7_nytb8"]
+[ext_resource type="Texture2D" uid="uid://cs0k0mnkd7af1" path="res://assets/enemies/teacher/teacher_sprites_4.png" id="3_e77kl"]
+[ext_resource type="Texture2D" uid="uid://c5gkegqkaukfs" path="res://assets/enemies/teacher/teacher_sprites_hit.png" id="5_e77kl"]
+[ext_resource type="Texture2D" uid="uid://djc0vpb7m1bk8" path="res://assets/enemies/teacher/teacher_sprites_0.png" id="6_hqsau"]
+[ext_resource type="Texture2D" uid="uid://b00kwyfxrvm2m" path="res://assets/enemies/teacher/teacher_sprites_1.png" id="7_8qe7k"]
+[ext_resource type="Texture2D" uid="uid://hbllr2s33er3" path="res://assets/enemies/teacher/teacher_sprites_teleport.png" id="7_e77kl"]
 [ext_resource type="AudioStream" uid="uid://bie2fhvjneomu" path="res://assets/sound/attack_sound.wav" id="8_e77kl"]
+[ext_resource type="Texture2D" uid="uid://bo0he8u7l8kge" path="res://assets/enemies/teacher/teacher_sprites_2.png" id="8_uq4c4"]
 [ext_resource type="AudioStream" uid="uid://qaq6rb50ne2x" path="res://assets/sound/hit_sound.wav" id="9_u3yuj"]
 [ext_resource type="AudioStream" uid="uid://dwyp8cnvx26xn" path="res://assets/sound/hit_enemy_shield_sound.wav" id="10_hqsau"]
 [ext_resource type="AudioStream" uid="uid://dygbyc0ekhj3h" path="res://assets/sound/heal_sound.wav" id="11_8qe7k"]
 [ext_resource type="AudioStream" uid="uid://cpsnh4tdwdhr5" path="res://assets/sound/poison_sound.mp3" id="12_uq4c4"]
 [ext_resource type="AudioStream" uid="uid://bupop38bwsrk4" path="res://assets/sound/death_sound.wav" id="13_ppjlk"]
 [ext_resource type="AudioStream" uid="uid://cen3ial3v3ibh" path="res://assets/sound/teleport_sound.wav" id="14_61scw"]
+[ext_resource type="PackedScene" uid="uid://noxivihsp6u" path="res://world/enemy/enemy_combat/enemy_hud.tscn" id="15_u3yuj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t8peg"]
 size = Vector2(182.5, 178.5)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_f3333"]
-atlas = ExtResource("5_ll3gp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_u3yuj"]
+atlas = ExtResource("5_e77kl")
 region = Rect2(0, 0, 313, 295)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_e77kl"]
-atlas = ExtResource("5_ll3gp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_hqsau"]
+atlas = ExtResource("5_e77kl")
 region = Rect2(313, 0, 313, 295)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_u3yuj"]
-atlas = ExtResource("5_ll3gp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_03yl5"]
+atlas = ExtResource("5_e77kl")
 region = Rect2(626, 0, 313, 295)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_hqsau"]
-atlas = ExtResource("5_ll3gp")
+[sub_resource type="AtlasTexture" id="AtlasTexture_wc301"]
+atlas = ExtResource("5_e77kl")
 region = Rect2(939, 0, 313, 295)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8qe7k"]
-atlas = ExtResource("7_nytb8")
+atlas = ExtResource("7_e77kl")
 region = Rect2(0, 0, 313, 281)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uq4c4"]
-atlas = ExtResource("7_nytb8")
+atlas = ExtResource("7_e77kl")
 region = Rect2(313, 0, 313, 281)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ppjlk"]
-atlas = ExtResource("7_nytb8")
+atlas = ExtResource("7_e77kl")
 region = Rect2(626, 0, 313, 281)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_61scw"]
-atlas = ExtResource("7_nytb8")
+atlas = ExtResource("7_e77kl")
 region = Rect2(939, 0, 313, 281)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_03yl5"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_ul2dx")
+"texture": ExtResource("7_8qe7k")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_wp4u7")
+"texture": ExtResource("3_e77kl")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_0i0uq")
+"texture": ExtResource("8_uq4c4")
 }],
 "loop": true,
 "name": &"attack",
@@ -68,16 +69,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_f3333")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_e77kl")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_u3yuj")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_hqsau")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03yl5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wc301")
 }],
 "loop": true,
 "name": &"hit",
@@ -85,13 +86,13 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("6_g4jwu")
+"texture": ExtResource("6_hqsau")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_ul2dx")
+"texture": ExtResource("7_8qe7k")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_0i0uq")
+"texture": ExtResource("8_uq4c4")
 }],
 "loop": true,
 "name": &"idle",
@@ -157,3 +158,6 @@ bus = &"SFX"
 [node name="TeleportSound" type="AudioStreamPlayer" parent="." unique_id=977613902]
 stream = ExtResource("14_61scw")
 bus = &"SFX"
+
+[node name="EnemyHud" parent="." unique_id=1682186653 instance=ExtResource("15_u3yuj")]
+position = Vector2(-32, -118)

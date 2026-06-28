@@ -14,17 +14,20 @@ var heal_amount := 3
 var self_heal_amount := 5
 var start_position: Vector2
 var is_attacking := false
+var max_health := 35
 
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_sound: AudioStreamPlayer = $AttackSound
 @onready var hit_sound: AudioStreamPlayer = $HitSound
 @onready var hit_shield_sound: AudioStreamPlayer = $HitShieldSound
 @onready var death_sound: AudioStreamPlayer = $DeathSound
+@onready var hud: Node2D = $EnemyHud
 
 func _ready():
 	start_position = position
 	anim_sprite.flip_h = false
 	anim_sprite.play("idle")
+	hud.setup(health, max_health)
 
 func _process(_delta):
 	if not is_attacking:
@@ -32,6 +35,7 @@ func _process(_delta):
 
 func choose_action():
 	shield = 0
+	hud.update_shield(0)
 	var action = randi_range(0, 100)
 	if action < 60:
 		await attack()
@@ -40,6 +44,7 @@ func choose_action():
 
 func heal():
 	health += self_heal_amount
+	hud.update_hp(health)
 	await play_effect_animation()
 
 func attack():
@@ -65,9 +70,12 @@ func attack():
 
 func apply_shield(amount):
 	shield += amount
+	hud.update_shield(shield)
+	await play_effect_animation()
 
 func defend():
 	shield += apply_defend
+	hud.update_shield(shield)
 	await play_effect_animation()
 
 func check_is_alive():
@@ -78,6 +86,7 @@ func check_is_alive():
 func take_damage(amount):
 	is_attacking = true
 	anim_sprite.play("hit")
+	var shield_before := shield
 
 	var tween := create_tween()
 	tween.tween_property(self, "position:x", start_position.x + 40, 0.15)
@@ -96,6 +105,10 @@ func take_damage(amount):
 	tween.tween_property(self, "position:x", start_position.x, 0.15)
 	await tween.finished
 
+	hud.update_hp(health)
+	hud.update_shield(shield)
+	DamageNumberSpawner.spawn(global_position + Vector2(0, -150), amount, DamageNumberSpawner.COLOR_ENEMY)
+
 	if health <= 0:
 		remove_from_group("enemies")
 		hit_sound.stop()
@@ -106,7 +119,7 @@ func take_damage(amount):
 		queue_free()
 		return
 
-	if shield > 0:
+	if shield_before > 0:
 		hit_shield_sound.play()
 	else:
 		hit_sound.play()

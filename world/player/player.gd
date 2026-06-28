@@ -34,6 +34,7 @@ func take_damage(amount):
 	health -= amount
 	GameManager.player_health = health
 	status_changed.emit()
+	DamageNumberSpawner.spawn(global_position + Vector2(0, -120), amount, DamageNumberSpawner.COLOR_PLAYER)
 	await anim_sprite.animation_finished
 	anim_sprite.play("idle")
 	check_is_alive()

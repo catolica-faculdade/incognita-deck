@@ -154,6 +154,8 @@ func execute_turn_actions() -> void:
 		
 	is_turn_running = true
 	GameManager.is_player_turn = false
+	
+	combat_ui.set_turn_indicator(false)
 
 	await player_attack_phase()
 
@@ -170,10 +172,9 @@ func execute_turn_actions() -> void:
 func start_player_turn() -> void:
 	print("Turno do jogador!")
 
-	
-
 	GameManager.is_player_turn = true
 	is_turn_running = false
+	combat_ui.set_turn_indicator(true)
 
 	clear_trajectory()
 	
