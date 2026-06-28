@@ -35,8 +35,8 @@ theme_override_constants/separation = 72
 layout_mode = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HHeathContainer" unique_id=1162661442]
-position = Vector2(30.999989, 13)
-scale = Vector2(0.05704944, 0.05704944)
+position = Vector2(35.999992, 16)
+scale = Vector2(0.02720354, 0.02720354)
 texture = ExtResource("2_upotv")
 
 [node name="HealthLabel" type="Label" parent="Control/Panel/HBoxContainer/HHeathContainer" unique_id=307286426]
@@ -51,8 +51,8 @@ layout_mode = 2
 text = "141"
 
 [node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HShieldContainer" unique_id=116505771]
-position = Vector2(32.00003, 9.999998)
-scale = Vector2(0.054657094, 0.054657094)
+position = Vector2(30.99997, 8)
+scale = Vector2(0.023400772, 0.023400776)
 texture = ExtResource("3_lcyvn")
 
 [node name="HPoisonContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer" unique_id=656387862]
@@ -63,6 +63,6 @@ layout_mode = 2
 text = "141"
 
 [node name="Sprite2D" type="Sprite2D" parent="Control/Panel/HBoxContainer/HPoisonContainer" unique_id=1490763427]
-position = Vector2(41.999985, 9.999999)
-scale = Vector2(0.048859663, 0.048859663)
+position = Vector2(44.000023, 7)
+scale = Vector2(0.02354394, 0.023543946)
 texture = ExtResource("4_o5oja")
