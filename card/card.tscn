@@ -9,14 +9,9 @@ mouse_filter = 1
 script = ExtResource("1_fjcud")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1959942833]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="Button" type="Button" parent="." unique_id=431229367]
 layout_mode = 1

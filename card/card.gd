@@ -11,31 +11,122 @@ var card_data: Dictionary = {}
 var default_texture = preload("res://assets/placeholder.jpg")
 var tween: Tween
 
-signal card_pressed(card_data: Dictionary)
+var dragging := false
+var drag_offset := Vector2()
+
+var original_position: Vector2
+var original_parent
+
+var is_played := false
+
+signal card_played(card)
+signal card_removed(card)
+
 signal card_hovered
 signal card_exited
 
 func setup(data: Dictionary):
+
 	card_data = data
+
 	custom_minimum_size = Vector2(100, 200)
 	size = Vector2(100, 200)
-	texture_rect.texture = card_data.get("texture", default_texture)
-	button.pressed.connect(_on_pressed)
 
-func _on_pressed():
-	card_pressed.emit(card_data)
+	original_parent = get_parent()
+	original_position = position
+	
+	texture_rect.texture = card_data.get("texture", default_texture)
+	texture_rect.position = Vector2.ZERO
+	texture_rect.custom_minimum_size = Vector2(100, 200)
+	texture_rect.size = Vector2(100, 200)
+	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	button.position = Vector2.ZERO
+	button.custom_minimum_size = Vector2(100, 200)
+	button.size = Vector2(100, 200)
+
+	texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+func _gui_input(event):
+
+	if event is InputEventMouseButton:
+
+		if event.button_index == MOUSE_BUTTON_LEFT:
+
+			if event.pressed:
+
+				dragging = true
+				drag_offset = get_global_mouse_position() - global_position
+				z_index = 100
+
+			else:
+
+				dragging = false
+				z_index = 0
+				check_drop()
+
+
+	elif event is InputEventMouseMotion and dragging:
+
+		global_position = get_global_mouse_position() - drag_offset
+
+
+func check_drop():
+
+	var drop_zone = get_tree().get_first_node_in_group("drop_zone")
+
+	if not drop_zone:
+		return_to_hand()
+		return
+
+	var is_inside_dropzone = drop_zone.get_global_rect().has_point(get_global_mouse_position())
+
+	if is_inside_dropzone:
+
+		if not is_played:
+			is_played = true
+			card_played.emit(self)
+
+	else:
+
+		if is_played:
+			is_played = false
+			card_removed.emit(self)
+		else:
+			return_to_hand()
+
+
+func return_to_hand():
+
+	if not original_parent:
+		return
+
+	if get_parent():
+		get_parent().remove_child(self)
+
+	original_parent.add_child(self)
+
+	position = original_position
+
 
 func _on_hover():
 	z_index = 10
 	_animate_scale(scale_hover)
 	card_hovered.emit()
 
+
 func _on_exit():
 	z_index = 0
 	_animate_scale(scale_default)
 	card_exited.emit()
 
+
+
 func _animate_scale(target_scale: Vector2) -> void:
+
 	if tween and tween.is_running():
 		tween.kill()
 	tween = create_tween()
