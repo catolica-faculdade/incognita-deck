@@ -14,6 +14,9 @@ var played_cards: Array = []
 
 var max_energy := 5
 var current_energy := 5
+var energy_recovery_per_round := 2
+
+var max_hand_size := 5
 
 var energy_images := {
 	0: preload("res://energy/energy_0.png"),
@@ -24,7 +27,10 @@ var energy_images := {
 	5: preload("res://energy/energy_5.png")
 }
 
+
 func _ready() -> void:
+	randomize()
+
 	update_energy_ui()
 
 	print("Energia inicial: ", current_energy)
@@ -36,7 +42,7 @@ func _ready() -> void:
 	create_card(CARDS[4])
 
 
-func create_card(data):
+func create_card(data: Dictionary):
 
 	var card = card_scene.instantiate()
 
@@ -46,6 +52,51 @@ func create_card(data):
 
 	card.card_played.connect(_on_card_played)
 	card.card_removed.connect(_on_card_removed)
+
+
+func draw_random_card():
+
+	var random_index = randi_range(0, CARDS.size() - 1)
+
+	create_card(CARDS[random_index])
+
+
+func refill_hand():
+
+	while card_container.get_child_count() < max_hand_size:
+		draw_random_card()
+
+
+func discard_played_cards():
+
+	for card in played_cards:
+		if is_instance_valid(card):
+			card.queue_free()
+
+	played_cards.clear()
+
+
+func recover_energy():
+
+	current_energy += energy_recovery_per_round
+	current_energy = min(current_energy, max_energy)
+
+	update_energy_ui()
+
+	print("Energia recuperada. Energia atual: ", current_energy)
+
+
+func start_new_player_round():
+
+	print("Iniciando novo round do jogador")
+
+	discard_played_cards()
+
+	recover_energy()
+
+	refill_hand()
+
+	recalculate_cards()
 
 
 func _on_card_played(card):
@@ -112,7 +163,7 @@ func _on_card_removed(card):
 func update_energy_ui():
 
 	if not energy_texture:
-		print("EnergyTexture não encontrado!")
+		print("energyTexture não encontrado!")
 		return
 
 	if energy_images.has(current_energy):

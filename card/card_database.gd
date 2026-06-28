@@ -8,6 +8,7 @@ const CARDS = [
 		"x": 4.0,
 		"y": 0.0,
 		"energy_cost": 1,
+		"draw_chance": 70,
 		"texture": preload("res://assets/cards/card_avanco.jpg")
 	},
 	{
@@ -17,6 +18,7 @@ const CARDS = [
 		"x": 3.0,
 		"y": 2.0,
 		"energy_cost": 1,
+		"draw_chance": 15,
 		"texture": preload("res://assets/cards/card_eleva.jpg")
 	},
 	{
@@ -26,6 +28,7 @@ const CARDS = [
 		"coefficient": "a",
 		"value": 0.35,
 		"energy_cost": 1,
+		"draw_chance": 5,
 		"texture": preload("res://assets/cards/card_arc.jpg")
 	},
 	{
@@ -35,6 +38,7 @@ const CARDS = [
 		"coefficient": "a",
 		"value": -0.35,
 		"energy_cost": 1,
+		"draw_chance": 5,
 		"texture": preload("res://assets/cards/card_queda.jpg")
 	},
 	{
@@ -46,6 +50,7 @@ const CARDS = [
 		"frequency": 2.0,
 		"length": 8.0,
 		"energy_cost": 1,
+		"draw_chance": 10,
 		"texture": preload("res://assets/cards/card_onda.jpg")
 	}
 ]

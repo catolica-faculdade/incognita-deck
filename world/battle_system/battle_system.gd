@@ -187,6 +187,8 @@ func start_player_turn() -> void:
 
 	clear_trajectory()
 
+	if combat_ui and combat_ui.has_method("start_new_player_round"):
+		combat_ui.start_new_player_round()
 
 func enemy_turn_phase() -> void:
 	print("Turno dos inimigos!")
