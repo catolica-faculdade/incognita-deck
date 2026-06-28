@@ -7,6 +7,7 @@ const CARDS = [
 		"type": "linear",
 		"x": 4.0,
 		"y": 0.0,
+		"energy_cost": 1,
 		"texture": preload("res://assets/cards/card_avanco.jpg")
 	},
 	{
@@ -15,6 +16,7 @@ const CARDS = [
 		"type": "linear",
 		"x": 3.0,
 		"y": 2.0,
+		"energy_cost": 1,
 		"texture": preload("res://assets/cards/card_eleva.jpg")
 	},
 	{
@@ -23,6 +25,7 @@ const CARDS = [
 		"type": "quadratic",
 		"coefficient": "a",
 		"value": 0.35,
+		"energy_cost": 1,
 		"texture": preload("res://assets/cards/card_arc.jpg")
 	},
 	{
@@ -31,6 +34,7 @@ const CARDS = [
 		"type": "quadratic",
 		"coefficient": "a",
 		"value": -0.35,
+		"energy_cost": 1,
 		"texture": preload("res://assets/cards/card_queda.jpg")
 	},
 	{
@@ -41,6 +45,7 @@ const CARDS = [
 		"amplitude": 1.5,
 		"frequency": 2.0,
 		"length": 8.0,
+		"energy_cost": 1,
 		"texture": preload("res://assets/cards/card_onda.jpg")
 	}
 ]

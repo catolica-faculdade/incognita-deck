@@ -35,6 +35,16 @@ func setup(data: Dictionary):
 	
 	texture_rect.texture = card_data.get("texture", default_texture)
 
+	texture_rect.position = Vector2.ZERO
+	texture_rect.custom_minimum_size = Vector2(100, 200)
+	texture_rect.size = Vector2(100, 200)
+	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	button.position = Vector2.ZERO
+	button.custom_minimum_size = Vector2(100, 200)
+	button.size = Vector2(100, 200)
+
 	texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 

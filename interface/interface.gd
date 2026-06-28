@@ -3,6 +3,7 @@ extends CanvasLayer
 @onready var card_container = $MarginContainer/Control/HBoxContainer
 @onready var equation_label = $MarginContainer/Buttons/EquationLabel
 @onready var played_container = $MarginContainer/Control/PlayedCards
+@onready var energy_texture = $energyTexture
 
 const CARDS = preload("res://card/card_database.gd").CARDS
 const card_scene = preload("res://card/card.tscn")
@@ -11,8 +12,23 @@ var battle_system
 
 var played_cards: Array = []
 
+var max_energy := 5
+var current_energy := 5
+
+var energy_images := {
+	0: preload("res://energy/energy_0.png"),
+	1: preload("res://energy/energy_1.png"),
+	2: preload("res://energy/energy_2.png"),
+	3: preload("res://energy/energy_3.png"),
+	4: preload("res://energy/energy_4.png"),
+	5: preload("res://energy/energy_5.png")
+}
 
 func _ready() -> void:
+	update_energy_ui()
+
+	print("Energia inicial: ", current_energy)
+
 	create_card(CARDS[0])
 	create_card(CARDS[1])
 	create_card(CARDS[2])
@@ -37,6 +53,16 @@ func _on_card_played(card):
 	if played_cards.has(card):
 		return
 
+	var energy_cost: int = int(card.card_data.get("energy_cost", 1))
+
+	if current_energy < energy_cost:
+		print("Sem energia suficiente para jogar a carta: ", card.card_data.get("name", "Carta"))
+
+		card.is_played = false
+		card.return_to_hand()
+
+		return
+
 	if card.get_parent():
 		card.get_parent().remove_child(card)
 
@@ -49,10 +75,20 @@ func _on_card_played(card):
 
 	played_cards.append(card)
 
+	current_energy -= energy_cost
+	current_energy = max(current_energy, 0)
+
+	update_energy_ui()
+
+	print("Carta jogada: ", card.card_data.get("name", "Carta"))
+	print("Energia atual: ", current_energy)
+
 	recalculate_cards()
 
 
 func _on_card_removed(card):
+
+	var energy_cost: int = int(card.card_data.get("energy_cost", 1))
 
 	if played_cards.has(card):
 		played_cards.erase(card)
@@ -62,7 +98,27 @@ func _on_card_removed(card):
 
 	card_container.add_child(card)
 
+	current_energy += energy_cost
+	current_energy = min(current_energy, max_energy)
+
+	update_energy_ui()
+
+	print("Carta removida: ", card.card_data.get("name", "Carta"))
+	print("Energia atual: ", current_energy)
+
 	recalculate_cards()
+
+
+func update_energy_ui():
+
+	if not energy_texture:
+		print("EnergyTexture não encontrado!")
+		return
+
+	if energy_images.has(current_energy):
+		energy_texture.texture = energy_images[current_energy]
+	else:
+		print("Imagem de energia não encontrada para: ", current_energy)
 
 
 func recalculate_cards():
@@ -70,10 +126,18 @@ func recalculate_cards():
 	if not battle_system:
 		return
 
-	battle_system.clear_trajectory()
+	var cards_data := []
 
 	for card in played_cards:
-		battle_system.apply_card(card.card_data)
+		cards_data.append(card.card_data)
+
+	if battle_system.has_method("rebuild_cards_formula"):
+		battle_system.rebuild_cards_formula(cards_data)
+	else:
+		battle_system.clear_trajectory()
+
+		for card in played_cards:
+			battle_system.apply_card(card.card_data)
 
 
 func set_battle_system(bs):

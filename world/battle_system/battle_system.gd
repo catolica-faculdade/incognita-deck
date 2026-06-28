@@ -387,6 +387,9 @@ func apply_quadratic_card(card: Dictionary):
 
 
 func update_trajectory():
+	if not trajectory:
+		return
+
 	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0 or quadratic_c != 0.0
 	var has_wave := wave_enabled
 

@@ -2,10 +2,21 @@
 
 [ext_resource type="Script" uid="uid://kn15ldbmc68h" path="res://interface/interface.gd" id="1_6nxxo"]
 [ext_resource type="PackedScene" uid="uid://cacwc8ih5dwrk" path="res://interface/buttons/buttons.tscn" id="2_0c05b"]
+[ext_resource type="Texture2D" uid="uid://8jyedp378yo0" path="res://energy/energy_5.png" id="2_o02ce"]
 [ext_resource type="PackedScene" uid="uid://cy44hrstj418f" path="res://world/player/player_interface.tscn" id="3_athsf"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=1260764440]
 script = ExtResource("1_6nxxo")
+
+[node name="energyTexture" type="TextureRect" parent="." unique_id=1846812032]
+custom_minimum_size = Vector2(100, 100)
+offset_left = 5.0
+offset_top = 416.0
+offset_right = 282.33334
+offset_bottom = 572.0
+texture = ExtResource("2_o02ce")
+expand_mode = 3
+stretch_mode = 5
 
 [node name="DropZone" type="ColorRect" parent="." unique_id=512673811 groups=["drop_zone"]]
 custom_minimum_size = Vector2(300, 200)
