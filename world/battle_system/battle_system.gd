@@ -3,6 +3,10 @@ extends Node
 @export var lock_distance = 75
 @export var combat_ui_scene = preload("res://interface/interface.tscn")
 
+const game_over_scene = preload("res://interface/game_over_screen.tscn")
+const victory_scene = preload("res://interface/victory_screen.tscn")
+var is_boss_fight := false
+
 signal card_pressed(card_data: Dictionary)
 
 var card_payload: Dictionary
@@ -38,6 +42,7 @@ func _ready() -> void:
 	GameManager.current_context = GameManager.Context.COMBAT
 
 	var scenario_to_load = GameManager.scenario_to_load
+	is_boss_fight = GameManager.scenario_to_load.contains("boss")
 
 	if scenario_to_load != "":
 		print("BattleSystem: Carregando o cenário -> ", scenario_to_load)
@@ -151,20 +156,16 @@ func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Ve
 func execute_turn_actions() -> void:
 	if not GameManager.is_player_turn or is_turn_running:
 		return
-		
 	is_turn_running = true
 	GameManager.is_player_turn = false
-	
 	combat_ui.set_turn_indicator(false)
 
 	await player_attack_phase()
-
-	if is_end_combat():
+	if await is_end_combat():
 		return
 
 	await enemy_turn_phase()
-
-	if is_end_combat():
+	if await is_end_combat():
 		return
 
 	start_player_turn()
@@ -180,37 +181,30 @@ func start_player_turn() -> void:
 	
 func enemy_turn_phase() -> void:
 	print("Turno dos inimigos!")
-
+	var player = get_tree().get_first_node_in_group("Player")
+	if player and player.has_method("on_end_turn"):
+		await player.on_end_turn()
 	var enemies = get_tree().get_nodes_in_group("enemies")
-
 	for enemy in enemies:
 		if is_instance_valid(enemy) and enemy.health > 0:
 			if enemy.has_method("choose_action"):
 				await enemy.choose_action()
 				if not is_inside_tree(): return
 				await get_tree().create_timer(1.0).timeout
-				
-	is_end_combat()
 	
 func player_attack_phase() -> void:
 	if current_enemies.size() > 0:
 		var player = get_tree().get_first_node_in_group("Player")
 		if player and player.has_method("play_attack"):
 			await player.play_attack()
-
 		var enemies_to_attack = current_enemies.duplicate()
-
 		if trajectory:
 			trajectory.clear_points()
-
 		reset_math()
-
 		for enemy in enemies_to_attack:
 			if is_instance_valid(enemy) and enemy.health > 0:
 				await enemy.take_damage(player_damage)
-
 		clear_target()
-		is_end_combat()
 	else:
 		print("Nenhum inimigo selecionado na trajetória.")
 
@@ -244,28 +238,21 @@ func apply_card(card: Dictionary):
 func is_end_combat() -> bool:
 	if not is_inside_tree():
 		return true
-		
-	var player = get_tree().get_first_node_in_group("Player")
 
+	var player = get_tree().get_first_node_in_group("Player")
 	if player:
 		var status = player.get_player_status()
-		var player_is_alive = status["health"] > 0
-
-		if not player_is_alive:
+		if status["health"] <= 0:
 			is_turn_running = false
 			GameManager.is_player_turn = true
-			GameManager.level = -1
-			GameManager.end_game()
+			await show_game_over(player)
 			return true
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var alive_enemies := 0
-
 	for enemy in enemies:
 		if is_instance_valid(enemy) and enemy.health > 0:
 			alive_enemies += 1
-
-	print("Inimigos vivos:", alive_enemies)
 
 	if alive_enemies <= 0:
 		win_combat()
@@ -273,12 +260,29 @@ func is_end_combat() -> bool:
 
 	return false
 
+func show_game_over(player) -> void:
+	if player.has_method("play_death"):
+		await player.play_death()
+	else:
+		await get_tree().create_timer(1.0).timeout
+	var screen = game_over_scene.instantiate()
+	add_child(screen)
+
+var combat_ended := false
+
 func win_combat():
+	if combat_ended:
+		return
+	combat_ended = true
 	is_turn_running = false
 	GameManager.is_player_turn = true
-	print("winning combat!")
-	GameManager.level += 1
-	GameManager.end_game()
+	if not is_boss_fight:
+		GameManager.level += 1
+	else:
+		GameManager.level = 5
+	var screen = victory_scene.instantiate()
+	screen.setup(is_boss_fight)
+	add_child(screen)
 
 func apply_linear_card(card: Dictionary):
 	var x_value: float = float(card.get("x", 0))

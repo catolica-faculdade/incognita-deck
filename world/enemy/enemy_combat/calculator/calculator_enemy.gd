@@ -73,7 +73,7 @@ func attack():
 	anim_sprite.play("idle")
 
 func heal(amount := self_heal_amount):
-	health += amount
+	health = min(health + self_heal_amount, max_health)
 	heal_sound.play()
 	hud.update_hp(health)
 	await play_effect_animation()

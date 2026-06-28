@@ -65,7 +65,7 @@ func choose_action():
 		await apply_all_heal()
 
 func heal(amount := self_heal_amount):
-	health += amount
+	health = min(health + self_heal_amount, max_health)
 	heal_sound.play()
 	hud.update_hp(health)
 	await play_effect_animation()
@@ -157,7 +157,7 @@ func take_damage(amount):
 		return
 	is_attacking = true
 	anim_sprite.play("hit")
-	var shield_was_hit := false
+	var shield_before := shield
 
 	var cur_pos := position
 	var random_offset := Vector2(randf_range(-30, 10), randf_range(0, 50))
@@ -169,7 +169,6 @@ func take_damage(amount):
 	tween.parallel().tween_property(self, "position:x", cur_pos.x + random_offset.x, 0.15)
 	tween.tween_callback(func():
 		if shield > 0:
-			shield_was_hit = true 
 			if amount >= shield:
 				amount -= shield
 				shield = 0
@@ -195,7 +194,7 @@ func take_damage(amount):
 		queue_free()
 		return
 
-	if shield_was_hit:                
+	if shield_before > 0:
 		hit_shield_sound.play()
 	else:
 		hit_sound.play()

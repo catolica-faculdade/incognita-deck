@@ -43,7 +43,7 @@ func choose_action():
 		defend()
 
 func heal():
-	health += self_heal_amount
+	health = min(health + self_heal_amount, max_health)
 	hud.update_hp(health)
 	await play_effect_animation()
 

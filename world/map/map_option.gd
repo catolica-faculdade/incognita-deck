@@ -43,17 +43,20 @@ func _on_pressed():
 			var random_combat = randi_range(1, 5)
 			scenario_path = "res://world/combat/combat_%d.tscn" % random_combat
 		elif random_event <= 80:
-			GameManager.player_health += GameManager.max_player_health * 0.5
+			GameManager.player_health = min(
+				GameManager.player_health + int(GameManager.max_player_health * 0.5),
+				GameManager.max_player_health
+			)
 			GameManager.level += 1
 			GameManager.end_game()
 			return
-		else:
-			var random_test = randi_range(1, 3)
-			scenario_path = "res://world/combat/test_%d.tscn" % random_test
 
 	elif is_in_group("rest"):
 		GameManager.level += 1
-		GameManager.player_health += GameManager.max_player_health * 0.5
+		GameManager.player_health = min(
+			GameManager.player_health + int(GameManager.max_player_health * 0.5),
+			GameManager.max_player_health
+		)
 		GameManager.end_game()
 		return
 

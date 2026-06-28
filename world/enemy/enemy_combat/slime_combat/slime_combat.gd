@@ -47,7 +47,7 @@ func choose_action():
 		heal()
 
 func heal(amount := self_heal_amount):
-	health += amount
+	health = min(health + self_heal_amount, max_health)
 	heal_sound.play()
 	hud.update_hp(health)
 	await play_effect_animation()
@@ -107,7 +107,6 @@ func take_damage(amount):
 	is_attacking = true
 	anim_sprite.play("hit")
 	var shield_before := shield
-	print("SLIME take_damage | shield_before=", shield_before, " | amount=", amount)
 
 	var tween := create_tween()
 	tween.tween_property(self, "position:x", start_position.x + 40, 0.15)

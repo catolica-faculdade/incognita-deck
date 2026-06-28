@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://bb1mugc0y6dlk"]
+
+[ext_resource type="Script" uid="uid://dgyl16mx0jd8s" path="res://interface/game_over_screen.gd" id="1_pfxit"]
+
+[node name="GameOverScreen" type="CanvasLayer" unique_id=262773124]
+process_mode = 3
+layer = 10
+script = ExtResource("1_pfxit")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1803512394]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=875393647]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -31.0
+offset_right = 4.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="ColorRect/VBoxContainer" unique_id=1216190360]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55204135, 0, 0.03565608, 1)
+theme_override_font_sizes/font_size = 48
+text = "GAME OVER"
+
+[node name="HSeparator" type="HSeparator" parent="ColorRect/VBoxContainer" unique_id=161786741]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="ColorRect/VBoxContainer" unique_id=784672016]
+layout_mode = 2
+text = "Você foi derrotado..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="ColorRect/VBoxContainer" unique_id=1761697986]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="ColorRect/VBoxContainer" unique_id=1148012971]
+layout_mode = 2
+text = "Continuar"
