@@ -96,7 +96,10 @@ func _ready() -> void:
 			if clear_button.clear_trajectory.is_connected(clear_trajectory):
 				clear_button.clear_trajectory.disconnect(clear_trajectory)
 
-			clear_button.clear_trajectory.connect(clear_trajectory)
+			if clear_button.clear_trajectory.is_connected(clear_player_selection):
+				clear_button.clear_trajectory.disconnect(clear_player_selection)
+
+			clear_button.clear_trajectory.connect(clear_player_selection)
 			print("BattleSystem: ClearTrajectory conectado com sucesso!")
 		else:
 			print("ClearTrajectoryButton não encontrado!")
@@ -189,6 +192,7 @@ func start_player_turn() -> void:
 
 	if combat_ui and combat_ui.has_method("start_new_player_round"):
 		combat_ui.start_new_player_round()
+
 
 func enemy_turn_phase() -> void:
 	print("Turno dos inimigos!")
@@ -450,6 +454,13 @@ func get_equation_text() -> String:
 		]
 
 	return "y = %.1f" % current_math_y
+
+
+func clear_player_selection():
+	if combat_ui and combat_ui.has_method("return_all_cards_to_hand"):
+		combat_ui.return_all_cards_to_hand()
+
+	clear_trajectory()
 
 
 func clear_trajectory():

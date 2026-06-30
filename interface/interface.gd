@@ -195,9 +195,28 @@ func set_battle_system(bs):
 
 
 func _on_clear_trajectory_pressed():
+	return_all_cards_to_hand()
+
 	if battle_system:
 		battle_system.clear_trajectory()
 
 
 func update_equation(text: String):
 	equation_label.text = text
+
+func return_all_cards_to_hand():
+
+	for card in played_cards.duplicate():
+		card.is_played = false
+		
+		if card.get_parent():
+			card.get_parent().remove_child(card)
+			
+		card_container.add_child(card)
+		var energy_cost := int(card.card_data.get("energy_cost", 1))
+		current_energy += energy_cost
+		
+	current_energy = min(current_energy, max_energy)
+	played_cards.clear()
+	update_energy_ui()
+	recalculate_cards()
