@@ -11,23 +11,21 @@ config_version=5
 [application]
 
 config/name="incognita-deck"
-run/main_scene="uid://dsfahu6pi11su"
+run/main_scene="res://main/main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
-[audio]
-
-buses/default_bus_layout="uid://cxk57hdgvae7l"
-
 [autoload]
 
-GameSettings="*uid://43tunbmxs8pn"
-GameManager="*uid://d13oini5aob7j"
-PauseMenu="*uid://cr85wvmfbic0l"
-DamageNumberSpawner="*uid://oohsd37tvpnm"
+GameSettings="*res://settings/game_settings.gd"
+GameManager="*res://settings/game_manager.gd"
+PauseMenu="*res://interface/pause_menu.gd"
+DamageNumberSpawner="*res://world/damage_number_spawner.gd"
 
 [display]
 
+window/size/viewport_width=1280
+window/size/viewport_height=800
 window/size/mode=2
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"

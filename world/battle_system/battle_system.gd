@@ -1,519 +1,166 @@
 extends Node
 
-@export var lock_distance = 75
-@export var combat_ui_scene = preload("res://interface/interface.tscn")
-
-const game_over_scene = preload("res://interface/game_over_screen.tscn")
-const victory_scene = preload("res://interface/victory_screen.tscn")
-var is_boss_fight := false
-
-signal card_pressed(card_data: Dictionary)
-
-var card_payload: Dictionary
-var is_turn_running := false
-
-var wave_enabled := false
-var wave_amplitude := 0.0
-var wave_frequency := 0.0
-var wave_length := 0.0
-
-var scenario_container: Node2D
+const Formula = preload("res://core/combat/trajectory_formula.gd")
+const Targeting = preload("res://core/combat/trajectory_targeting.gd")
+const Effects = preload("res://core/combat/card_effects.gd")
+const Builder = preload("res://world/combat/encounter_builder.gd")
+const Generator = preload("res://core/run/run_generator.gd")
+const GAME_OVER = preload("res://interface/game_over_screen.tscn")
+const REWARD = preload("res://interface/reward_screen.tscn")
+enum Phase { SETUP, PLAYER, RESOLVING, ENEMIES, FINISHED }
+var phase := Phase.SETUP
+var formula = Formula.new()
+var current_enemies: Array = []
+var player: Node2D
+var trajectory: Line2D
 var combat_ui: CanvasLayer
-var player_interface
-
-var trajectory: Node2D
-var player_damage = 15
-
-var current_enemies = []
-
-var current_math_x: float = 0.0
-var current_math_y: float = 0.0
-
-var quadratic_a: float = 0.0
-var quadratic_b: float = 0.0
-var quadratic_c: float = 0.0
-
+var scenario_container: Node2D
+var is_boss_fight := false
+@export var lock_distance := 65.0
+@export var player_damage := 15
+@export var combat_ui_scene: PackedScene = preload("res://interface/interface.tscn")
 
 func _ready() -> void:
-	GameManager.is_player_turn = true
-	is_turn_running = false
-
-	scenario_container = Node2D.new()
-	scenario_container.name = "CenarioContainer"
-	add_child(scenario_container)
 	GameManager.current_context = GameManager.Context.COMBAT
-
-	var scenario_to_load = GameManager.scenario_to_load
-	is_boss_fight = GameManager.scenario_to_load.contains("boss")
-
-	if scenario_to_load != "":
-		print("BattleSystem: Carregando o cenário -> ", scenario_to_load)
-
-		var cenario_prefab = load(scenario_to_load)
-		var cenario_instancia = cenario_prefab.instantiate()
-
-		scenario_container.add_child(cenario_instancia)
-
-		trajectory = cenario_instancia.find_child("Trajectory", true, false)
-
-		if trajectory:
-			print("BattleSystem: Trajetória encontrada!")
-		else:
-			print("Erro: Trajectory não encontrada!")
+	if not GameManager.scenario_to_load.is_empty():
+		scenario_container = load(GameManager.scenario_to_load).instantiate()
+		is_boss_fight = GameManager.scenario_to_load.contains("boss")
 	else:
-		print("Aviso: Nenhum cenário foi especificado!")
+		var spec: Dictionary = GameManager.current_encounter
+		if spec.is_empty():
+			spec = Generator.encounter({"seed": 42,"tier": 1,"kind": "combat"})
+		scenario_container = Builder.build(spec)
+		is_boss_fight = spec.boss
+	add_child(scenario_container)
+	_name_enemies()
+	player = scenario_container.get_node("player")
+	trajectory = player.trajectory
+	combat_ui = combat_ui_scene.instantiate()
+	add_child(combat_ui)
+	combat_ui.end_turn_requested.connect(execute_turn_actions)
+	combat_ui.selection_changed.connect(rebuild_cards_formula)
+	combat_ui.card_hover_changed.connect(_on_card_hover_changed)
+	player.status_changed.connect(update_player_interface)
+	update_player_interface()
+	await _start_player_turn(false)
 
-	if combat_ui_scene:
-		combat_ui = combat_ui_scene.instantiate() as CanvasLayer
-		add_child(combat_ui)
-		combat_ui.show()
-
-		if combat_ui.has_method("set_battle_system"):
-			combat_ui.set_battle_system(self)
-
-		player_interface = combat_ui.find_child("PlayerInterface", true, false)
-
-		if player_interface:
-			update_player_interface()
-		else:
-			print("PlayerInterface não encontrada!")
-
-		var player = get_tree().get_first_node_in_group("Player")
-
-		if player:
-			player.status_changed.connect(update_player_interface)
-			update_player_interface()
-		else:
-			print("Player não encontrado!")
-
-		var end_turn_button = combat_ui.find_child("EndTurnButton", true, false)
-		var clear_button = combat_ui.find_child("ClearTrajectoryButton", true, false)
-
-		if end_turn_button:
-			if end_turn_button.end_turn.is_connected(execute_turn_actions):
-				end_turn_button.end_turn.disconnect(execute_turn_actions)
-
-			end_turn_button.end_turn.connect(execute_turn_actions)
-			print("BattleSystem: EndTurn conectado com sucesso!")
-		else:
-			print("Aviso: Botão 'EndTurnButton' não foi encontrado na cena de interface.")
-
-		if clear_button:
-			if clear_button.clear_trajectory.is_connected(clear_trajectory):
-				clear_button.clear_trajectory.disconnect(clear_trajectory)
-
-			if clear_button.clear_trajectory.is_connected(clear_player_selection):
-				clear_button.clear_trajectory.disconnect(clear_player_selection)
-
-			clear_button.clear_trajectory.connect(clear_player_selection)
-			print("BattleSystem: ClearTrajectory conectado com sucesso!")
-		else:
-			print("ClearTrajectoryButton não encontrado!")
-
-		print("BattleSystem: Interface carregada com sucesso!")
-
-
-func setup(card_data: Dictionary):
-	card_payload = card_data
-
-
-func _on_pressed():
-	card_pressed.emit(card_payload)
-
-
-func clear_target():
-	for enemy in current_enemies:
-		if is_instance_valid(enemy) and enemy.has_method("unlock"):
-			enemy.unlock()
-
-	current_enemies = []
-
-
-func lock_target(enemy):
-	current_enemies.push_back(enemy)
-
-
-func evaluate_trajectory(points):
-	clear_target()
-
-	var enemies = get_tree().get_nodes_in_group("enemies")
-
-	var global_points := PackedVector2Array()
-
-	if trajectory:
-		for point in points:
-			global_points.append(trajectory.to_global(point))
-
+func _name_enemies() -> void:
+	var counts := {}
+	var indices := {}
+	var enemies: Array = []
+	for enemy in scenario_container.get_children():
+		if enemy.is_in_group("enemies"):
+			enemies.append(enemy)
+			counts[enemy.display_name] = int(counts.get(enemy.display_name, 0)) + 1
 	for enemy in enemies:
-		if trajectory_hits_enemy(global_points, enemy.global_position):
-			lock_target(enemy)
+		var base_name: String = enemy.display_name
+		indices[base_name] = int(indices.get(base_name, 0)) + 1
+		enemy.combat_name = "%s %d" % [base_name, indices[base_name]] if counts[base_name] > 1 else base_name
+		enemy._refresh_hud()
 
+func _physics_process(_delta: float) -> void:
+	if phase == Phase.PLAYER:
+		evaluate_trajectory()
 
-func trajectory_hits_enemy(points: PackedVector2Array, enemy_global_position: Vector2) -> bool:
-	for i in range(points.size() - 1):
-		var a = points[i]
-		var b = points[i + 1]
+func can_edit_selection() -> bool:
+	return phase == Phase.PLAYER
 
-		var closest_point = Geometry2D.get_closest_point_to_segment(
-			enemy_global_position,
-			a,
-			b
-		)
+func get_pause_details() -> String:
+	var state: String = {Phase.PLAYER: "Sua vez", Phase.ENEMIES: "Inimigos", Phase.RESOLVING: "Resolvendo ações", Phase.SETUP: "Preparando", Phase.FINISHED: "Finalizado"}[phase]
+	var tier := clampi(int(GameManager.current_encounter.get("tier", 1)), 1, Generator.TIERS.size())
+	return "Turno %d • %s\nEtapa %d/7 • %s\nModo %s" % [combat_ui.turn_count, state, mini(GameManager.level + 1, 7), Generator.TIERS[tier - 1], "Difícil" if GameManager.hard_mode else "Normal"]
 
-		var distance = closest_point.distance_to(enemy_global_position)
+func _start_player_turn(new_round: bool) -> void:
+	phase = Phase.RESOLVING
+	await player.begin_turn()
+	if await _finish_if_needed():
+		return
+	if new_round:
+		combat_ui.start_new_player_round()
+	phase = Phase.PLAYER
+	combat_ui.set_player_turn(true)
+	rebuild_cards_formula([])
 
-		if distance <= lock_distance:
-			return true
+func rebuild_cards_formula(cards: Array) -> void:
+	if not can_edit_selection():
+		return
+	formula.rebuild(cards)
+	trajectory.show_formula(formula)
+	combat_ui.update_equation(formula.equation_text())
+	evaluate_trajectory()
 
-	return false
+func evaluate_trajectory() -> void:
+	clear_target()
+	var points := PackedVector2Array()
+	for point in trajectory.points:
+		points.append(trajectory.to_global(point))
+	for enemy in scenario_container.get_children():
+		if is_instance_valid(enemy) and enemy.is_in_group("enemies") and enemy.check_is_alive():
+			if Targeting.hits(points, enemy.global_position, lock_distance):
+				current_enemies.append(enemy)
+				enemy.lock()
 
+func clear_target() -> void:
+	for enemy in current_enemies:
+		if is_instance_valid(enemy):
+			enemy.unlock()
+	current_enemies.clear()
 
 func execute_turn_actions() -> void:
-	if not GameManager.is_player_turn or is_turn_running:
+	if phase != Phase.PLAYER:
 		return
-
-	is_turn_running = true
-	GameManager.is_player_turn = false
-	combat_ui.set_turn_indicator(false)
-
-	await player_attack_phase()
-	if await is_end_combat():
-		return
-
-	await enemy_turn_phase()
-	if await is_end_combat():
-		return
-
-	start_player_turn()
-
-
-func start_player_turn() -> void:
-	print("Turno do jogador!")
-
-	GameManager.is_player_turn = true
-	is_turn_running = false
-	combat_ui.set_turn_indicator(true)
-
-	clear_trajectory()
-
-	if combat_ui and combat_ui.has_method("start_new_player_round"):
-		combat_ui.start_new_player_round()
-
-
-func enemy_turn_phase() -> void:
-	print("Turno dos inimigos!")
-	var player = get_tree().get_first_node_in_group("Player")
-	if player and player.has_method("on_end_turn"):
-		await player.on_end_turn()
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.health > 0:
-			if enemy.has_method("choose_action"):
-				await enemy.choose_action()
-
-				if not is_inside_tree():
-					return
-
-				await get_tree().create_timer(1.0).timeout
-
-	is_end_combat()
-
-
-func player_attack_phase() -> void:
-	if current_enemies.size() > 0:
-		var player = get_tree().get_first_node_in_group("Player")
-		if player and player.has_method("play_attack"):
-			await player.play_attack()
-		var enemies_to_attack = current_enemies.duplicate()
-		if trajectory:
-			trajectory.clear_points()
-		reset_math()
-		for enemy in enemies_to_attack:
-			if is_instance_valid(enemy) and enemy.health > 0:
-				await enemy.take_damage(player_damage)
-		clear_target()
-	else:
-		print("Nenhum inimigo selecionado na trajetória.")
-
-		if trajectory:
-			trajectory.clear_points()
-
-		reset_math()
-
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation("y = 0")
-
-	is_end_combat()
-
-
-func apply_card(card: Dictionary):
-	if not GameManager.is_player_turn or is_turn_running:
-		print("Não é turno do jogador!")
-		return
-
-	if not trajectory:
-		print("trajectory line doesn't exist!")
-		return
-
-	var applied := _apply_card_math(card)
-
-	if not applied:
-		return
-
-	update_trajectory()
-
-	if trajectory:
-		evaluate_trajectory(trajectory.points)
-
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation(get_equation_text())
-
-
-func rebuild_cards_formula(cards: Array):
-	if not GameManager.is_player_turn or is_turn_running:
-		print("Não é turno do jogador!")
-		return
-
-	if not trajectory:
-		print("trajectory line doesn't exist!")
-		return
-
-	reset_math()
+	evaluate_trajectory()
+	phase = Phase.RESOLVING
+	combat_ui.set_player_turn(false)
+	var targets := current_enemies.duplicate()
+	var cards: Array = combat_ui.commit_selection()
+	var effects := Effects.aggregate(cards)
+	trajectory.clear_points()
 	clear_target()
+	player.apply_effects(effects)
+	if not targets.is_empty():
+		await player.play_attack()
+		for enemy in targets:
+			if is_instance_valid(enemy) and enemy.check_is_alive():
+				enemy.receive_vulnerable(int(effects.vulnerable))
+				await enemy.take_damage(player.attack_damage(player_damage + int(effects.damage)), int(effects.pierce) > 0)
+				if is_instance_valid(enemy) and enemy.check_is_alive():
+					enemy.receive_poison(int(effects.poison))
+	player.finish_turn()
+	combat_ui.update_equation("y = 0")
+	if await _finish_if_needed():
+		return
+	phase = Phase.ENEMIES
+	for enemy in scenario_container.get_children():
+		if is_instance_valid(enemy) and enemy.is_in_group("enemies") and enemy.check_is_alive():
+			await enemy.take_turn()
+			if await _finish_if_needed():
+				return
+			await get_tree().create_timer(0.25).timeout
+	await _start_player_turn(true)
 
-	if trajectory:
-		trajectory.clear_points()
-		trajectory.add_point(Vector2.ZERO)
-
-	for card in cards:
-		_apply_card_math(card)
-
-	if cards.size() > 0:
-		update_trajectory()
-
-		if trajectory:
-			evaluate_trajectory(trajectory.points)
-	else:
-		clear_target()
-
-		if trajectory:
-			trajectory.clear_points()
-			trajectory.add_point(Vector2.ZERO)
-
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation(get_equation_text())
-
-
-func _apply_card_math(card: Dictionary) -> bool:
-	var type: String = card.get("type", "linear")
-
-	if type == "linear" || type == "diagonal":
-		apply_linear_card(card)
-	elif type == "quadratic":
-		apply_quadratic_card(card)
-	elif type == "special":
-		apply_special_card(card)
-	else:
-		print("invalid card type!")
-		return false
-
+func _finish_if_needed() -> bool:
+	if phase == Phase.FINISHED:
+		return true
+	if not player.check_is_alive():
+		phase = Phase.FINISHED
+		await player.play_death()
+		add_child(GAME_OVER.instantiate())
+		return true
+	for enemy in scenario_container.get_children():
+		if is_instance_valid(enemy) and enemy.is_in_group("enemies") and enemy.check_is_alive():
+			return false
+	phase = Phase.FINISHED
+	GameManager.complete_combat(is_boss_fight)
+	add_child(REWARD.instantiate())
 	return true
 
+func update_player_interface() -> void:
+	combat_ui.update_player_status(player.get_player_status())
 
-func is_end_combat() -> bool:
-	if not is_inside_tree():
-		return true
-
-
-	var player = get_tree().get_first_node_in_group("Player")
-	if player:
-		var status = player.get_player_status()
-		if status["health"] <= 0:
-			is_turn_running = false
-			GameManager.is_player_turn = true
-			await show_game_over(player)
-			return true
-
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	var alive_enemies := 0
-	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.health > 0:
-			alive_enemies += 1
-
-	if alive_enemies <= 0:
-		win_combat()
-		return true
-
-	return false
-
-func show_game_over(player) -> void:
-	if player.has_method("play_death"):
-		await player.play_death()
-	else:
-		await get_tree().create_timer(1.0).timeout
-	var screen = game_over_scene.instantiate()
-	add_child(screen)
-
-var combat_ended := false
-
-func win_combat():
-	if combat_ended:
-		return
-	combat_ended = true
-	is_turn_running = false
-	GameManager.is_player_turn = true
-	GameManager.player_health = min(
-		GameManager.player_health + GameManager.max_player_health / 4,
-		GameManager.max_player_health
-	)
-	if not is_boss_fight:
-		GameManager.level += 1
-	else:
-		GameManager.level = 5
-	var screen = victory_scene.instantiate()
-	screen.setup(is_boss_fight)
-	add_child(screen)
-
-
-
-func apply_linear_card(card: Dictionary):
-	var x_value: float = float(card.get("x", 0))
-	var y_value: float = float(card.get("y", 0))
-
-	current_math_x += x_value
-	current_math_y += y_value
-
-
-func apply_special_card(card: Dictionary):
-	var special_type = card.get("special_type", "")
-
-	if special_type == "wave":
-		wave_enabled = true
-		wave_amplitude += float(card.get("amplitude", 2.0))
-		wave_frequency += float(card.get("frequency", 2.0))
-		wave_length = max(wave_length, float(card.get("length", 8.0)))
-	else:
-		print("invalid special card: ", special_type)
-
-
-func apply_quadratic_card(card: Dictionary):
-	var coefficient: String = card.get("coefficient", "")
-	var value: float = float(card.get("value", 0))
-
-	if coefficient == "a":
-		quadratic_a += value
-	elif coefficient == "b":
-		quadratic_b += value
-	elif coefficient == "c":
-		quadratic_c += value
-	else:
-		print("invalid quadratic coefficient!")
-
-
-func update_trajectory():
-	if not trajectory:
-		return
-
-	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0 or quadratic_c != 0.0
-	var has_wave := wave_enabled
-
-	var end_x := current_math_x
-
-	if end_x <= 0:
-		if has_wave:
-			end_x = wave_length
-		elif has_quadratic:
-			end_x = 8.0
-
-	if has_wave:
-		trajectory.update_mixed_line(
-			quadratic_a,
-			quadratic_b,
-			quadratic_c + current_math_y,
-			0.0,
-			end_x,
-			wave_amplitude,
-			wave_frequency
-		)
-	elif has_quadratic:
-		trajectory.update_quadratic_line(
-			quadratic_a,
-			quadratic_b,
-			quadratic_c + current_math_y,
-			0.0,
-			end_x
-		)
-	else:
-		trajectory.update_straight_line(current_math_x, current_math_y)
-
-
-func reset_math():
-	current_math_x = 0.0
-	current_math_y = 0.0
-
-	quadratic_a = 0.0
-	quadratic_b = 0.0
-	quadratic_c = 0.0
-
-	wave_enabled = false
-	wave_amplitude = 0.0
-	wave_frequency = 0.0
-	wave_length = 0.0
-
-
-func get_equation_text() -> String:
-	var has_quadratic := quadratic_a != 0.0 or quadratic_b != 0.0
-
-	if has_quadratic:
-		return "y = %.1fx² + %.1fx + %.1f" % [
-			quadratic_a,
-			quadratic_b,
-			quadratic_c + current_math_y
-		]
-
-	return "y = %.1f" % current_math_y
-
-
-func clear_player_selection():
-	if combat_ui and combat_ui.has_method("return_all_cards_to_hand"):
-		combat_ui.return_all_cards_to_hand()
-
-	clear_trajectory()
-
-
-func clear_trajectory():
-	print("função: clear trajectory")
-
-	reset_math()
-	clear_target()
-
-	if trajectory:
-		trajectory.clear_points()
-		trajectory.add_point(Vector2.ZERO)
-
-	if combat_ui.has_method("update_equation"):
-		combat_ui.update_equation("y = 0")
-
-	print("Trajetória limpa!")
-
-
-func update_player_interface():
-	if not is_inside_tree():
-		return
-
-	var player = get_tree().get_first_node_in_group("Player")
-
-	if not player:
-		return
-
-	if not player_interface:
-		return
-
-	var status = player.get_player_status()
-
-	player_interface.update_player_info(
-		status["health"],
-		status["max_health"],
-		status["poison"],
-		status["shield"]
-	)
+func _on_card_hover_changed(hovered: bool) -> void:
+	if phase == Phase.PLAYER:
+		if hovered:
+			player.on_card_hovered()
+		else:
+			player.on_card_exited()
