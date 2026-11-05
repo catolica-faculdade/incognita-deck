@@ -1,3 +1,5 @@
+`Já disponível na branch 'main'`
+
 # Conteúdo novo — feat/new-content
 
 Implementação local sobre a reestruturação anterior, em 03/11/2026. A branch solicitada é `feat/new-content`; inclui também as alterações da reestruturação que ainda não tinham sido commitadas. Nenhum envio ao remoto foi feito.
