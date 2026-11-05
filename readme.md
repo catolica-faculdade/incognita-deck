@@ -20,7 +20,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 
 ### Quero baixar o projeto
 
-1. Na tela principal do repositório, selecione a branch **feat/new-content**. Selecione a opção "Code" (botão verde, na tela principal do repositório) e selecione "Download Zip" ou "Baixar Zip".
+1. Na tela principal do repositório. Selecione a opção "Code" (botão verde, na tela principal do repositório) e selecione "Download Zip" ou "Baixar Zip".
 2. Após baixar o ZIP, selecione ele na pasta de Downloads (no próprio computador), aperte com o botão direito e selecione a opção extrair.
 3. Após extrair, abra o aplicativo *Godot* e selecione a opção "Importar". Selecione o arquivo `project.godot` na pasta extraída, confirme a importação, abra o projeto e aguarde a importação dos recursos. 
 4. Continue para o capítulo "Jogar". 
@@ -32,7 +32,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 3. Selecione *Clone from Github*.
 4. Copie e cole esta url: "https://github.com/catolica-faculdade/incognita-deck", pressione enter.
 5. Selecione a pasta de destino.
-6. Após clonar, selecione a branch **feat/new-content** no controle de versão da sua IDE. Abra o aplicativo Godot e selecione a opção "Importar". Selecione o arquivo `project.godot` na pasta clonada, confirme a importação, abra o projeto e aguarde a importação dos recursos.  
+6. Após clonar abra o aplicativo Godot e selecione a opção "Importar". Selecione o arquivo `project.godot` na pasta clonada, confirme a importação, abra o projeto e aguarde a importação dos recursos.  
 7. Continue para o capítulo "Jogar". 
 
 ### Utilizando o executável
