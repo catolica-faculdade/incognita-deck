@@ -1,232 +1,28 @@
-extends Node2D
+extends "res://world/enemy/enemy_combat/combat_enemy.gd"
 
-@export var min_random_scale := 0.7
-@export var max_random_scale := 1.3
-@export var idle_height := 8.0
-@export var idle_speed := 2.0
-@export var attack_distance := 40.0
-@export var attack_time := 0.15
+@export var min_random_scale := 0.65
+@export var max_random_scale := 0.85
+var teleport_positions := [Vector2(590, -300), Vector2(282, -350), Vector2(800, -250), Vector2(400, -350), Vector2(650, -280)]
 
-var teleport_positions := [
-	Vector2(590, -300),
-	Vector2(282, -380),
-	Vector2(800, -250),
-	Vector2(400, -395),
-	Vector2(650, -280)
-]
+func configure_archetype() -> void:
+	display_name = "Professor"
+	max_health = 65
+	base_damage = 8
+	poison = 4
+	heal_amount = 7
+	self_heal_amount = 6
 
-var base_damage := 13
-var health := 70
-var max_health := 70
-var shield := 0
-var poison := 5
-var apply_block := 3
-var apply_defend := 7
-var heal_amount := max_health / 10
-var self_heal_amount := max_health / 15
-var start_position: Vector2
-var is_attacking := false
+func choose_action() -> String:
+	if health < int(max_health * 0.5):
+		return ["heavy", "poison", "heal_all", "teleport"][turns_taken % 4]
+	return ["teleport", "attack", "poison", "guard_all"][turns_taken % 4]
 
-
-@onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var attack_sound: AudioStreamPlayer = $AttackSound
-@onready var hit_sound: AudioStreamPlayer = $HitSound
-@onready var hit_shield_sound: AudioStreamPlayer = $HitShieldSound
-@onready var heal_sound: AudioStreamPlayer = $HealSound
-@onready var poison_sound: AudioStreamPlayer = $PoisonSound
-@onready var death_sound: AudioStreamPlayer = $DeathSound
-@onready var teleport_sound: AudioStreamPlayer = $TeleportSound
-@onready var hud: Node2D = $EnemyHud
-
-func _ready():
-	start_position = position
-	anim_sprite.flip_h = false
-	anim_sprite.play("idle")
-	hud.setup(health, max_health)
-
-func _process(_delta):
-	if not is_attacking:
-		position.y = start_position.y + sin(Time.get_ticks_msec() / 1000.0 * idle_speed) * idle_height
-
-func choose_action():
-	shield = 0
-	hud.update_shield(0)
-	var action = randi_range(0, 100)
-	if health <= 8 and action < 35:
-		await heal()
-	elif action < 45:
-		await attack()
-	elif action < 60:
-		await apply_poison()
-	elif action < 80:
-		await defend()
-	elif action < 95:
-		await defend_all()
-	else:
-		await apply_all_heal()
-
-func heal(amount := self_heal_amount):
-	health = min(health + self_heal_amount, max_health)
-	heal_sound.play()
-	hud.update_hp(health)
-	await play_effect_animation()
-
-func apply_heal():
-	heal_sound.play()
-	await play_effect_animation()
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy != self and enemy.has_method("heal"):
-			await enemy.heal(self_heal_amount)
-			break
-
-func apply_all_heal():
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	heal_sound.play()
-	await play_effect_animation()
-	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.has_method("heal"):
-			await enemy.heal(heal_amount)
-
-func attack():
-	var player = get_tree().get_first_node_in_group("Player")
-	if is_attacking:
-		return
-	is_attacking = true
-	teleport_sound.stop()
-	anim_sprite.play("attack")
-	attack_sound.play()
-
-	var tween := create_tween()
-	tween.tween_property(self, "position:x", start_position.x + attack_distance, attack_time)
-	tween.tween_property(self, "position:x", start_position.x - attack_distance, 0.12)
-	tween.tween_callback(func():
-		if player:
-			player.take_damage(base_damage)
-	)
-	tween.tween_property(self, "position:x", start_position.x, attack_time)
-	await tween.finished
-
-	is_attacking = false
-	anim_sprite.play("idle")
-
-func defend():
-	shield += apply_defend
-	hud.update_shield(shield)
-	await play_effect_animation()
-
-func apply_shield(amount):
-	shield += amount
-	hud.update_shield(shield)
-	await play_effect_animation()
-
-func defend_all():
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	await play_effect_animation()
-	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.has_method("apply_shield"):
-			await enemy.apply_shield(apply_block)
-
-func apply_poison():
-	var player = get_tree().get_first_node_in_group("Player")
-	if is_attacking:
-		return
-	is_attacking = true
-	anim_sprite.play("attack")
-	poison_sound.play()
-
-	var tween := create_tween()
-	tween.tween_property(self, "position:x", start_position.x + attack_distance, attack_time)
-	tween.tween_property(self, "position:x", start_position.x - attack_distance, 0.12)
-	tween.tween_callback(func():
-		if player:
-			player.receive_poison(poison)
-	)
-	tween.tween_property(self, "position:x", start_position.x, attack_time)
-	await tween.finished
-
-	is_attacking = false
-	anim_sprite.play("idle")
-
-func check_is_alive():
-	if health <= 0:
-		return false
-	return true
-
-func take_damage(amount):
-	if is_attacking:
-		return
-	is_attacking = true
-	anim_sprite.play("hit")
-	var shield_before := shield
-
-	var cur_pos := position
-	var random_offset := Vector2(randf_range(-30, 10), randf_range(0, 50))
-	var new_scale := scale * 0.60
-
-	var tween := create_tween()
-	tween.tween_property(self, "position:x", cur_pos.x + 40, 0.08)
-	tween.tween_property(self, "scale", new_scale, 0.15)
-	tween.parallel().tween_property(self, "position:x", cur_pos.x + random_offset.x, 0.15)
-	tween.tween_callback(func():
-		if shield > 0:
-			if amount >= shield:
-				amount -= shield
-				shield = 0
-			else:
-				shield -= amount
-				amount = 0
-		if amount > 0:
-			health -= amount
-	)
-	await tween.finished
-
-	hud.update_hp(health)
-	hud.update_shield(shield)
-	DamageNumberSpawner.spawn(global_position + Vector2(0, -150), amount, DamageNumberSpawner.COLOR_ENEMY)
-
-	if health <= 0:
-		remove_from_group("enemies")
-		hit_sound.stop()
-		hit_shield_sound.stop()
-		death_sound.play()
-		await get_tree().create_timer(3.0).timeout
-		death_sound.stop()
-		queue_free()
-		return
-
-	if shield_before > 0:
-		hit_shield_sound.play()
-	else:
-		hit_sound.play()
-
-	await teleport_randomly()
-	is_attacking = false
-
-func teleport_randomly():
+func after_surviving_hit() -> void:
 	anim_sprite.play("teleport")
-	teleport_sound.play()
-	await get_tree().create_timer(1.0).timeout
-
-	var new_position: Vector2 = teleport_positions.pick_random()
-	var new_scale_value := randf_range(min_random_scale, max_random_scale)
-	global_position = new_position
+	_play_sound("TeleportSound")
+	await get_tree().create_timer(0.3).timeout
+	position = teleport_positions[rng.randi_range(0, teleport_positions.size() - 1)]
 	start_position = position
-	scale = Vector2(new_scale_value, new_scale_value)
+	var random_scale := rng.randf_range(min_random_scale, max_random_scale)
+	scale = Vector2(random_scale, random_scale)
 	anim_sprite.play("idle")
-	await get_tree().create_timer(1).timeout
-
-func play_effect_animation():
-	var original_x = position.x
-	var tween := create_tween()
-	tween.tween_property(self, "position:x", original_x + 8, 0.04)
-	tween.tween_property(self, "position:x", original_x - 8, 0.04)
-	tween.tween_property(self, "position:x", original_x + 6, 0.03)
-	tween.tween_property(self, "position:x", original_x, 0.03)
-	await tween.finished
-
-func lock():
-	modulate = Color(1.0, 0.4, 0.4)
-
-func unlock():
-	modulate = Color.WHITE

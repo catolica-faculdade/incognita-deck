@@ -26,4 +26,4 @@ func _ready():
 
 func _on_continue():
 	get_tree().paused = false
-	GameManager.end_game()
+	GameManager.return_to_map()

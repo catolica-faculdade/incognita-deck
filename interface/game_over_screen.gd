@@ -11,5 +11,4 @@ func _ready():
 
 func _on_continue():
 	get_tree().paused = false
-	GameManager.level = -1
-	GameManager.end_game()
+	GameManager.return_to_menu()

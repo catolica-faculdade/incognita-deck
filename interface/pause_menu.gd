@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const Style = preload("res://interface/ui_style.gd")
+
 var music_bus := -1
 var sfx_bus := -1
 
@@ -8,6 +10,7 @@ var music_slider: HSlider
 var sfx_slider: HSlider
 var button_continue: Button
 var button_quit: Button
+var run_info_label: Label
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -21,6 +24,12 @@ func _ready():
 	button_continue = scene.get_node("ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Button")
 	button_quit = scene.get_node("ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Button2")
 
+	var content := button_quit.get_parent()
+	run_info_label = Style.readable_label("", 17)
+	run_info_label.add_theme_color_override("font_color", Color.WHITE)
+	run_info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	content.add_child(run_info_label)
+	content.move_child(run_info_label, 1)
 	overlay.visible = false
 
 	music_bus = AudioServer.get_bus_index("Music")
@@ -42,6 +51,9 @@ func _process(_delta):
 			pause()
 
 func pause():
+	# Não sobrepor as telas de resultado, que já pausam o jogo.
+	if get_tree().paused and not overlay.visible:
+		return
 	match GameManager.current_context:
 		GameManager.Context.MAIN_MENU:
 			button_continue.visible = false
@@ -52,7 +64,18 @@ func pause():
 		GameManager.Context.COMBAT:
 			button_continue.visible = true
 			button_quit.visible = true
+		_:
+			button_continue.visible = true
+			button_quit.visible = true
 
+	run_info_label.text = ""
+	if GameManager.current_context == GameManager.Context.COMBAT:
+		var battle := get_tree().current_scene
+		if is_instance_valid(battle) and battle.has_method("get_pause_details"):
+			run_info_label.text = battle.get_pause_details()
+	elif GameManager.current_context == GameManager.Context.MAP:
+		run_info_label.text = "Etapa %d/7 • Modo %s" % [mini(GameManager.level + 1, 7), "Difícil" if GameManager.hard_mode else "Normal"]
+	run_info_label.visible = not run_info_label.text.is_empty()
 	overlay.visible = true
 	get_tree().paused = true
 
@@ -72,9 +95,7 @@ func _on_continue_pressed():
 func _on_quit_pressed():
 	overlay.visible = false
 	get_tree().paused = false
-	GameManager.level = 0
-	GameManager.player_health = GameManager.max_player_health
 	call_deferred("_change_to_main")
 
 func _change_to_main():
-	get_tree().change_scene_to_file("res://main/main.tscn")
+	GameManager.return_to_menu()
