@@ -17,6 +17,8 @@ const PROJECTILE_ACCELERATION_TIME := (PROJECTILE_MAX_SPEED - PROJECTILE_INITIAL
 const PROJECTILE_ACCELERATION_DISTANCE := (PROJECTILE_INITIAL_SPEED + PROJECTILE_MAX_SPEED) * 0.5 * PROJECTILE_ACCELERATION_TIME
 const TURN_MIRROR_SLOTS := [Vector2(350, -258), Vector2(553, -319), Vector2(746, -307), Vector2(940, -280)]
 const MIRROR_LIMIT := 4
+const MIRROR_MIN_TURNS := 4
+const MIRROR_MAX_TURNS := 12
 enum Phase { SETUP, PLAYER, RESOLVING, ENEMIES, FINISHED }
 var phase := Phase.SETUP
 var formula = Formula.new()
@@ -24,7 +26,9 @@ var current_enemies: Array = []
 var trajectory_contacts: Array[Dictionary] = []
 var trajectory_points := PackedVector2Array()
 var mirror_segments: Array[PackedVector2Array] = []
-var turn_mirror_drawings: Array[Node2D] = []
+var fixed_mirror_count := 0
+var turn_mirrors: Array[Dictionary] = []
+var mirror_rng := RandomNumberGenerator.new()
 var preview_shot: Sprite2D
 var player: Node2D
 var trajectory: Line2D
@@ -57,6 +61,8 @@ func _ready() -> void:
 	trajectory.add_child(preview_shot)
 	for segment: PackedVector2Array in spec.get("mirrors", []):
 		_register_mirror(segment)
+	fixed_mirror_count = mirror_segments.size()
+	mirror_rng.seed = int(spec.get("seed", GameManager.run_seed)) + 7369
 	combat_ui = combat_ui_scene.instantiate()
 	add_child(combat_ui)
 	combat_ui.end_turn_requested.connect(execute_turn_actions)
@@ -156,7 +162,7 @@ func execute_turn_actions() -> void:
 		await player.play_attack()
 		await _fire_projectile(points, contacts, effects, uses_spiral)
 	trajectory.clear_points()
-	_clear_turn_mirrors()
+	_tick_turn_mirrors()
 	player.finish_turn()
 	combat_ui.update_equation("y = 0")
 	if await _finish_if_needed():
@@ -243,7 +249,9 @@ func _place_turn_mirror() -> void:
 			continue
 		var segment := PackedVector2Array([start, finish])
 		_register_mirror(segment)
-		turn_mirror_drawings.append(Builder.draw_mirror(scenario_container, segment))
+		var turns := mirror_rng.randi_range(MIRROR_MIN_TURNS, MIRROR_MAX_TURNS)
+		var drawing := Builder.draw_mirror(scenario_container, segment, turns)
+		turn_mirrors.append({"turns": turns, "drawing": drawing})
 		return
 
 func _mirror_space_is_clear(start: Vector2, finish: Vector2) -> bool:
@@ -260,11 +268,16 @@ func _mirror_space_is_clear(start: Vector2, finish: Vector2) -> bool:
 			return false
 	return true
 
-func _clear_turn_mirrors() -> void:
-	mirror_segments.resize(mirror_segments.size() - turn_mirror_drawings.size())
-	for drawing in turn_mirror_drawings:
-		drawing.queue_free()
-	turn_mirror_drawings.clear()
+func _tick_turn_mirrors() -> void:
+	for i in range(turn_mirrors.size() - 1, -1, -1):
+		var mirror := turn_mirrors[i]
+		mirror.turns -= 1
+		if mirror.turns > 0:
+			mirror.drawing.get_node("Caption").text = Builder.mirror_caption(mirror.turns)
+		else:
+			mirror.drawing.queue_free()
+			turn_mirrors.remove_at(i)
+			mirror_segments.remove_at(fixed_mirror_count + i)
 
 func _move_projectile(position_projectile: Callable, from: float, to: float) -> void:
 	if to > from:

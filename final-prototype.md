@@ -41,7 +41,8 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 - **Campanha.** O Plano Cartesiano tem seis etapas e termina no Professor. Sala de Aula tem sete e termina nos Alunos. Diretoria tem oito e termina no Diretor. O ENEM é a 22ª etapa e acontece fora do mapa. Vida e baralho, incluindo a recompensa do chefe, continuam na transição. Cada mundo tem quatro inimigos comuns exclusivos e usa uma tonalidade própria no papel do mapa e da arena.
 - **Pool de Elites.** Sentinela e Alquimista no Plano Cartesiano. Tesoura, Compasso e Sentinela na Sala de Aula. Relógio, Compasso e Alquimista na Diretoria. Todo nó Elite reserva uma vaga a um deles. Esse inimigo recebe +22% de vida (ao menos +6 HP), +2 de dano e duas intenções adicionais intercaladas com suas ações originais.
-- **Chefes e espelhos.** Compasso, Alunos, Diretor e ENEM podem posicionar espelhos para o próximo turno do jogador. O espelho temporário entra na prévia e some ao fim desse turno. A arena mantém no máximo quatro espelhos simultâneos.
+- **Chefes.** Alunos, Diretor e ENEM agem duas vezes em dois de cada três turnos. A ação extra é de defesa ou suporte e aparece abaixo da primeira intenção ao passar o mouse. O Professor age uma vez.
+- **Espelhos.** Compasso, Alunos, Diretor e ENEM podem posicionar espelhos que duram de 4 a 12 turnos do jogador. A duração é sorteada pela semente do encontro e aparece no espelho. Ele entra na prévia desde o primeiro turno e conta para o limite de quatro espelhos simultâneos na arena.
 - **Arte.** Treze sprites transparentes de inimigos em `assets/enemies/doodle/`. O jato preto e branco, em `assets/projectiles/water_doodle.png`, aponta para a direção final da prévia e gira com o disparo durante o percurso.
 
 As artes foram geradas com o ImageGen integrado e recortadas em sprites individuais. Os três pedidos de geração foram um atlas 3×3 com Lápis, Régua, Tesoura, Caderno, Compasso, Relógio, Alunos, Diretor e ENEM, um atlas 2×2 com Borracha, Clipe, Transferidor e Grampeador e um jato d'água horizontal voltado à direita com gotas atrás. Para os três, a direção visual foi contorno preto irregular de caneta, preenchimento branco, silhueta legível em tamanho reduzido, fundo transparente, sem texto ou cenário.
@@ -60,6 +61,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão dos passos 9 e 10 com renderização | 11.774 verificações, zero falhas. Inclui a garantia de inimigo difícil, a expiração do espelho e a campanha completa |
 | Regressão do ajuste da Espiral | 11.745 verificações headless, zero falhas. Um disparo com cinco passagens aplica só três acertos e limita os efeitos |
 | Regressão da aceleração do projétil | 11.751 verificações headless, zero falhas. Inclui continuidade após acertos, limite de velocidade e posição ao longo da trajetória |
+| Regressão dos turnos de chefes e da duração de espelhos | 11.801 verificações headless, zero falhas. Inclui ordem das ações, efeitos por turno e expiração independente dos espelhos temporários |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

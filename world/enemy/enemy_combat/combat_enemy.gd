@@ -26,6 +26,7 @@ var start_position: Vector2
 var is_attacking := false
 var flip_on_attack := false
 var planned_action := "attack"
+var planned_follow_up := ""
 var rng := RandomNumberGenerator.new()
 var enemy_seed := 1
 var difficulty_tier := 1
@@ -88,7 +89,11 @@ func plan_next_action() -> void:
 		planned_action = "pressure"
 	else:
 		planned_action = choose_action()
+	planned_follow_up = choose_follow_up(planned_action)
 	_refresh_hud()
+
+func choose_follow_up(_first: String) -> String:
+	return ""
 
 func action_turn() -> int:
 	if not elite_unit:
@@ -97,7 +102,13 @@ func action_turn() -> int:
 	return floori(turns_taken / 6.0) * 4 + slot - int(slot > 2)
 
 func intent_text() -> String:
-	match planned_action:
+	var first := _action_text(planned_action)
+	if planned_follow_up.is_empty():
+		return first
+	return "%s\nDepois: %s" % [first, _action_text(planned_follow_up)]
+
+func _action_text(action: String) -> String:
+	match action:
 		"attack": return "Ataque %d" % (base_damage + strength)
 		"heavy": return "Ataque forte %d" % ((base_damage + strength) * 2)
 		"drain": return "Drenar %d + cura" % (base_damage + strength)
@@ -112,7 +123,7 @@ func intent_text() -> String:
 		"mirror": return "Posiciona um espelho"
 		"fortify": return "Escudo +%d e Força +2" % apply_defend
 		"pressure": return "Ataque %d e Fraqueza" % (base_damage + strength)
-	return planned_action
+	return action
 
 func take_turn() -> void:
 	if not check_is_alive():
@@ -125,7 +136,18 @@ func take_turn() -> void:
 		if not check_is_alive():
 			return
 	_refresh_hud()
-	match planned_action:
+	await _take_action(planned_action)
+	if not planned_follow_up.is_empty() and check_is_alive():
+		var player := get_tree().get_first_node_in_group("Player")
+		if is_instance_valid(player) and player.check_is_alive():
+			await _take_action(planned_follow_up)
+	vulnerable = maxi(vulnerable - 1, 0)
+	turns_taken += 1
+	if check_is_alive():
+		plan_next_action()
+
+func _take_action(action: String) -> void:
+	match action:
 		"attack": await attack()
 		"heavy": await _attack_player(false, 2)
 		"drain":
@@ -158,10 +180,6 @@ func take_turn() -> void:
 			var player := get_tree().get_first_node_in_group("Player")
 			if is_instance_valid(player) and player.check_is_alive():
 				player.receive_weak(1)
-	vulnerable = maxi(vulnerable - 1, 0)
-	turns_taken += 1
-	if check_is_alive():
-		plan_next_action()
 
 func attack() -> void:
 	await _attack_player(false)

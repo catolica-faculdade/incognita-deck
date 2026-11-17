@@ -63,7 +63,9 @@ Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Ext
 
 Cada encontro comum reúne 2 a 4 inimigos da lista do mundo. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. Todo Elite contém um inimigo difícil da lista do mundo, com 22% de HP extra (mínimo de 6), +2 de dano e ações extras. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
 
-Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos para o próximo turno do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
+Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos com duração sorteada de 4 a 12 turnos do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
+
+Alunos, Diretor e ENEM têm duas ações em dois de cada três turnos. A ação adicional é de defesa ou suporte. As intenções são anunciadas na ordem de execução. O Professor age uma vez por turno.
 
 O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na run. Entrar em um nó ou retornar da recompensa não muda os encontros restantes. É impossível selecionar um nó bloqueado usando apenas o ID. A semente exibida permite reproduzir o mapa pela API `GameManager.prepare_run(modo, semente)` em testes.
 

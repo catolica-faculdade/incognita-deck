@@ -117,10 +117,11 @@ func _score_play(battle: Node, cards: Array) -> float:
 			if damage + enemy.poison_amount >= enemy.health:
 				value += 20.0
 				continue
-		match enemy.planned_action:
-			"attack", "drain": incoming += enemy.base_damage + enemy.strength
-			"heavy": incoming += (enemy.base_damage + enemy.strength) * 2
-			"poison": value += effects.cleanse * 0.5
+		for action in [enemy.planned_action, enemy.planned_follow_up]:
+			match action:
+				"attack", "drain", "pressure": incoming += enemy.base_damage + enemy.strength
+				"heavy": incoming += (enemy.base_damage + enemy.strength) * 2
+				"poison": value += effects.cleanse * 0.5
 	value += mini(effects.shield, incoming) * 1.5
 	if incoming > 0:
 		value += effects.thorns * 1.5

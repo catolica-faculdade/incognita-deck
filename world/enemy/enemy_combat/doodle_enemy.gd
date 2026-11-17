@@ -11,9 +11,9 @@ const PROFILES := {
 	"scissors": {"name":"Tesoura", "hp":30, "damage":8, "actions":["attack", "heavy", "defend", "weak", "charge"]},
 	"compass": {"name":"Compasso", "hp":33, "damage":8, "actions":["mirror", "attack", "guard_all", "heavy", "weak"]},
 	"clock": {"name":"Relógio", "hp":35, "damage":9, "actions":["charge", "attack", "heavy", "defend", "weak"]},
-	"students": {"name":"Alunos", "hp":66, "damage":8, "actions":["guard_all", "mirror", "attack", "heal_all", "heavy"], "boss":true},
-	"principal": {"name":"Diretor", "hp":80, "damage":9, "actions":["defend", "mirror", "pressure", "guard_all", "heavy"], "boss":true},
-	"exam": {"name":"ENEM", "hp":96, "damage":9, "actions":["mirror", "weak", "attack", "heavy", "guard_all", "pressure"], "boss":true}
+	"students": {"name":"Alunos", "hp":66, "damage":8, "actions":["guard_all", "mirror", "attack", "heal_all", "heavy"], "boss":true, "support":"guard_all"},
+	"principal": {"name":"Diretor", "hp":80, "damage":9, "actions":["defend", "mirror", "pressure", "guard_all", "heavy"], "boss":true, "support":"defend"},
+	"exam": {"name":"ENEM", "hp":96, "damage":9, "actions":["mirror", "weak", "attack", "heavy", "guard_all", "pressure"], "boss":true, "support":"mirror"}
 }
 
 var archetype := ""
@@ -39,3 +39,11 @@ func choose_action() -> String:
 	if health <= max_health / 3.0 and PROFILES[archetype].get("boss", false):
 		return ["pressure", "mirror", "heavy"][turn % 3]
 	return actions[turn % actions.size()]
+
+func choose_follow_up(first: String) -> String:
+	var support: String = PROFILES[archetype].get("support", "")
+	if support.is_empty() or turns_taken % 3 == 2:
+		return ""
+	if first != support:
+		return support
+	return "guard_all" if first == "defend" else "defend"

@@ -32,6 +32,7 @@ func _run() -> void:
 	await _test_legacy_scenes()
 	await _test_generated_enemies()
 	await _test_hard_enemy_turn()
+	await _test_boss_actions()
 	await _test_pointer_input()
 	await _test_symbol_hud()
 	await _test_hover_and_pause()
@@ -524,6 +525,7 @@ func _test_hard_enemy_turn() -> void:
 	GameManager.prepare_run(false, 17)
 	var spec := Generator.encounter({"seed":17, "world":1, "tier":3, "kind":"elite"})
 	spec.enemies = [enemy_data]
+	spec.mirrors = [PackedVector2Array([Vector2(800, -295), Vector2(850, -245)])]
 	GameManager.current_encounter = spec
 	await _show_scene("res://world/battle_system/battle_system.tscn")
 	var ordinary = get_tree().get_nodes_in_group("enemies")[0]
@@ -548,13 +550,51 @@ func _test_hard_enemy_turn() -> void:
 	elite.turns_taken = 0
 	elite.plan_next_action()
 	await battle.execute_turn_actions()
-	check(battle.mirror_segments.size() == 1, "inimigo coloca espelho para o próximo disparo")
+	check(battle.mirror_segments.size() == 2 and battle.turn_mirrors.size() == 1, "inimigo coloca espelho sem remover o fixo")
+	var duration: int = battle.turn_mirrors[0].turns
+	check(duration >= 4 and duration <= 12, "espelho inimigo dura entre quatro e doze turnos")
 	battle.rebuild_cards_formula([Catalog.get_card(1)])
 	check(battle.preview_shot.visible and battle.preview_shot.texture == battle.WATER_SHOT,
 		"prévia exibe o símbolo de água")
 	await _capture("campaign-elite-compass.png")
 	await battle.execute_turn_actions()
-	check(battle.mirror_segments.is_empty(), "espelho inimigo expira após o turno do jogador")
+	check(battle.turn_mirrors[0].turns == duration - 1, "espelho permanece após o primeiro turno do jogador")
+	check(battle.turn_mirrors[0].drawing.get_node("Caption").text == Builder.mirror_caption(duration - 1), "espelho mostra a duração restante")
+	for turn in range(duration - 2):
+		battle._tick_turn_mirrors()
+	check(battle.turn_mirrors[0].turns == 1, "espelho fica na arena até seu último turno")
+	battle._tick_turn_mirrors()
+	check(battle.mirror_segments.size() == 1 and battle.turn_mirrors.is_empty(), "só o espelho inimigo expira")
+
+func _test_boss_actions() -> void:
+	var attacks := ["attack", "heavy", "drain", "poison", "pressure"]
+	for archetype in ["teacher", "students", "principal", "exam"]:
+		var battle = await _battle(1, false, [archetype])
+		var boss = get_tree().get_nodes_in_group("enemies")[0]
+		var doubles := 0
+		for turn in range(9):
+			boss.turns_taken = turn
+			boss.plan_next_action()
+			if boss.planned_follow_up.is_empty():
+				continue
+			doubles += 1
+			check(boss.planned_follow_up not in attacks, "ação adicional é sempre de suporte")
+			check("\nDepois:" in boss.hud.body_hover.tooltip_text, "HUD anuncia a segunda intenção")
+		check(doubles == (0 if archetype == "teacher" else 6), "chefe age duas vezes em dois de cada três turnos após o primeiro mundo")
+		if archetype == "teacher":
+			continue
+		boss.turns_taken = 0
+		boss.planned_action = "attack"
+		boss.planned_follow_up = "defend"
+		boss.poison_amount = 2
+		boss.vulnerable = 2
+		var hp: int = battle.player.health
+		var boss_hp: int = boss.health
+		await boss.take_turn()
+		check(boss.shield == boss.apply_defend and battle.player.health == hp - boss.base_damage,
+			"defesa e ataque anunciados são executados no mesmo turno")
+		check(boss.turns_taken == 1 and boss.health == boss_hp - 2 and boss.vulnerable == 1,
+			"veneno e vulnerabilidade avançam uma vez no turno de duas ações")
 
 func _test_spiral_preview() -> void:
 	var battle = await _battle()

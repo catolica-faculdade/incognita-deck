@@ -59,7 +59,10 @@ static func build(spec: Dictionary) -> Node2D:
 static func has_archetype(id: String) -> bool:
 	return ENEMY_SCENES.has(id) or Doodle.PROFILES.has(id)
 
-static func draw_mirror(arena: Node2D, segment: PackedVector2Array) -> Node2D:
+static func mirror_caption(turns: int) -> String:
+	return "Espelho · %d" % turns if turns > 0 else "Espelho"
+
+static func draw_mirror(arena: Node2D, segment: PackedVector2Array, turns: int = 0) -> Node2D:
 	var outline := Line2D.new()
 	outline.points = segment
 	outline.width = 10.0
@@ -72,7 +75,8 @@ static func draw_mirror(arena: Node2D, segment: PackedVector2Array) -> Node2D:
 	glass.default_color = Color("bdefff")
 	glass.antialiased = true
 	outline.add_child(glass)
-	var label := Style.readable_label("Espelho", 14)
+	var label := Style.readable_label(mirror_caption(turns), 14)
+	label.name = "Caption"
 	label.size.x = 88
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.position = Vector2((segment[0].x + segment[1].x) * 0.5 - label.size.x * 0.5, minf(segment[0].y, segment[1].y) - 24)
