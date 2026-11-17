@@ -20,6 +20,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 ## Painel de mensagens
 
 - As instruções e os efeitos das cartas preparadas, como veneno e escudo, aparecem num painel de papel no canto superior direito.
+- O painel ajusta sua altura ao conteúdo desde a abertura do combate, inclusive antes da primeira carta preparada.
 - Em **Fim do turno**, o painel mostra dois espaços em formato de carta. O símbolo `+` indica um espaço disponível e a marca verde com `✓` confirma cada carta escolhida para manter.
 
 ## Campanha e entrega

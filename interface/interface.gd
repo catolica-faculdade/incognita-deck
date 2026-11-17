@@ -115,8 +115,16 @@ func _build_ui() -> void:
 	root.add_child(view_deck)
 
 func _build_message_panel() -> void:
+	var corner := VBoxContainer.new()
+	corner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(corner)
+	corner.anchor_left = 1.0
+	corner.anchor_right = 1.0
+	corner.offset_left = -MESSAGE_PANEL_WIDTH - 16.0
+	corner.offset_right = -16.0
+	corner.offset_top = 10.0
+
 	message_panel = PanelContainer.new()
-	message_panel.custom_minimum_size.x = MESSAGE_PANEL_WIDTH
 	message_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var paper := StyleBoxFlat.new()
 	paper.bg_color = Color("fffcf3")
@@ -131,7 +139,7 @@ func _build_message_panel() -> void:
 	paper.set_content_margin(SIDE_TOP, 10)
 	paper.set_content_margin(SIDE_BOTTOM, 12)
 	message_panel.add_theme_stylebox_override("panel", paper)
-	root.add_child(message_panel)
+	corner.add_child(message_panel)
 
 	var content := VBoxContainer.new()
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -175,7 +183,6 @@ func _layout() -> void:
 	drop_zone.size = Vector2(dimensions.x - 340, dimensions.y - 348)
 	played_container.position = Vector2(roundf((dimensions.x - 672) * 0.5), dimensions.y - 424)
 	played_container.size = Vector2(672, 196)
-	message_panel.position = Vector2(dimensions.x - MESSAGE_PANEL_WIDTH - 16, 10)
 	hand_panel.position = Vector2(0, dimensions.y - 216)
 	hand_panel.size = Vector2(dimensions.x, 216)
 	var hand_width := maxf(dimensions.x - 480, 1.0)
@@ -332,7 +339,6 @@ func _refresh_message_panel() -> void:
 			var filled := i < retained_cards.size()
 			slot.text = "✓" if filled else "+"
 			slot.add_theme_stylebox_override("normal", filled_slot_style if filled else empty_slot_style)
-		message_panel.reset_size()
 		return
 	var effects: Dictionary = Effects.aggregate(selection.cards_data())
 	var parts: Array[String] = []
@@ -341,7 +347,6 @@ func _refresh_message_panel() -> void:
 			parts.append({"heal":"Cura", "shield":"Escudo", "poison":"Veneno nos alvos", "damage":"Dano extra"}[key] + " +%d" % effects[key])
 	message_title.text = "Preparar jogada" if parts.is_empty() else "Efeitos da jogada"
 	effect_label.text = "Arraste cartas para a área de preparo." if parts.is_empty() else "\n".join(parts)
-	message_panel.reset_size()
 
 func update_equation(text: String) -> void:
 	equation_label.text = text

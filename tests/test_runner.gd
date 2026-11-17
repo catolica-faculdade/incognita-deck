@@ -421,6 +421,9 @@ func _test_retained_hand() -> void:
 	check(hand.size() == 5, "mão inicial de cinco cartas")
 	check(is_equal_approx(ui.message_panel.get_global_rect().end.x, get_viewport().get_visible_rect().end.x - 16),
 		"mensagens ficam no canto superior direito")
+	check(ui.message_panel.visible and ui.message_title.text == "Preparar jogada" and ui.message_panel.size.y < 150.0,
+		"painel já abre compacto antes de preparar a primeira carta")
+	await _capture("final-prototype-first-turn.png")
 	ui.end_turn_button.pressed.emit()
 	check(ui.retention_row.visible and ui.retention_slots[0].text == "+" and ui.retention_slots[1].text == "+",
 		"dois espaços vazios indicam a capacidade de retenção")
