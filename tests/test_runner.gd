@@ -864,9 +864,13 @@ func _test_checkpoint() -> void:
 	await get_tree().scene_changed
 	check(GameManager.pending_rewards == offered and GameManager.visited_nodes == [node_id],
 		"retomada da recompensa preserva ofertas e não repete o combate")
-	get_tree().current_scene._choose(offered[0].id)
-	await get_tree().scene_changed
-	check(GameManager.run_deck.size() == Catalog.STARTER_DECK.size() + 1, "recompensa retomada é adicionada uma vez")
+	var reward_screen := get_tree().current_scene
+	for i in range(3):
+		check("[%d]" % (i + 1) in reward_screen.choice_buttons[i].text, "botão exibe o atalho da recompensa")
+	await _press_key(KEY_KP_2)
+	check(GameManager.run_deck.size() == Catalog.STARTER_DECK.size() + 1 and GameManager.run_deck[-1] == offered[1].id,
+		"atalho escolhe a segunda recompensa retomada uma vez")
+	await get_tree().process_frame
 	GameManager.begin_run(false, 17)
 	await get_tree().scene_changed
 	GameManager.select_map_node(GameManager.available_nodes[0])

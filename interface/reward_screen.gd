@@ -2,6 +2,8 @@ extends CanvasLayer
 
 const Style = preload("res://interface/ui_style.gd")
 const CARD_SCENE = preload("res://card/card.tscn")
+const CHOICE_KEYS := [KEY_1, KEY_2, KEY_3]
+const KEYPAD_CHOICE_KEYS := [KEY_KP_1, KEY_KP_2, KEY_KP_3]
 var choice_buttons: Array = []
 var offered_cards: Array = []
 var chosen := false
@@ -41,13 +43,24 @@ func _ready() -> void:
 		rarity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		rarity.add_theme_color_override("font_color", Color("755325"))
 		column.add_child(rarity)
-		var button := Style.button("Escolher", _choose.bind(int(data.id)))
+		var button := Style.button("Escolher  [%d]" % (choice_buttons.size() + 1), _choose.bind(int(data.id)))
 		column.add_child(button)
 		choice_buttons.append(button)
 	var footer := Style.label("%d cartas • HP %d/%d • %s" % [GameManager.get_run_deck().size(), GameManager.player_health, GameManager.max_player_health, "Difícil" if GameManager.hard_mode else "Normal"], 16)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(footer)
 	content.add_child(Style.button("Pular", _choose.bind(-1)))
+
+func _input(event: InputEvent) -> void:
+	if chosen or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	var index := CHOICE_KEYS.find(event.keycode)
+	if index == -1:
+		index = KEYPAD_CHOICE_KEYS.find(event.keycode)
+	if index < 0 or index >= choice_buttons.size():
+		return
+	get_viewport().set_input_as_handled()
+	choice_buttons[index].pressed.emit()
 
 func _choose(card_id: int) -> void:
 	if chosen or not GameManager.claim_reward(card_id):
