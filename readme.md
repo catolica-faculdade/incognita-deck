@@ -47,7 +47,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 2. Clique em iniciar e escolha **Normal** ou **Difícil** antes de cada run. Difícil esconde as ilustrações das cartas e mantém fórmulas, alvos e custos.
 3. No mapa, escolha um nó disponível. Os encontros têm dificuldades sorteadas e composições geradas. Apenas rotas adjacentes ficam disponíveis.
 4. Arraste cartas para a área de preparo acima da mão para montar trajetória e efeitos. O número amarelo é o custo em energia. Devolva cartas ou use **Limpar** para desfazer.
-5. **Fim do turno** confirma a jogada. Efeitos ofensivos precisam acertar os inimigos para serem efetivados, demais efeitos de cura e bloqueio afetam o player independente disso.
+5. Clique em **Fim do turno**, selecione até duas cartas da mão para descartar e clique em **Continuar**. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
 6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. O chefe da sétima etapa encerra a jornada.
 
 *Obs*: Use **Ver baralho** para revisar suas cartas e **Esc** para pausar. O modo difícil também vale nas recompensas e na visualização do baralho.
@@ -57,20 +57,20 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - O objetivo é derrotar os inimigos de cada combate, avançar pelo mapa e vencer o Professor na sétima etapa.
 - O jogador inicia a tentativa com **80 de vida** e possui **5 pontos de energia por turno**. A energia é restaurada no início de cada turno e não acumula entre turnos.
 - Cada carta possui um custo em energia. Combine cartas para montar uma trajetória que atinja os inimigos, ou utilize efeitos para auxiliar o personagem.
-- Ao selecionar **Fim do turno**, a jogada é confirmada e os inimigos sobreviventes realizam suas ações. As cartas jogadas e as que permaneceram na mão são descartadas, e uma nova mão é comprada no próximo turno.
+- As cartas jogadas e os descartes opcionais vão para a pilha de descarte. As demais cartas ficam na mão. No início do turno, compre até seis cartas, respeitando o limite de 12. Os descartes opcionais não consomem energia nem dão compra imediata.
 - O combate termina em vitória quando todos os inimigos são derrotados. Caso a vida do jogador chegue a zero, a tentativa termina em derrota.
 - A vida restante é mantida entre combates. Os nós de descanso recuperam **24 de vida**, sem ultrapassar o máximo de 80.
 - Ao vencer um combate, escolha uma carta para adicionar ao baralho durante a tentativa, ou pule a recompensa.
-- Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida e escudo. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
+- Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida, escudo e próxima ação. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
 
 ## Conteúdo
 
 - 30 cartas: deslocamentos, parábolas, ondas, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
-- Baralho inicial de 12 cartas; compra de 5 por turno, descarte de toda a mão, embaralhamento quando a compra esgota e recompensas persistentes durante a run.
+- Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
 - Mapa de 7 etapas com bifurcações, descanso, encontros comuns, elite e chefe. Cada semente conserva suas opções durante a partida.
 - 8 arquétipos de inimigos, com comportamentos próprios, estratégias próprias e atributos escalados pela dificuldade do encontro.
 
-O **GDD atualizado** deve ser consultado pelo link indicado a seguir: **[INSERIR LINK DO GDD ATUALIZADO ANTES DA ENTREGA]**.
+As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.
 
 As regras, valores e pontos para avaliação estão em [docs/new-content.md](docs/new-content.md). O documento da reestruturação anterior foi mantido como histórico.
 
@@ -115,6 +115,6 @@ Na raiz do projeto, informe o caminho do Godot se ele não estiver no PATH:
 ./tests/run_tests.ps1 -Godot 'C:/caminho/Godot_console.exe' -Playtest
 ```
 
-A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, efeitos, entrada de mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, sem alterar HP ou eliminar inimigos artificialmente.
+A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, projétil, descarte opcional com mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, duas em cada modo e sem alterar HP ou eliminar inimigos artificialmente.
 
 O wrapper retorna falha também se o Godot emitir erros de script/runtime, mesmo quando o processo da engine retorna 0. Testes e documentação ficam excluídos dos presets de exportação.

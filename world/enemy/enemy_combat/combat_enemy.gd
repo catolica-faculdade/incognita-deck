@@ -258,6 +258,7 @@ func _refresh_hud() -> void:
 	hud.update_shield(shield)
 	hud.update_poison(poison_amount)
 	hud.update_name(combat_name if not combat_name.is_empty() else display_name)
+	hud.update_intent(intent_text())
 
 func _play_sound(node_name: String) -> void:
 	var sound := get_node_or_null(node_name) as AudioStreamPlayer

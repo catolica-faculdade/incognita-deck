@@ -116,6 +116,10 @@ func update_shield(amount: int) -> void:
 func update_name(enemy_name: String) -> void:
 	name_label.text = enemy_name
 
+func update_intent(intent: String) -> void:
+	body_hover.tooltip_text = "Próxima ação: " + intent
+	health_bar.tooltip_text = body_hover.tooltip_text
+
 func update_poison(amount: int) -> void:
 	poison_marker.visible = amount > 0
 	poison_label.text = str(amount)

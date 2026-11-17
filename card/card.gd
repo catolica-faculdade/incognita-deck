@@ -4,6 +4,7 @@ signal card_played(card)
 signal card_removed(card)
 signal card_hovered
 signal card_exited
+signal discard_selected(card)
 
 const Catalog = preload("res://card/card_database.gd")
 const Style = preload("res://interface/ui_style.gd")
@@ -24,6 +25,7 @@ var interaction_enabled := false
 var is_played := false
 var hard_mode := false
 var dragging := false
+var can_select_discard := false
 var drag_offset := Vector2.ZERO
 var original_position := Vector2.ZERO
 var drop_zone: Control
@@ -145,6 +147,10 @@ func set_affordable(affordable: bool) -> void:
 	modulate = Color.WHITE if affordable or is_played else Color(0.65, 0.65, 0.65)
 
 func _gui_input(event: InputEvent) -> void:
+	if can_select_discard and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		discard_selected.emit(self)
+		accept_event()
+		return
 	if not interaction_enabled:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -184,9 +190,10 @@ func return_to_slot() -> void:
 	z_index = 0
 
 func _on_hover() -> void:
-	if interaction_enabled and not dragging:
+	if not dragging:
 		z_index = 10
-		card_hovered.emit()
+		if interaction_enabled:
+			card_hovered.emit()
 
 func _on_exit() -> void:
 	if not dragging:

@@ -5,7 +5,8 @@ func _run() -> void:
 	Engine.time_scale = 40.0
 	var wins := 0
 	for seed_value in [17, 42, 991, 12345]:
-		GameManager.prepare_run(false, seed_value)
+		var hard: bool = seed_value in [42, 12345]
+		GameManager.prepare_run(hard, seed_value)
 		await _show_scene("res://world/map/procedural_map.tscn")
 		var rooms := 0
 		var turns := 0
@@ -36,7 +37,7 @@ func _run() -> void:
 			rooms += 1
 		if GameManager.run_complete:
 			wins += 1
-		print("PLAYTEST seed=%d salas=%d turnos=%d HP=%d venceu=%s" % [seed_value, rooms, turns, GameManager.player_health, GameManager.run_complete])
+		print("PLAYTEST seed=%d difícil=%s salas=%d turnos=%d HP=%d venceu=%s" % [seed_value, hard, rooms, turns, GameManager.player_health, GameManager.run_complete])
 	await _clear_scene()
 	print("PLAYTEST: %d/4 vitórias, %d falhas de execução" % [wins, failures])
 	get_tree().quit(0 if failures == 0 else 1)
@@ -89,7 +90,8 @@ func _score_play(battle: Node, cards: Array) -> float:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if not enemy.check_is_alive():
 			continue
-		var hits := Targeting.hits(points, enemy.global_position, battle.lock_distance)
+		var center: Vector2 = battle.scenario_container.to_global(enemy.start_position)
+		var hits := Targeting.hits(points, center, battle.lock_distance)
 		var damage: int = battle.player.attack_damage(battle.player_damage + int(effects.damage))
 		if enemy.vulnerable > 0 or effects.vulnerable > 0:
 			damage = int(damage * 1.5)

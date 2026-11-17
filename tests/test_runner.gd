@@ -35,6 +35,8 @@ func _run() -> void:
 	await _test_hover_and_pause()
 	await _test_enemy_names()
 	await _test_deck_viewer()
+	await _test_retained_hand()
+	await _test_projectile_contacts()
 	await _test_effect_resolution()
 	await _test_status_and_intents()
 	await _test_freed_enemy_during_turn()
@@ -87,6 +89,9 @@ func _test_selection_and_formula() -> void:
 	var line := PackedVector2Array([Vector2.ZERO, Vector2(100, 0)])
 	check(Targeting.hits(line, Vector2(50, 65), 65), "raio inclusivo")
 	check(not Targeting.hits(line, Vector2(50, 66), 65), "fora do raio")
+	var path := PackedVector2Array([Vector2.ZERO, Vector2(50, 0), Vector2(100, 0), Vector2(50, 0)])
+	var contacts := Targeting.contacts(path, Vector2(50, 0), 10.0)
+	check(contacts == PackedFloat32Array([40.0, 140.0]), "contato contínuo conta uma vez e reentrada volta a acertar")
 	var effects := Effects.aggregate([Catalog.get_card(16), Catalog.get_card(17), Catalog.get_card(18), Catalog.get_card(28)])
 	check(effects.heal == 11 and effects.shield == 15 and effects.poison == 4, "agrega efeitos compostos")
 
@@ -406,6 +411,55 @@ func _test_deck_viewer() -> void:
 		check(not card.symbol.visible and not card.texture_rect.visible, "visualizador respeita modo difícil")
 	viewer._close()
 	check(not get_tree().paused, "fechar baralho restaura combate")
+
+func _test_retained_hand() -> void:
+	var battle = await _battle()
+	var ui = battle.combat_ui
+	var original: Array = ui.card_container.get_children()
+	check(original.size() == 6, "mão inicial de seis cartas")
+	await battle.execute_turn_actions()
+	check(ui.card_container.get_child_count() == 12, "nova compra preserva cartas e enche a mão até doze")
+	for card in original:
+		check(card.get_parent() == ui.card_container, "carta não usada permanece na mão")
+	await _capture("final-prototype-hand.png")
+	var hand: Array = ui.card_container.get_children()
+	ui.end_turn_button.pressed.emit()
+	for i in range(3):
+		var card := hand[i] as Control
+		var point := card.get_global_rect().position + Vector2(22, 55)
+		await _mouse_move(point)
+		await _mouse_button(point, true)
+		await _mouse_button(point, false)
+	check(ui.selected_discards.size() == 2 and not ui.selected_discards.has(hand[2]), "mouse seleciona no máximo dois descartes")
+	check(ui.selection.current_energy == 5 and ui.deck.discard_pile.is_empty(), "escolher descarte não gasta energia nem troca carta")
+	await _capture("final-prototype-discard.png")
+	ui.confirm_discard_button.pressed.emit()
+	check(ui.card_container.get_child_count() == 10 and ui.deck.discard_pile.size() == 2, "confirma dois descartes sem reposição imediata")
+	await _wait_turn(battle)
+	check(ui.card_container.get_child_count() == 12, "compra só na rodada seguinte e respeita o teto")
+
+func _test_projectile_contacts() -> void:
+	var battle = await _battle(1, false, ["cube", "cube"])
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		enemy.max_health = 100
+		enemy.health = 100
+		enemy.planned_action = "defend"
+	var ui = battle.combat_ui
+	await _set_hand(ui, [18])
+	ui._on_card_played(_card(ui, 18))
+	var first: Vector2 = battle.trajectory.to_local(enemies[0].global_position)
+	var second: Vector2 = battle.trajectory.to_local(enemies[1].global_position)
+	battle.trajectory.points = PackedVector2Array([second + Vector2(100, 0), second, first, second])
+	battle.evaluate_trajectory()
+	var contacts: Array = battle.trajectory_contacts
+	check(contacts.size() == 3, "prévia prevê duas passagens no segundo inimigo")
+	if contacts.size() == 3:
+		check(contacts[0].enemy == enemies[1] and contacts[1].enemy == enemies[0] and contacts[2].enemy == enemies[1],
+			"ordem de acerto segue a trajetória, independente da ordem dos inimigos na cena")
+	await battle.execute_turn_actions()
+	check(enemies[0].health == 81 and enemies[0].poison_amount == 3, "primeiro acerto aplica veneno integral")
+	check(enemies[1].health == 65 and enemies[1].poison_amount == 4, "segunda passagem dá dano e acrescenta um de veneno")
 
 func _test_effect_resolution() -> void:
 	var battle = await _battle()

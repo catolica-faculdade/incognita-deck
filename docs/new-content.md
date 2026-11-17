@@ -36,11 +36,11 @@ Os conceitos de bloqueio, veneno acumulado, vulnerabilidade, compra/descarte e e
 
 O baralho inicial contém 12 cartas: Avanço ×2; Elevar, Arco, Queda, Onda e Degrau ×1; Remendo ×1; Guarda ×2; Tinta tóxica e Giz afiado ×1. A run começa com 80 HP e cada turno tem 5 de energia. Os efeitos temporários são reiniciados em cada combate; HP e baralho persistem entre encontros.
 
-Em cada combate o baralho é embaralhado com a semente do encontro. A mão tem 5 cartas. Ao confirmar, tanto cartas preparadas quanto cartas não usadas vão para o descarte; ao esgotar a compra, o descarte é embaralhado. As ofertas de recompensa têm três IDs diferentes; é possível adicionar uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez, sem rerrolar ao reavaliar o resultado.
+Em cada combate o baralho é embaralhado com a semente do encontro. A mão começa com até seis cartas. Nos turnos seguintes, são compradas até seis cartas sem exceder 12 na mão. Ao confirmar a jogada, vão para o descarte as cartas preparadas e até duas cartas escolhidas da mão. Se uma compra esgotar a pilha, o descarte é embaralhado para concluir a compra. As ofertas de recompensa têm três IDs diferentes e podem incluir uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez por vitória.
 
 ## Regras dos efeitos
 
-- O ataque base causa 15 de dano a cada inimigo interceptado. Dano extra e veneno exigem uma trajetória que atinja o inimigo; não atingem automaticamente toda a sala.
+- O projétil percorre os mesmos segmentos da prévia e resolve contatos por ordem de distância percorrida. O ataque base causa 15 de dano por passagem. Uma nova passagem pelo mesmo inimigo dá dano novamente e adiciona até uma carga de cada efeito acumulável presente no ataque.
 - Escudo absorve dano normal e expira no início do próximo turno do seu dono. Perfuração ignora o escudo sem consumi-lo.
 - Veneno causa dano igual às cargas no início do turno do alvo, ignora escudo e perde uma carga. Pode se acumular. Veneno letal impede a ação do alvo.
 - Vulnerabilidade aumenta dano de ataques em 50%, inclusive no ataque que a aplica, e perde uma carga depois da ação inimiga. Não amplia o dano do veneno ou dos espinhos.
@@ -75,7 +75,7 @@ O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na
 | Sanguessuga (novo) | Drena vida com base no dano realmente causado e pressiona quando está ferida |
 | Professor | Teleporta, protege o grupo e alterna ataques/veneno; muda a sequência com menos de 50% de HP |
 
-As intenções são escolhidas antes do turno do jogador e executadas sem novo sorteio oculto. A vida, o escudo, o veneno e a vulnerabilidade são mostrados junto à intenção. Os três novos arquétipos reaproveitam a arte existente, preservando personagens em preto e branco e diferenciando-se pelo nome e comportamento; não foram produzidos sprites inéditos nesta etapa.
+As intenções são escolhidas antes do turno do jogador e executadas sem novo sorteio oculto. Passe o mouse sobre o inimigo ou a barra de vida para consultar a próxima ação. Os três novos arquétipos reaproveitam a arte existente e se diferenciam pelo nome e comportamento.
 
 ## Revisão da identidade visual
 
