@@ -79,11 +79,18 @@ A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O
 
 ## Limitações da versão atual
 
-- Não há salvamento e retomada de uma tentativa em andamento. Ao sair do jogo, não é possível continuar do mesmo ponto.
-- Os eventos aleatórios ainda não foram implementados.
 - Melhorias de cartas continuam fora do escopo da versão atual.
-- As ações principais são realizadas com o mouse. O jogo possui **Esc** para pausar, mas os demais atalhos de teclado previstos ainda não foram implementados.
 - O jogo ainda não possui tutorial interno. Utilize as orientações deste guia para iniciar e jogar.
+
+## Continuar uma run
+
+O jogo usa um slot. O menu exibe **Continuar run** quando há um progresso válido. O jogo salva automaticamente ao avançar e também oferece **Salvar run** no menu de pausa. Retomar durante um combate reinicia aquele encontro com o HP de entrada. Se a recompensa já estiver disponível, a retomada abre as mesmas cartas. Uma nova run substitui o slot. Derrota ou conclusão apagam o salvamento.
+
+## Atalhos e eventos
+
+- **E** ou **Espaço** abre a seleção de fim de turno e confirma as cartas a manter.
+- **Tab** abre e fecha o baralho no mapa e no combate. **Ctrl** alterna a revisão das cartas preparadas. **Esc** pausa.
+- Nos nós de **Evento**, o Monitor propõe uma questão de função linear. Acerte para escolher uma carta, treine em combate ou siga viagem.
 
 ## Organização
 

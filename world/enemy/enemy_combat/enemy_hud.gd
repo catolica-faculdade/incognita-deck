@@ -89,7 +89,10 @@ func _label(at: Vector2, dimensions: Vector2) -> Label:
 	return label
 
 func _update_hover() -> void:
-	var target := get_viewport().gui_get_hovered_control()
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var target := viewport.gui_get_hovered_control()
 	hover_info.visible = target == body_hover or target == health_bar
 
 func setup(current: int, maximum: int) -> void:

@@ -13,6 +13,7 @@ var checks := 0
 var failures := 0
 
 func _ready() -> void:
+	GameManager.save_path = "user://incognita-regression-%d.save" % OS.get_process_id()
 	get_tree().current_scene = null
 	_run.call_deferred()
 
@@ -48,6 +49,9 @@ func _run() -> void:
 	await _test_rewards()
 	await _test_rest()
 	await _test_navigation()
+	await _test_event()
+	await _test_checkpoint()
+	await _test_keyboard()
 	await _test_full_run()
 	await _clear_scene()
 	print("REGRESSAO: %d verificações, %d falhas" % [checks, failures])
@@ -159,7 +163,7 @@ func _test_generation() -> void:
 					check(int(next.row) == int(node.row) + 1, "rota avança uma etapa")
 					if not following.has(next_id):
 						following.append(next_id)
-				if node.kind != "rest":
+				if node.kind not in ["rest", "event"]:
 					var encounter: Dictionary = Generator.encounter(node)
 					check(encounter == Generator.encounter(node), "encontro não rerrola")
 					check(encounter.enemies.size() >= 2 and encounter.enemies.size() <= 4, "composição limitada")
@@ -807,6 +811,94 @@ func _test_navigation() -> void:
 	await get_tree().scene_changed
 	check(not GameManager.hard_mode and GameManager.player_health == 80, "menu encerra estado da run")
 
+func _test_event() -> void:
+	for event_choice in ["quiz", "combat", "skip"]:
+		GameManager.prepare_run(false, 17)
+		GameManager.map_rows[0][0].kind = "event"
+		await _show_scene("res://world/map/procedural_map.tscn")
+		check(GameManager.select_map_node("0:0:0"), "mapa abre evento do Monitor")
+		await get_tree().scene_changed
+		var screen := get_tree().current_scene
+		await _capture("campaign-monitor-event.png")
+		if event_choice == "quiz":
+			screen._answer(screen.answer)
+			await get_tree().scene_changed
+			check(GameManager.pending_rewards.size() == 3 and GameManager.victories == 0, "acerto no evento recompensa sem combate")
+			get_tree().current_scene._choose(-1)
+			await get_tree().scene_changed
+		else:
+			screen._choose(event_choice)
+			await get_tree().scene_changed
+		var expected := GameManager.Context.COMBAT if event_choice == "combat" else GameManager.Context.MAP
+		check(GameManager.current_context == expected, "evento segue a rota escolhida")
+		check(GameManager.visited_nodes.size() == (0 if event_choice == "combat" else 1), "evento conclui o nó só após o resultado")
+
+func _test_checkpoint() -> void:
+	await _show_scene("res://interface/run_setup.tscn")
+	GameManager.begin_run(true, 17)
+	await get_tree().scene_changed
+	check(GameManager.has_saved_run(), "nova run cria o slot")
+	GameManager.player_health = 53
+	var node_id: String = GameManager.available_nodes[0]
+	GameManager.select_map_node(node_id)
+	await get_tree().scene_changed
+	var encounter: Dictionary = GameManager.current_encounter.duplicate(true)
+	GameManager.player_health = 19
+	check(GameManager.save_run(), "salvamento manual atualiza o slot")
+	GameManager.return_to_menu()
+	await get_tree().scene_changed
+	check(get_tree().current_scene.resume_button.visible, "menu oferece continuar")
+	get_tree().current_scene.resume_button.pressed.emit()
+	await get_tree().scene_changed
+	check(GameManager.hard_mode and GameManager.player_health == 53 and GameManager.current_encounter == encounter,
+		"retomada reabre o mesmo combate com HP de entrada")
+	var battle := get_tree().current_scene
+	check(battle.combat_ui.turn_count == 1, "combate retomado começa no primeiro turno")
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		enemy.health = 0
+	await battle.execute_turn_actions()
+	var offered: Array = GameManager.pending_rewards.duplicate(true)
+	GameManager.return_to_menu()
+	await get_tree().scene_changed
+	GameManager.resume_run()
+	await get_tree().scene_changed
+	check(GameManager.pending_rewards == offered and GameManager.visited_nodes == [node_id],
+		"retomada da recompensa preserva ofertas e não repete o combate")
+	get_tree().current_scene._choose(offered[0].id)
+	await get_tree().scene_changed
+	check(GameManager.run_deck.size() == Catalog.STARTER_DECK.size() + 1, "recompensa retomada é adicionada uma vez")
+	GameManager.begin_run(false, 17)
+	await get_tree().scene_changed
+	GameManager.select_map_node(GameManager.available_nodes[0])
+	await get_tree().scene_changed
+	battle = get_tree().current_scene
+	battle.player.health = 0
+	await battle._finish_if_needed()
+	check(not GameManager.has_saved_run(), "derrota limpa o slot")
+
+func _press_key(code: Key) -> void:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.pressed = true
+	get_viewport().push_input(event)
+	await get_tree().process_frame
+
+func _test_keyboard() -> void:
+	var battle = await _battle()
+	var ui = battle.combat_ui
+	await _press_key(KEY_CTRL)
+	check(ui.message_title.text == "Cartas preparadas", "Ctrl abre revisão das cartas")
+	await _press_key(KEY_TAB)
+	check(get_tree().paused, "Tab abre o baralho")
+	await _press_key(KEY_TAB)
+	check(not get_tree().paused, "Tab fecha o baralho")
+	await _press_key(KEY_E)
+	check(ui.choosing_retention, "E abre a seleção do fim de turno")
+	await _press_key(KEY_SPACE)
+	if battle.phase != battle.Phase.PLAYER:
+		await _wait_turn(battle)
+	check(ui.turn_count == 2 and not ui.choosing_retention, "Espaço confirma e resolve o turno")
+
 func _test_full_run() -> void:
 	await _show_scene("res://interface/run_setup.tscn")
 	GameManager.begin_run(false, 991)
@@ -820,6 +912,9 @@ func _test_full_run() -> void:
 			await get_tree().scene_changed
 		if GameManager.current_context == GameManager.Context.REST:
 			get_tree().current_scene._heal()
+			await get_tree().scene_changed
+		if GameManager.current_context == GameManager.Context.EVENT:
+			get_tree().current_scene._choose("skip")
 			await get_tree().scene_changed
 		if GameManager.current_context == GameManager.Context.COMBAT:
 			var battle := get_tree().current_scene

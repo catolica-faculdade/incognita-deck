@@ -16,6 +16,9 @@ func _run() -> void:
 				var node_id := _choose_node()
 				GameManager.select_map_node(node_id)
 				await get_tree().scene_changed
+			if GameManager.current_context == GameManager.Context.EVENT:
+				get_tree().current_scene._choose("skip")
+				await get_tree().scene_changed
 			if GameManager.current_context == GameManager.Context.REST:
 				get_tree().current_scene._heal()
 				await get_tree().scene_changed
@@ -44,6 +47,9 @@ func _run() -> void:
 			wins += 1
 		print("PLAYTEST seed=%d difícil=%s salas=%d turnos=%d HP=%d venceu=%s" % [seed_value, hard, rooms, turns, GameManager.player_health, GameManager.run_complete])
 	await _clear_scene()
+	# O servidor de áudio libera streams em tempo real, mesmo com o playtest acelerado.
+	Engine.time_scale = 1.0
+	await get_tree().create_timer(0.3).timeout
 	print("PLAYTEST: %d/4 vitórias, %d falhas de execução" % [wins, failures])
 	get_tree().quit(0 if failures == 0 else 1)
 

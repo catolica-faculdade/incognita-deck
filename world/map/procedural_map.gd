@@ -5,7 +5,8 @@ const Generator = preload("res://core/run/run_generator.gd")
 const ICONS = {
 	"combat": preload("res://assets/map/combat_map_icon.png"),
 	"elite": preload("res://assets/map/combat_map_icon.png"),
-	"rest": preload("res://assets/map/rest_map_icon.png")
+	"rest": preload("res://assets/map/rest_map_icon.png"),
+	"event": preload("res://assets/map/question_mark_map_icon.png")
 }
 const BOSS_ICONS = {
 	"teacher": preload("res://assets/map/teacher_map_icon.png"),
@@ -43,14 +44,14 @@ func _ready() -> void:
 	legend = HBoxContainer.new()
 	legend.add_theme_constant_override("separation", 20)
 	add_child(legend)
-	for kind in ["combat", "rest", "boss"]:
+	for kind in ["combat", "rest", "event", "boss"]:
 		var icon := TextureRect.new()
 		icon.texture = _map_icon(kind)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.custom_minimum_size = Vector2(32, 32)
 		legend.add_child(icon)
-		legend.add_child(Style.label({"combat":"Combate / Elite", "rest":"Descanso", "boss":GameManager.world_info().boss}[kind], 14))
+		legend.add_child(Style.label({"combat":"Combate / Elite", "rest":"Descanso", "event":"Evento", "boss":GameManager.world_info().boss}[kind], 14))
 	footer = Style.label("Siga os círculos de lápis. A dificuldade está abaixo de cada encontro.  •  Semente %d" % GameManager.run_seed, 13)
 	add_child(footer)
 	deck_button = Style.button("Ver baralho", _show_deck)
@@ -82,13 +83,15 @@ func _create_node(node: Dictionary) -> void:
 	icon.mouse_exited.connect(func(): if not icon.disabled: icon.modulate = Color.WHITE)
 	holder.add_child(icon)
 	node_buttons[node.id] = icon
-	var kind: String = {"combat":"Combate", "elite":"ELITE", "rest":"Descanso", "boss":GameManager.world_info().boss}[node.kind]
+	var kind: String = {"combat":"Combate", "elite":"ELITE", "rest":"Descanso", "event":"Evento", "boss":GameManager.world_info().boss}[node.kind]
 	var caption := Style.label(kind, 14)
 	caption.position = Vector2(-9, 88)
 	caption.size = Vector2(136, 26)
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	holder.add_child(caption)
 	var detail: String = "Curar ou remover" if node.kind == "rest" else Generator.TIERS[int(node.tier) - 1]
+	if node.kind == "event":
+		detail = "Monitor"
 	if node.get("mirror", false):
 		detail += " • Espelho"
 	var tier := Style.label(detail, 12)
@@ -129,6 +132,11 @@ func _select(id: String) -> void:
 
 func _show_deck() -> void:
 	add_child(load("res://interface/deck_viewer.gd").new())
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled()
+		_show_deck()
 
 func _map_icon(kind: String) -> Texture2D:
 	return BOSS_ICONS[GameManager.world_info().boss_id] if kind == "boss" else ICONS[kind]

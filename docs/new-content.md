@@ -65,6 +65,10 @@ Cada encontro comum reúne 2 a 4 inimigos da lista do mundo. Atributos escalam e
 
 Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos com duração sorteada de 4 a 12 turnos do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
 
+Alguns nós de **Evento** abrem o Desafio do Monitor. A questão e a ordem das respostas são reproduzíveis pela semente do nó. Acertar abre a oferta de cartas. Aceitar o treino abre um combate comum no mesmo nó, que é concluído após a vitória.
+
+O slot da run guarda a posição atual no mapa e o estado de entrada dos encontros. Se uma vitória já tiver sido registrada, a retomada abre a recompensa pendente com as mesmas opções.
+
 Alunos, Diretor e ENEM têm duas ações em dois de cada três turnos. A ação adicional é de defesa ou suporte. As intenções são anunciadas na ordem de execução. O Professor age uma vez por turno.
 
 O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na run. Entrar em um nó ou retornar da recompensa não muda os encontros restantes. É impossível selecionar um nó bloqueado usando apenas o ID. A semente exibida permite reproduzir o mapa pela API `GameManager.prepare_run(modo, semente)` em testes.

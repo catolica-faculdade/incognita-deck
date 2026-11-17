@@ -37,6 +37,8 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 				elif row >= 2 and roll > 0.76:
 					kind = "elite"
 					tier = mini(tier + 1, 5)
+				elif roll < 0.25:
+					kind = "event"
 			if boss:
 				tier = 3 + world
 			var node_seed := int(rng.randi())

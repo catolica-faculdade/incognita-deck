@@ -47,6 +47,12 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 As artes foram geradas com o ImageGen integrado e recortadas em sprites individuais. Os três pedidos de geração foram um atlas 3×3 com Lápis, Régua, Tesoura, Caderno, Compasso, Relógio, Alunos, Diretor e ENEM, um atlas 2×2 com Borracha, Clipe, Transferidor e Grampeador e um jato d'água horizontal voltado à direita com gotas atrás. Para os três, a direção visual foi contorno preto irregular de caneta, preenchimento branco, silhueta legível em tamanho reduzido, fundo transparente, sem texto ou cenário.
 
+## Passos 11 e 12
+
+- **Salvamento.** Um slot em `user://incognita-run.save` registra a semente, o mapa, o nó, o mundo, o modo, o HP e o baralho. A pausa permite gravar manualmente, e o menu oferece **Continuar run**. Ao retomar no combate, o encontro reinicia no turno 1 com o HP de entrada. Se houver recompensa pendente, o jogo reabre as mesmas opções. Começar outra run substitui o slot, e derrota ou conclusão encerram o salvamento.
+- **Atalhos.** E ou Espaço abre ou confirma o fim do turno. Tab abre ou fecha o baralho. Ctrl alterna a revisão das cartas preparadas. Esc pausa.
+- **Evento.** Alguns nós mostram o **Desafio do Monitor**. A função e as opções de resposta dependem da semente do nó. O jogador pode acertar o cálculo para escolher uma carta sem combate, treinar contra inimigos ou seguir.
+
 ## Validação
 
 Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 para abrir o projeto.
@@ -62,6 +68,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão do ajuste da Espiral | 11.745 verificações headless, zero falhas. Um disparo com cinco passagens aplica só três acertos e limita os efeitos |
 | Regressão da aceleração do projétil | 11.751 verificações headless, zero falhas. Inclui continuidade após acertos, limite de velocidade e posição ao longo da trajetória |
 | Regressão dos turnos de chefes e da duração de espelhos | 11.801 verificações headless, zero falhas. Inclui ordem das ações, efeitos por turno e expiração independente dos espelhos temporários |
+| Regressão dos passos 11 e 12 | 11.437 verificações com renderização, zero falhas. Inclui retomar combate ou recompensa, limpar o slot na derrota, atalhos e os três caminhos do evento |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

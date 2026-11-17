@@ -3,6 +3,7 @@ extends Control
 const Style = preload("res://interface/ui_style.gd")
 var start_button: TextureButton
 var leave_button: TextureButton
+var resume_button: Button
 var logo: TextureRect
 var settings_button: TextureButton
 var composition: VBoxContainer
@@ -31,6 +32,11 @@ func _ready() -> void:
 	start_button.name = "StartButton"
 	start_button.pressed.connect(GameManager.start_run)
 	start_center.add_child(start_button)
+	resume_button = Style.button("Continuar run", _resume_run)
+	resume_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	resume_button.custom_minimum_size.x = 240
+	resume_button.visible = GameManager.has_saved_run()
+	composition.add_child(resume_button)
 	var leave_center := CenterContainer.new()
 	composition.add_child(leave_center)
 	leave_button = _art_button(preload("res://assets/buttons/button_leave_menu.png"), preload("res://assets/buttons/button_leave_hover_menu.png"), Vector2(360, 130))
@@ -58,10 +64,16 @@ func _art_button(normal: Texture2D, hover: Texture2D, dimensions: Vector2) -> Te
 
 func _layout() -> void:
 	var dimensions := get_viewport_rect().size
-	composition.size = Vector2(600, 520)
-	composition.position = Vector2((dimensions.x - 600) * 0.5, (dimensions.y - 520) * 0.5 - 12)
+	var height := 592.0 if resume_button.visible else 520.0
+	composition.size = Vector2(600, height)
+	composition.position = Vector2((dimensions.x - 600) * 0.5, (dimensions.y - height) * 0.5 - 12)
 	settings_button.position = Vector2(dimensions.x - 112, dimensions.y - 110)
 	settings_button.size = Vector2(66, 66)
 
 func _on_config_pressed() -> void:
 	PauseMenu.pause()
+
+func _resume_run() -> void:
+	if not GameManager.resume_run():
+		resume_button.text = "Não foi possível continuar"
+		resume_button.disabled = true

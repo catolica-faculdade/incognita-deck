@@ -308,6 +308,7 @@ func _finish_if_needed() -> bool:
 	if phase == Phase.FINISHED:
 		return true
 	if not player.check_is_alive():
+		GameManager.finish_run_save()
 		phase = Phase.FINISHED
 		await player.play_death()
 		add_child(GAME_OVER.instantiate())

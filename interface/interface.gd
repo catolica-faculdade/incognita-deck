@@ -22,6 +22,7 @@ var selection = Selection.new(5)
 var deck = Deck.new()
 var turn_count := 0
 var choosing_retention := false
+var reviewing_cards := false
 var retained_cards: Array[Control] = []
 var card_container: HBoxContainer
 var played_container: HBoxContainer
@@ -105,7 +106,7 @@ func _build_ui() -> void:
 	clear_button.tooltip_text = "Limpar trajetória"
 	root.add_child(clear_button)
 	end_turn_button = Style.illustrated_button(preload("res://assets/button.png"), _on_end_turn_requested)
-	end_turn_button.tooltip_text = "Fim do turno"
+	end_turn_button.tooltip_text = "Fim do turno (E ou Espaço)"
 	root.add_child(end_turn_button)
 	confirm_keep_button = Style.button("Continuar", _confirm_retention)
 	confirm_keep_button.hide()
@@ -227,6 +228,8 @@ func create_card(data: Dictionary) -> void:
 
 func set_player_turn(enabled: bool) -> void:
 	selection.enabled = enabled
+	if not enabled:
+		reviewing_cards = false
 	end_turn_button.disabled = not enabled
 	clear_button.disabled = not enabled
 	if enabled:
@@ -340,6 +343,13 @@ func _refresh_message_panel() -> void:
 			slot.text = "✓" if filled else "+"
 			slot.add_theme_stylebox_override("normal", filled_slot_style if filled else empty_slot_style)
 		return
+	if reviewing_cards:
+		message_title.text = "Cartas preparadas"
+		var names: Array[String] = []
+		for card in selection.cards_data():
+			names.append(card.name)
+		effect_label.text = "Nenhuma carta preparada." if names.is_empty() else "\n".join(names)
+		return
 	var effects: Dictionary = Effects.aggregate(selection.cards_data())
 	var parts: Array[String] = []
 	for key in ["heal", "shield", "poison", "damage"]:
@@ -364,3 +374,22 @@ func update_player_status(status: Dictionary) -> void:
 
 func _show_deck() -> void:
 	add_child(load("res://interface/deck_viewer.gd").new())
+
+func _input(event: InputEvent) -> void:
+	if not event is InputEventKey or not event.pressed or event.echo:
+		return
+	if event.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled()
+		_show_deck()
+	elif selection.enabled:
+		match event.keycode:
+			KEY_E, KEY_SPACE:
+				get_viewport().set_input_as_handled()
+				if choosing_retention:
+					_confirm_retention()
+				else:
+					_on_end_turn_requested()
+			KEY_CTRL:
+				get_viewport().set_input_as_handled()
+				reviewing_cards = not reviewing_cards
+				_refresh_message_panel()
