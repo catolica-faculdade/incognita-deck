@@ -14,3 +14,6 @@ func choose_action() -> String:
 			if ally.check_is_alive() and ally.health < int(ally.max_health * 0.7):
 				return "heal_all"
 	return ["poison", "weak", "attack"][turn % 3]
+
+func strategy_text() -> String:
+	return "Se o grupo estiver ferido, o Alquimista anuncia cura. Concentre o dano antes que ele cure."

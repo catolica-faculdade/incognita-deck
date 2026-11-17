@@ -33,7 +33,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 - **Elite.** Entre as três opções de recompensa há pelo menos uma carta rara. O jogo identifica as raras na tela de recompensa. O jogador ainda pode escolher qualquer uma das três ou pular.
 - **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
-- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem dez voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 25% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos. A composição simultânea fica para uma etapa posterior.
+- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem quatro voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 25% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos.
 - **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
 - **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo.
 
@@ -55,6 +55,14 @@ As artes foram geradas com o ImageGen integrado e recortadas em sprites individu
 - **Recompensas pelo teclado.** Os botões indicam as teclas 1, 2 e 3 da esquerda para a direita. O teclado numérico também confirma a escolha.
 - **Evento.** Alguns nós mostram o **Desafio do Monitor**. A função e as opções de resposta dependem da semente do nó. O jogador pode acertar o cálculo para escolher uma carta sem combate, treinar contra inimigos ou seguir.
 
+## Revisão de combate e arte
+
+- O Plano Cartesiano introduz o **Alvo móvel**, que muda a altura do primeiro inimigo vivo a cada dois turnos. A Sala de Aula introduz **Espelhos**. A Diretoria acrescenta **Barreiras**, que interrompem o disparo e podem coexistir com espelhos. O mapa mostra as regras de cada nó, e a chance sobe nas etapas mais profundas.
+- Além do tier, a profundidade acrescenta 0,65% de vida por etapa já passada e +1 de dano a cada dez etapas. Os Elites mantêm seus bônus próprios.
+- Os inimigos mostram dicas estratégicas nas intenções. A Calculadora reduz o dano de composições com menos de duas cartas matemáticas, o Slime fica frágil sob veneno, o Cubo protege melhor com escudo e o Fantasma protege os outros. A Tesoura apara composições longas, o Grampeador amortece disparos fracos e a Badalada do Relógio ganha dano com o tempo.
+- Entraram quatro cartas. **Rotação** gira o caminho em 15°. **Fenda** atravessa barreiras. **Prisma** acrescenta 7 de dano com Reflexão em X ou ricochete. **Catalisador** soma 3 cargas quando a jogada já aplica veneno. A Espiral passou de dez para quatro voltas com o mesmo raio.
+- Redesenhei os 13 sprites em `assets/enemies/doodle/` com o ImageGen integrado. O pedido para os dois atlas foi preservar a ordem dos personagens, usar Cubo, Slime e Professor como referências, simplificar os olhos e a boca, igualar o traço de caneta e deixar o interior transparente para revelar o quadriculado. Os sprites foram recortados em PNGs individuais. A prévia agora marca o alvo com um losango ao lado da barra de HP, visível mesmo em sprites só de contorno.
+
 ## Validação
 
 Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 para abrir o projeto.
@@ -71,6 +79,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão da aceleração do projétil | 11.751 verificações headless, zero falhas. Inclui continuidade após acertos, limite de velocidade e posição ao longo da trajetória |
 | Regressão dos turnos de chefes e da duração de espelhos | 11.801 verificações headless, zero falhas. Inclui ordem das ações, efeitos por turno e expiração independente dos espelhos temporários |
 | Regressão dos passos 11 e 12 | 11.437 verificações com renderização, zero falhas. Inclui retomar combate ou recompensa, limpar o slot na derrota, atalhos e os três caminhos do evento |
+| Regressão da revisão de combate e arte | 11.501 verificações com renderização, zero falhas. Inclui a barreira na prévia e no disparo, Fenda, Prisma, Catalisador e as diferenças entre inimigos |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

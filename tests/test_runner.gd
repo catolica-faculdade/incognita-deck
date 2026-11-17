@@ -43,6 +43,7 @@ func _run() -> void:
 	await _test_projectile_contacts()
 	await _test_spiral_preview()
 	await _test_mirror_preview()
+	await _test_arena_combinations()
 	await _test_effect_resolution()
 	await _test_status_and_intents()
 	await _test_freed_enemy_during_turn()
@@ -98,8 +99,8 @@ func _test_selection_and_formula() -> void:
 	check(not formula.has_cards and formula.sample().size() == 1, "efeitos não inventam trajetória")
 	formula.rebuild([Catalog.get_card(2), Catalog.get_card(31), Catalog.get_card(32)])
 	var reflected_spiral: PackedVector2Array = formula.sample()
-	check(reflected_spiral.size() == 322 and reflected_spiral[1].is_equal_approx(Vector2(375, 150)),
-		"espiral de dez voltas inicia no fim da base e a reflexão inverte o eixo Y")
+	check(reflected_spiral.size() == 130 and reflected_spiral[1].is_equal_approx(Vector2(375, 150)),
+		"espiral de quatro voltas inicia no fim da base e a reflexão inverte o eixo Y")
 	check(reflected_spiral[-1].is_equal_approx(Vector2(600, 150)), "espiral termina a três unidades do seu centro")
 	formula.rebuild([Catalog.get_card(2), Catalog.get_card(32), Catalog.get_card(31)])
 	check(is_equal_approx(formula.sample()[50].y + reflected_spiral[50].y, 300.0), "ordem dos modificadores define o sentido da espiral")
@@ -121,6 +122,10 @@ func _test_selection_and_formula() -> void:
 	check(contacts == PackedFloat32Array([40.0, 140.0]), "contato contínuo conta uma vez e reentrada volta a acertar")
 	var effects := Effects.aggregate([Catalog.get_card(16), Catalog.get_card(17), Catalog.get_card(18), Catalog.get_card(28)])
 	check(effects.heal == 11 and effects.shield == 15 and effects.poison == 4, "agrega efeitos compostos")
+	check(Effects.aggregate([Catalog.get_card(36)]).poison == 0
+		and Effects.aggregate([Catalog.get_card(18), Catalog.get_card(36)]).poison == 7, "Catalisador amplifica outra carta de veneno")
+	formula.rebuild([Catalog.get_card(1), Catalog.get_card(33), Catalog.get_card(32)])
+	check(formula.sample()[-1].is_equal_approx(Vector2(600, 0).rotated(deg_to_rad(15.0))), "Rotação e Reflexão compõem em ordem")
 
 func _test_deck() -> void:
 	var deck = Deck.new()
@@ -178,6 +183,13 @@ func _test_generation() -> void:
 					check(elites == (1 if node.kind == "elite" else 0), "todo Elite contém um inimigo difícil obrigatório")
 			reachable = following
 	check(seen_archetypes.size() == 20 and elite_archetypes.size() == 5, "mapas usam 20 arquétipos, cinco reservados aos Elites")
+	check(Generator.arena_rules(0, 4, "combat", 0).shift and not Generator.arena_rules(0, 4, "combat", 0).mirror, "mundo 1 apresenta alvo móvel")
+	check(Generator.arena_rules(1, 5, "combat", 0).mirror and not Generator.arena_rules(1, 5, "combat", 0).barrier, "mundo 2 tem espelhos sem barreiras")
+	check(Generator.arena_rules(2, 6, "combat", 0).mirror and Generator.arena_rules(2, 6, "combat", 0).barrier, "mundo 3 combina espelho e barreira")
+	check(not Generator.arena_rules(2, 1, "combat", 4300).barrier and Generator.arena_rules(2, 6, "combat", 4300).barrier,
+		"barreiras ganham chance conforme a profundidade")
+	var end: Dictionary = Generator.encounter({"world":2, "row":6, "kind":"combat", "tier":1, "seed":0})
+	check(end.enemies[0].depth == 19, "escala acompanha a profundidade além do tier")
 
 func _clear_scene() -> void:
 	get_tree().paused = false
@@ -254,7 +266,7 @@ func _test_cards() -> void:
 		check(not card.symbol.visible and not card.texture_rect.visible and card.value.visible, "difícil remove toda ilustração da carta")
 		check(card.cost_label.text == str(data.energy_cost), "difícil preserva custo")
 		card.queue_free()
-	check(Catalog.CARDS.size() == 32, "32 cartas no catálogo")
+	check(Catalog.CARDS.size() == 36, "36 cartas no catálogo")
 
 func _test_legacy_scenes() -> void:
 	for filename in DirAccess.get_files_at("res://world/combat"):
@@ -606,9 +618,9 @@ func _test_spiral_preview() -> void:
 	await _set_hand(ui, [7, 18, 31])
 	ui._on_card_played(_card(ui, 7))
 	ui._on_card_played(_card(ui, 31))
-	check(battle.trajectory.points.size() == 322 and battle.trajectory.points[1].is_equal_approx(Vector2(225, 0)),
+	check(battle.trajectory.points.size() == 130 and battle.trajectory.points[1].is_equal_approx(Vector2(225, 0)),
 		"carta Espiral acrescenta a curva ao fim da prévia no combate")
-	check("Espiral (10 voltas)" in ui.equation_label.text, "HUD identifica a espiral preparada")
+	check("Espiral (4 voltas)" in ui.equation_label.text, "HUD identifica a espiral preparada")
 	await _capture("final-prototype-spiral.png")
 	ui._on_card_played(_card(ui, 18))
 	var enemy = get_tree().get_nodes_in_group("enemies")[0]
@@ -644,6 +656,48 @@ func _test_mirror_preview() -> void:
 	await _capture("final-prototype-mirror.png")
 	await battle.execute_turn_actions()
 	check(enemies[0].health == 70 and enemies[1].health == 100, "disparo usa a mesma trajetória refletida da prévia")
+
+func _test_arena_combinations() -> void:
+	var battle = await _battle(1, false, ["calculator", "slime"])
+	var ui = battle.combat_ui
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	var calculator = enemies[0]
+	var slime = enemies[1]
+	check(calculator.projectile_damage(15, {"math_cards":1}) == 10
+		and calculator.projectile_damage(15, {"math_cards":2}) == 15, "Calculadora recompensa composição matemática")
+	slime.poison_amount = 1
+	check(slime.projectile_damage(15, {}) == 19, "Slime envenenado fica mais vulnerável")
+	slime.poison_amount = 0
+	var wall := Vector2(350, -240)
+	battle.barrier_segments.append(PackedVector2Array([
+		battle.trajectory.to_local(wall - Vector2(0, 60)), battle.trajectory.to_local(wall + Vector2(0, 60))
+	]))
+	await _set_hand(ui, [1, 34])
+	ui._on_card_played(_card(ui, 1))
+	check(battle.current_enemies == [calculator] and battle.trajectory_points[-1].is_equal_approx(wall),
+		"barreira corta prévia e protege inimigo atrás")
+	check(calculator.hud.target_marker.visible and not slime.hud.target_marker.visible,
+		"HUD marca o alvo previsto mesmo com sprite transparente")
+	ui._on_card_played(_card(ui, 34))
+	check(battle.current_enemies.size() == 2, "Fenda atravessa a barreira na prévia")
+	for enemy in enemies:
+		enemy.health = 100
+		enemy.max_health = 100
+		enemy.planned_action = "defend"
+	await battle.execute_turn_actions()
+	check(calculator.health == 90 and slime.health == 85, "disparo atravessa a barreira e aplica as defesas individuais")
+	await _set_hand(ui, [1, 32, 35])
+	calculator.health = 100
+	calculator.shield = 0
+	calculator.planned_action = "defend"
+	for id in [1, 32, 35]:
+		ui._on_card_played(_card(ui, id))
+	check("Prisma: +7 dano" in ui.equation_label.text, "prévia anuncia combinação de Prisma e Reflexão")
+	battle.moving_target = true
+	var start_y: float = calculator.start_position.y
+	await battle.execute_turn_actions()
+	check(calculator.health == 78, "Prisma fortalece disparo refletido composto")
+	check(calculator.start_position.y < start_y, "a arena move o primeiro alvo entre turnos")
 
 func _test_effect_resolution() -> void:
 	var battle = await _battle()

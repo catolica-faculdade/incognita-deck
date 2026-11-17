@@ -44,10 +44,13 @@ static func build(spec: Dictionary) -> Node2D:
 		enemy.scale = Vector2(0.62, 0.62)
 		enemy.enemy_seed = int(data.seed)
 		enemy.difficulty_tier = int(data.tier)
+		enemy.run_depth = data.get("depth", 0)
 		enemy.elite_unit = data.get("elite", false)
 		arena.add_child(enemy)
 	for mirror: PackedVector2Array in spec.get("mirrors", []):
 		draw_mirror(arena, mirror)
+	for segment: PackedVector2Array in spec.get("barriers", []):
+		draw_mirror(arena, segment, 0, true)
 	var music := AudioStreamPlayer.new()
 	music.stream = preload("res://assets/music/incognita_deck_combate.mp3")
 	music.bus = &"Music"
@@ -62,20 +65,20 @@ static func has_archetype(id: String) -> bool:
 static func mirror_caption(turns: int) -> String:
 	return "Espelho · %d" % turns if turns > 0 else "Espelho"
 
-static func draw_mirror(arena: Node2D, segment: PackedVector2Array, turns: int = 0) -> Node2D:
+static func draw_mirror(arena: Node2D, segment: PackedVector2Array, turns: int = 0, barrier: bool = false) -> Node2D:
 	var outline := Line2D.new()
 	outline.points = segment
 	outline.width = 10.0
-	outline.default_color = Color("27596a")
+	outline.default_color = Color("6a482c") if barrier else Color("27596a")
 	outline.antialiased = true
 	arena.add_child(outline)
 	var glass := Line2D.new()
 	glass.points = segment
 	glass.width = 4.0
-	glass.default_color = Color("bdefff")
+	glass.default_color = Color("edbc80") if barrier else Color("bdefff")
 	glass.antialiased = true
 	outline.add_child(glass)
-	var label := Style.readable_label(mirror_caption(turns), 14)
+	var label := Style.readable_label("Barreira" if barrier else mirror_caption(turns), 14)
 	label.name = "Caption"
 	label.size.x = 88
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

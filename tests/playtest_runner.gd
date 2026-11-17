@@ -100,8 +100,13 @@ func _score_play(battle: Node, cards: Array) -> float:
 	var formula = Formula.new()
 	formula.rebuild(cards)
 	var effects: Dictionary = Effects.aggregate(cards)
+	var trace: Dictionary = battle._trace_path(formula)
+	var shot := {"math_cards": formula.math_cards, "reflected": trace.reflected or formula.reflected_by_card,
+		"curved": formula.has_quadratic() or formula.wave_enabled or formula.has_spiral, "pierce": effects.pierce > 0}
+	if shot.reflected:
+		effects.damage += effects.reflected_damage
 	var points := PackedVector2Array()
-	for point in battle.projected_path(formula):
+	for point in trace.points:
 		points.append(battle.trajectory.to_global(point))
 	var value := minf(effects.heal, 80 - battle.player.health) * 2.0
 	value += effects.strength * 5.0
@@ -113,6 +118,7 @@ func _score_play(battle: Node, cards: Array) -> float:
 		var center: Vector2 = battle.scenario_container.to_global(enemy.start_position)
 		var hits := Targeting.hits(points, center, battle.lock_distance)
 		var damage: int = battle.player.attack_damage(battle.player_damage + int(effects.damage))
+		damage = enemy.projectile_damage(damage, shot)
 		if enemy.vulnerable > 0 or effects.vulnerable > 0:
 			damage = int(damage * 1.5)
 		if effects.pierce == 0:
@@ -127,6 +133,7 @@ func _score_play(battle: Node, cards: Array) -> float:
 			match action:
 				"attack", "drain", "pressure": incoming += enemy.base_damage + enemy.strength
 				"heavy": incoming += (enemy.base_damage + enemy.strength) * 2
+				"clock_strike": incoming += enemy.base_damage + enemy.strength + mini(enemy.turns_taken, 6)
 				"poison": value += effects.cleanse * 0.5
 	value += mini(effects.shield, incoming) * 1.5
 	if incoming > 0:

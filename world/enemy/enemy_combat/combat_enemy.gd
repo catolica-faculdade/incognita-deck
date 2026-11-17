@@ -30,6 +30,7 @@ var planned_follow_up := ""
 var rng := RandomNumberGenerator.new()
 var enemy_seed := 1
 var difficulty_tier := 1
+var run_depth := 0
 var elite_unit := false
 var is_dying := false
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -44,6 +45,8 @@ func _ready() -> void:
 	rng.seed = enemy_seed
 	max_health = int(max_health * (1.0 + (difficulty_tier - 1) * 0.15))
 	base_damage += difficulty_tier - 1
+	max_health += roundi(max_health * run_depth * 0.0065)
+	base_damage += floori(run_depth / 10.0)
 	if elite_unit:
 		max_health += maxi(6, roundi(max_health * 0.22))
 		base_damage += 2
@@ -81,6 +84,12 @@ func check_is_alive() -> bool:
 func choose_action() -> String:
 	return "attack"
 
+func strategy_text() -> String:
+	return ""
+
+func projectile_damage(damage: int, _shot: Dictionary) -> int:
+	return damage
+
 func plan_next_action() -> void:
 	var slot := turns_taken % 6
 	if elite_unit and slot == 2:
@@ -114,6 +123,7 @@ func _action_text(action: String) -> String:
 		"drain": return "Drenar %d + cura" % (base_damage + strength)
 		"defend": return "Escudo +%d" % apply_defend
 		"guard_all": return "Protege todos +%d" % apply_block
+		"guard_others": return "Protege os outros +%d" % apply_block
 		"poison": return "Veneno +%d" % poison
 		"heal_all": return "Cura aliados +%d" % heal_amount
 		"heal": return "Cura +%d" % self_heal_amount
@@ -123,6 +133,8 @@ func _action_text(action: String) -> String:
 		"mirror": return "Posiciona um espelho"
 		"fortify": return "Escudo +%d e Força +2" % apply_defend
 		"pressure": return "Ataque %d e Fraqueza" % (base_damage + strength)
+		"cleanse_self": return "Remove o próprio veneno e a vulnerabilidade"
+		"clock_strike": return "Badalada %d" % (base_damage + strength + mini(turns_taken, 6))
 	return action
 
 func take_turn() -> void:
@@ -150,12 +162,14 @@ func _take_action(action: String) -> void:
 	match action:
 		"attack": await attack()
 		"heavy": await _attack_player(false, 2)
+		"clock_strike": await _attack_player(false, 1, mini(turns_taken, 6))
 		"drain":
 			var damage: int = await _attack_player(false)
 			if check_is_alive():
 				await heal(maxi(int(damage / 2.0), 1))
 		"defend": await defend()
 		"guard_all": await defend_all()
+		"guard_others": await defend_all(false)
 		"poison": await apply_poison()
 		"heal": await heal()
 		"heal_all": await apply_all_heal()
@@ -180,6 +194,11 @@ func _take_action(action: String) -> void:
 			var player := get_tree().get_first_node_in_group("Player")
 			if is_instance_valid(player) and player.check_is_alive():
 				player.receive_weak(1)
+		"cleanse_self":
+			poison_amount = 0
+			vulnerable = 0
+			_refresh_hud()
+			await play_effect_animation()
 
 func attack() -> void:
 	await _attack_player(false)
@@ -187,7 +206,7 @@ func attack() -> void:
 func apply_poison() -> void:
 	await _attack_player(true)
 
-func _attack_player(with_poison: bool, multiplier: int = 1) -> int:
+func _attack_player(with_poison: bool, multiplier: int = 1, bonus: int = 0) -> int:
 	var player = get_tree().get_first_node_in_group("Player")
 	if is_attacking or not check_is_alive() or not is_instance_valid(player):
 		return 0
@@ -203,7 +222,7 @@ func _attack_player(with_poison: bool, multiplier: int = 1) -> int:
 	if with_poison:
 		player.receive_poison(poison)
 	else:
-		dealt = await player.take_damage((base_damage + strength) * multiplier)
+		dealt = await player.take_damage((base_damage + strength) * multiplier + bonus)
 	tween = create_tween()
 	tween.tween_property(self, "position:x", start_position.x, attack_time)
 	await tween.finished
@@ -232,10 +251,10 @@ func apply_shield(amount: int) -> void:
 func defend() -> void:
 	await apply_shield(apply_defend)
 
-func defend_all() -> void:
+func defend_all(include_self: bool = true) -> void:
 	await play_effect_animation()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if is_instance_valid(enemy) and enemy.check_is_alive():
+		if is_instance_valid(enemy) and (include_self or enemy != self) and enemy.check_is_alive():
 			await enemy.apply_shield(apply_block)
 
 func apply_all_heal() -> void:
@@ -302,9 +321,11 @@ func play_effect_animation() -> void:
 
 func lock() -> void:
 	modulate = Color(1.0, 0.65, 0.65)
+	hud.target_marker.show()
 
 func unlock() -> void:
 	modulate = Color.WHITE
+	hud.target_marker.hide()
 
 func _refresh_hud() -> void:
 	if not is_instance_valid(hud):
@@ -313,7 +334,8 @@ func _refresh_hud() -> void:
 	hud.update_shield(shield)
 	hud.update_poison(poison_amount)
 	hud.update_name(combat_name if not combat_name.is_empty() else display_name)
-	hud.update_intent(intent_text())
+	var advice := strategy_text()
+	hud.update_intent(intent_text() if advice.is_empty() else intent_text() + "\n" + advice)
 
 func _play_sound(node_name: String) -> void:
 	var sound := get_node_or_null(node_name) as AudioStreamPlayer

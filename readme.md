@@ -66,7 +66,8 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 
 ## Conteúdo
 
-- 32 cartas: deslocamentos, parábolas, ondas, espiral, reflexão em X, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
+- 36 cartas, incluindo Rotação, Fenda, Prisma e Catalisador. Combine as cartas de trajetória e efeitos para lidar com as defesas dos inimigos e as regras da arena.
+- O Plano Cartesiano pode ter um alvo móvel, a Sala de Aula pode ter espelhos e a Diretoria pode combinar espelhos e barreiras. A chance sobe ao avançar em cada mundo.
 - Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
 - Três mapas ramificados e um encontro final, com vida e baralho preservados entre mundos. Cada semente reproduz seus mapas e encontros.
 - 21 arquétipos de inimigos, incluindo cinco difíceis reservados aos Elites e quatro chefes.

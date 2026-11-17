@@ -12,6 +12,10 @@ var wave_length := 0.0
 var wave_components: Array = []
 var path_operations: Array[Dictionary] = []
 var has_cards := false
+var math_cards := 0
+var passes_barriers := false
+var reflected_by_card := false
+var has_spiral := false
 
 func rebuild(cards: Array) -> void:
 	displacement = Vector2.ZERO
@@ -25,10 +29,17 @@ func rebuild(cards: Array) -> void:
 	wave_components.clear()
 	path_operations.clear()
 	has_cards = false
+	math_cards = 0
+	passes_barriers = false
+	reflected_by_card = false
+	has_spiral = false
 	for card in cards:
-		if card.get("type", "") not in ["effect", "reflection"]:
+		var type: String = card.get("type", "linear")
+		if type not in ["effect", "reflection", "rotation", "modifier"]:
 			has_cards = true
-		match card.get("type", "linear"):
+		if type not in ["effect", "modifier"]:
+			math_cards += 1
+		match type:
 			"linear", "diagonal":
 				displacement += Vector2(float(card.get("x", 0)), float(card.get("y", 0)))
 			"quadratic":
@@ -43,8 +54,12 @@ func rebuild(cards: Array) -> void:
 					frequency += float(card.get("frequency", 2.0))
 					wave_length = maxf(wave_length, float(card.get("length", 8.0)))
 					wave_components.append({"amplitude": float(card.get("amplitude", 2.0)), "frequency": float(card.get("frequency", 2.0)), "length": maxf(float(card.get("length", 8.0)), 0.01)})
-			"spiral", "reflection":
+			"spiral", "reflection", "rotation":
 				path_operations.append(card)
+				reflected_by_card = reflected_by_card or type == "reflection"
+				has_spiral = has_spiral or type == "spiral"
+			"modifier":
+				passes_barriers = true
 
 func has_quadratic() -> bool:
 	return a != 0.0 or b != 0.0 or c != 0.0
@@ -73,6 +88,9 @@ func sample(grid_unit: float = 75.0, resolution: int = 40) -> PackedVector2Array
 			"reflection":
 				for i in range(result.size()):
 					result[i] = Vector2(result[i].x, -result[i].y)
+			"rotation":
+				for i in range(result.size()):
+					result[i] = result[i].rotated(-deg_to_rad(float(operation.degrees)))
 	return result
 
 func _sample_base(grid_unit: float, resolution: int) -> PackedVector2Array:
@@ -96,8 +114,14 @@ func equation_text() -> String:
 		return "y = 0"
 	var text := _base_equation_text()
 	for operation in path_operations:
-		var label := "Espiral (%d voltas)" % operation.turns if operation.type == "spiral" else "Reflexão em X"
+		var label: String
+		match operation.type:
+			"spiral": label = "Espiral (%d voltas)" % operation.turns
+			"rotation": label = "Rotação %d°" % operation.degrees
+			_: label = "Reflexão em X"
 		text += (" → " if not text.is_empty() else "") + label
+	if passes_barriers:
+		text += " → Fenda"
 	return text
 
 func _base_equation_text() -> String:

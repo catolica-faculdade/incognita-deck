@@ -26,6 +26,9 @@ var current_enemies: Array = []
 var trajectory_contacts: Array[Dictionary] = []
 var trajectory_points := PackedVector2Array()
 var mirror_segments: Array[PackedVector2Array] = []
+var barrier_segments: Array[PackedVector2Array] = []
+var moving_target := false
+var preview_reflected := false
 var fixed_mirror_count := 0
 var turn_mirrors: Array[Dictionary] = []
 var mirror_rng := RandomNumberGenerator.new()
@@ -61,10 +64,14 @@ func _ready() -> void:
 	trajectory.add_child(preview_shot)
 	for segment: PackedVector2Array in spec.get("mirrors", []):
 		_register_mirror(segment)
+	for segment: PackedVector2Array in spec.get("barriers", []):
+		barrier_segments.append(_local_segment(segment))
+	moving_target = spec.get("shift", false)
 	fixed_mirror_count = mirror_segments.size()
 	mirror_rng.seed = int(spec.get("seed", GameManager.run_seed)) + 7369
 	combat_ui = combat_ui_scene.instantiate()
 	add_child(combat_ui)
+	combat_ui.show_arena_rule(spec.get("arena_label", ""))
 	combat_ui.end_turn_requested.connect(execute_turn_actions)
 	combat_ui.selection_changed.connect(rebuild_cards_formula)
 	combat_ui.card_hover_changed.connect(_on_card_hover_changed)
@@ -85,7 +92,7 @@ func _name_enemies() -> void:
 		var base_name: String = enemy.display_name
 		indices[base_name] = int(indices.get(base_name, 0)) + 1
 		enemy.combat_name = "%s %d" % [base_name, indices[base_name]] if counts[base_name] > 1 else base_name
-		enemy._refresh_hud()
+		enemy.plan_next_action()
 
 func can_edit_selection() -> bool:
 	return phase == Phase.PLAYER
@@ -110,16 +117,26 @@ func rebuild_cards_formula(cards: Array) -> void:
 	if not can_edit_selection():
 		return
 	formula.rebuild(cards)
-	trajectory.points = projected_path(formula)
+	var trace := _trace_path(formula)
+	trajectory.points = trace.points
+	preview_reflected = trace.reflected or formula.reflected_by_card
 	preview_shot.visible = trajectory.points.size() >= 2
 	if preview_shot.visible:
 		preview_shot.position = trajectory.points[-1]
 		preview_shot.rotation = (trajectory.points[-1] - trajectory.points[-2]).angle()
-	combat_ui.update_equation(formula.equation_text())
+	var equation: String = formula.equation_text()
+	var bonus := int(Effects.aggregate(cards).reflected_damage)
+	if preview_reflected and bonus > 0:
+		equation += "\nPrisma: +%d dano" % bonus
+	combat_ui.update_equation(equation)
 	evaluate_trajectory()
 
 func projected_path(composition: RefCounted) -> PackedVector2Array:
-	return Reflection.reflect_path(trajectory.sample_formula(composition), mirror_segments)
+	return _trace_path(composition).points
+
+func _trace_path(composition: RefCounted) -> Dictionary:
+	var barriers: Array = [] if composition.passes_barriers else barrier_segments
+	return Reflection.trace(trajectory.sample_formula(composition), mirror_segments, barriers)
 
 func evaluate_trajectory() -> void:
 	clear_target()
@@ -154,13 +171,17 @@ func execute_turn_actions() -> void:
 	var points := trajectory_points.duplicate()
 	var cards: Array = combat_ui.commit_selection()
 	var effects := Effects.aggregate(cards)
-	var uses_spiral := cards.any(func(card: Dictionary): return card.type == "spiral")
+	var shot := {"spiral": formula.has_spiral, "math_cards": formula.math_cards, "reflected": preview_reflected,
+		"curved": formula.has_quadratic() or formula.wave_enabled or formula.has_spiral,
+		"pierce": int(effects.pierce) > 0}
+	if preview_reflected:
+		effects.damage += effects.reflected_damage
 	clear_target()
 	preview_shot.hide()
 	player.apply_effects(effects)
 	if points.size() >= 2:
 		await player.play_attack()
-		await _fire_projectile(points, contacts, effects, uses_spiral)
+		await _fire_projectile(points, contacts, effects, shot)
 	trajectory.clear_points()
 	_tick_turn_mirrors()
 	player.finish_turn()
@@ -174,9 +195,25 @@ func execute_turn_actions() -> void:
 			if await _finish_if_needed():
 				return
 			await get_tree().create_timer(0.25).timeout
+	if moving_target and combat_ui.turn_count % 2 == 0:
+		await _move_front_enemy()
 	await _start_player_turn(true)
 
-func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dictionary, uses_spiral: bool) -> void:
+func _move_front_enemy() -> void:
+	for enemy in scenario_container.get_children():
+		if not enemy.is_in_group("enemies") or not enemy.check_is_alive():
+			continue
+		var direction := -1.0 if combat_ui.turn_count % 4 == 2 else 1.0
+		var next_y := clampf(enemy.start_position.y + direction * 55.0, -400.0, -195.0)
+		enemy.is_attacking = true
+		var tween := create_tween()
+		tween.tween_property(enemy, "position:y", next_y, 0.23)
+		await tween.finished
+		enemy.start_position.y = next_y
+		enemy.is_attacking = false
+		break
+
+func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dictionary, shot: Dictionary) -> void:
 	var distances := PackedFloat32Array([0.0])
 	for i in range(1, points.size()):
 		distances.append(distances[-1] + points[i - 1].distance_to(points[i]))
@@ -205,7 +242,7 @@ func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dict
 		if not is_instance_valid(enemy) or not enemy.check_is_alive():
 			continue
 		var hits := int(hit_enemies.get(enemy, 0))
-		if uses_spiral and hits > Catalog.SPIRAL_REPEAT_LIMIT:
+		if shot.spiral and hits > Catalog.SPIRAL_REPEAT_LIMIT:
 			continue
 		await _move_projectile(position_projectile, traveled, contact.distance)
 		traveled = contact.distance
@@ -217,10 +254,11 @@ func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dict
 		hit_enemies[enemy] = hits + 1
 		var repeated := hits > 0
 		var damage: int = player.attack_damage(player_damage + int(effects.damage))
-		if repeated and uses_spiral:
+		damage = enemy.projectile_damage(damage, shot)
+		if repeated and shot.spiral:
 			damage = floori(damage * Catalog.SPIRAL_REPEAT_DAMAGE)
 		enemy.receive_vulnerable(_hit_effect(int(effects.vulnerable), repeated))
-		await enemy.take_damage(damage, int(effects.pierce) > 0)
+		await enemy.take_damage(damage, shot.pierce)
 		if is_instance_valid(enemy) and enemy.check_is_alive():
 			enemy.receive_poison(_hit_effect(int(effects.poison), repeated))
 	await _move_projectile(position_projectile, traveled, distances[-1])
@@ -233,10 +271,13 @@ func _make_shot(width: float) -> Sprite2D:
 	return sprite
 
 func _register_mirror(segment: PackedVector2Array) -> void:
-	mirror_segments.append(PackedVector2Array([
+	mirror_segments.append(_local_segment(segment))
+
+func _local_segment(segment: PackedVector2Array) -> PackedVector2Array:
+	return PackedVector2Array([
 		trajectory.to_local(scenario_container.to_global(segment[0])),
 		trajectory.to_local(scenario_container.to_global(segment[1]))
-	]))
+	])
 
 func _place_turn_mirror() -> void:
 	if mirror_segments.size() >= MIRROR_LIMIT:

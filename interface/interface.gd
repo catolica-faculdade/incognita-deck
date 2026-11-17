@@ -29,6 +29,7 @@ var retained_cards: Array[Control] = []
 var card_container: HBoxContainer
 var played_container: HBoxContainer
 var equation_label: Label
+var arena_rule_label: Label
 var energy_texture: TextureRect
 var energy_icons: Array[AtlasTexture] = []
 var player_interface: Control
@@ -71,6 +72,10 @@ func _build_ui() -> void:
 	equation_label.max_lines_visible = 3
 	equation_label.clip_text = true
 	root.add_child(equation_label)
+	arena_rule_label = Style.readable_label("", 15)
+	arena_rule_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(arena_rule_label)
+	arena_rule_label.hide()
 	buff_label = Style.readable_label("", 16)
 	root.add_child(buff_label)
 	drop_zone = Control.new()
@@ -199,6 +204,8 @@ func _layout() -> void:
 	player_interface.size = Vector2(600, 94)
 	equation_label.position = Vector2(16, 10)
 	equation_label.size = Vector2(300, 78)
+	arena_rule_label.position = Vector2(dimensions.x * 0.5 - 180, 108)
+	arena_rule_label.size = Vector2(360, 24)
 	buff_label.position = Vector2(16, 96)
 	# Região de soltura ampla; a fileira mantém a carta inteira em tamanho natural.
 	drop_zone.position = Vector2(170, 122)
@@ -420,6 +427,10 @@ func _refresh_message_panel() -> void:
 func update_equation(text: String) -> void:
 	equation_label.text = text
 	equation_label.tooltip_text = text
+
+func show_arena_rule(rule: String) -> void:
+	arena_rule_label.visible = not rule.is_empty()
+	arena_rule_label.text = "Arena: " + rule
 
 func update_player_status(status: Dictionary) -> void:
 	player_interface.update_player_info(status.health, status.max_health, status.poison_amount, status.shield, status.thorns)

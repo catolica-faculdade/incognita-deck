@@ -35,8 +35,12 @@ const CARDS = [
 	{"id":28,"name":"Abrigo","type":"effect","energy_cost":2,"icon":"heal","effects":{"heal":6,"shield":8}},
 	{"id":29,"name":"Descida","type":"diagonal","x":5.0,"y":-2.0,"energy_cost":1},
 	{"id":30,"name":"Rampa","type":"quadratic","coefficient":"b","value":0.5,"energy_cost":1},
-	{"id":31,"name":"Espiral","type":"spiral","turns":10,"radius":3.0,"energy_cost":2,"rare":true},
-	{"id":32,"name":"Reflexão em X","type":"reflection","energy_cost":1}
+	{"id":31,"name":"Espiral","type":"spiral","turns":4,"radius":3.0,"energy_cost":2,"rare":true},
+	{"id":32,"name":"Reflexão em X","type":"reflection","energy_cost":1},
+	{"id":33,"name":"Rotação","type":"rotation","degrees":15,"icon":"diagonal","energy_cost":1},
+	{"id":34,"name":"Fenda","type":"modifier","icon":"linear","energy_cost":1},
+	{"id":35,"name":"Prisma","type":"effect","icon":"attack","energy_cost":1,"rare":true,"effects":{"reflected_damage":7}},
+	{"id":36,"name":"Catalisador","type":"effect","icon":"poison","energy_cost":1,"effects":{"poison_bonus":3}}
 ]
 
 static func get_card(id: int) -> Dictionary:
@@ -73,6 +77,10 @@ static func math_text(card: Dictionary) -> String:
 			return "r = %.0fθ/(%dπ)\nθ ∈ [0, %dπ]" % [card.radius, int(card.turns) * 2, int(card.turns) * 2]
 		"reflection":
 			return "(x, y) → (x, −y)"
+		"rotation":
+			return "Gira %d°" % card.degrees
+		"modifier":
+			return "Atravessa barreiras"
 	var effects: Dictionary = card.get("effects", {})
 	var lines: Array[String] = []
 	for key in effects:
@@ -82,6 +90,8 @@ static func math_text(card: Dictionary) -> String:
 			"shield": lines.append("Escudo + %d" % amount)
 			"poison": lines.append("Veneno + %d" % amount)
 			"damage": lines.append("Dano + %d" % amount)
+			"reflected_damage": lines.append("+%d se refletir" % amount)
+			"poison_bonus": lines.append("Veneno +%d\nEm combo" % amount)
 			"pierce": lines.append("Ignora escudo")
 			"cleanse": lines.append("Veneno = 0")
 			"vulnerable": lines.append("Vulnerável: %d" % amount)
@@ -104,6 +114,10 @@ static func description(card: Dictionary) -> String:
 			rules += "\nForça aumenta todos os seus ataques até o fim do combate."
 		if effects.has("thorns"):
 			rules += "\nRetorna dano a cada atacante até o seu próximo turno."
+		if effects.has("reflected_damage"):
+			rules += "\nCombine com Reflexão em X ou acerte um espelho."
+		if effects.has("poison_bonus"):
+			rules += "\nCombine com outra carta que aplique veneno."
 		return math_text(card) + "\n" + target + rules
 	match card.type:
 		"linear", "diagonal": return "Desloca o ponto final da trajetória."
@@ -114,8 +128,10 @@ static func description(card: Dictionary) -> String:
 				card.turns, card.radius, SPIRAL_REPEAT_LIMIT, roundi(SPIRAL_REPEAT_DAMAGE * 100.0)
 			]
 		"reflection": return "Reflete o percurso montado até aqui em torno do eixo X. Precisa de uma trajetória."
+		"rotation": return "Gira o percurso montado ao redor da origem em %d° no sentido anti-horário." % card.degrees
+		"modifier": return "O disparo atravessa barreiras da arena e continua ricocheteando nos espelhos."
 	return ""
 
 static func hits_targets(card: Dictionary) -> bool:
 	var effects: Dictionary = card.get("effects", {})
-	return effects.has("poison") or effects.has("damage") or effects.has("vulnerable") or effects.has("pierce")
+	return effects.has("poison") or effects.has("damage") or effects.has("vulnerable") or effects.has("pierce") or effects.has("poison_bonus") or effects.has("reflected_damage")

@@ -12,7 +12,7 @@ O modo **Difícil** altera a apresentação das cartas: remove a arte de fundo e
 
 ## Cartas e baralho
 
-O catálogo tem 32 cartas, incluindo Espiral e Reflexão em X. Cada carta possui custo no canto superior direito. Cartas sem energia suficiente ficam acinzentadas. Jogar uma carta ou devolvê-la à mão altera a seleção. Cura, escudo e outros efeitos são aplicados ao confirmar o turno.
+O catálogo tem 36 cartas. Cada carta possui custo no canto superior direito. Cartas sem energia suficiente ficam acinzentadas. Jogar uma carta ou devolvê-la à mão altera a seleção. Cura, escudo e outros efeitos são aplicados ao confirmar o turno.
 
 | Nova carta | Custo | Efeito |
 | --- | ---: | --- |
@@ -53,7 +53,9 @@ Na composição matemática, ondas agora conservam sua frequência/comprimento e
 
 A convenção herdada para composições com curva é mantida: o deslocamento Y entra como termo constante, enquanto uma seleção apenas linear define o ponto final. A equipe ainda pode revisar essa convenção pedagógica separadamente.
 
-A Espiral usa o fim do percurso como centro e cresce linearmente em função do ângulo até completar dez voltas. A Reflexão em X inverte a coordenada Y de todo o percurso já montado. O jogo compõe primeiro as cartas de deslocamento, parábola e onda, depois aplica Espiral e Reflexão na ordem em que foram preparadas.
+A Espiral usa o fim do percurso como centro e cresce linearmente em função do ângulo até completar quatro voltas e alcançar três unidades da grade. A Reflexão em X inverte Y. A Rotação gira o trajeto em 15° em torno da origem. O jogo compõe a base primeiro e aplica Espiral, Reflexão e Rotação na ordem em que foram preparadas.
+
+A Fenda atravessa barreiras e permite ricochetes nos espelhos. O Prisma acrescenta 7 de dano quando a jogada inclui uma Reflexão em X ou ricocheteia. O Catalisador acrescenta 3 cargas de veneno quando combinado com uma carta que já aplica veneno.
 
 ## Mapa e encontros
 
@@ -62,6 +64,8 @@ Cada run gera três mapas de 6, 7 e 8 etapas. Um nó libera nós da próxima eta
 Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier sobe com o mundo e com a etapa. Elites recebem um tier adicional, limitado a 5. Após a primeira etapa há chance de Descanso e, a partir da terceira, de Elite. A penúltima etapa de cada mundo garante um Descanso na coluna central.
 
 Cada encontro comum reúne 2 a 4 inimigos da lista do mundo. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. Todo Elite contém um inimigo difícil da lista do mundo, com 22% de HP extra (mínimo de 6), +2 de dano e ações extras. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
+
+A profundidade total da run acrescenta 0,65% de HP por etapa já passada, arredondado por inimigo, e +1 de dano a cada dez etapas. O Plano Cartesiano tem encontros em que o inimigo da frente muda de altura a cada dois turnos. Na Sala de Aula podem aparecer espelhos. Na Diretoria, espelhos e barreiras podem aparecer juntos. A chance de cada regra aumenta ao avançar no mapa.
 
 Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos com duração sorteada de 4 a 12 turnos do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
 
@@ -77,10 +81,10 @@ O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na
 
 | Arquétipo | Comportamento anunciado |
 | --- | --- |
-| Cubo | Defende, ataca, acumula força e prepara golpe forte |
-| Fantasma | Protege o grupo, ataca e aplica fraqueza |
-| Calculadora | Alterna fraqueza, ataque e golpe forte; pode curar quando ferida |
-| Slime | Alterna veneno, ataque e defesa |
+| Cubo | Reduz o dano comum enquanto tem escudo. Perfuração evita a redução |
+| Fantasma | Protege os aliados e fica exposto enquanto levanta os escudos |
+| Calculadora | Reduz em 5 o dano de disparos com menos de duas cartas matemáticas |
+| Slime | Aplica veneno e recebe +4 de dano por acerto enquanto está envenenado |
 | Sentinela (novo) | Protege aliados, carrega força e usa golpe forte |
 | Alquimista (novo) | Usa veneno/fraqueza e anuncia cura quando aliados estão feridos |
 | Sanguessuga (novo) | Drena vida com base no dano realmente causado e pressiona quando está ferida |

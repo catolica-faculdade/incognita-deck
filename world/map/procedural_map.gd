@@ -92,8 +92,9 @@ func _create_node(node: Dictionary) -> void:
 	var detail: String = "Curar ou remover" if node.kind == "rest" else Generator.TIERS[int(node.tier) - 1]
 	if node.kind == "event":
 		detail = "Monitor"
-	if node.get("mirror", false):
-		detail += " • Espelho"
+	var arena_rule := Generator.arena_label(node)
+	if not arena_rule.is_empty():
+		detail = arena_rule
 	var tier := Style.label(detail, 12)
 	tier.position = Vector2(-9, 113)
 	tier.size = Vector2(136, 24)
@@ -105,6 +106,8 @@ func _create_node(node: Dictionary) -> void:
 	if icon.disabled and not visited:
 		holder.modulate = Color(0.75, 0.75, 0.75, 0.58)
 	icon.tooltip_text = "%s • %s\n%s" % [kind, tier.text, "Concluído" if visited else ("Escolher este caminho" if not icon.disabled else "Siga uma rota adjacente para chegar aqui")]
+	if not arena_rule.is_empty():
+		icon.tooltip_text += "\nDificuldade: " + Generator.TIERS[int(node.tier) - 1]
 	if node.kind == "elite":
 		icon.tooltip_text += "\nInclui um inimigo difícil e garante uma carta rara na recompensa."
 

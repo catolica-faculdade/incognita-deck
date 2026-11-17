@@ -9,3 +9,6 @@ func choose_action() -> String:
 	if health < int(max_health * 0.5) and turns_taken % 2 == 0:
 		return "heavy"
 	return "drain" if turns_taken % 3 != 2 else "defend"
+
+func strategy_text() -> String:
+	return "Use escudo contra o dreno. Ela só recupera vida quando o ataque tira seu HP."
