@@ -4,7 +4,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 ## Combate e projétil
 
-- A prévia e o projétil usam os mesmos segmentos calculados pelas cartas. O projétil se move a 1.100 unidades de cena por segundo entre contatos e aguarda a reação a cada acerto antes de seguir.
+- A prévia e o projétil usam os mesmos segmentos calculados pelas cartas. O projétil parte a 1.100 unidades de cena por segundo e acelera até 3.600. A reação a cada acerto ainda faz uma pausa. Depois dela, o disparo continua com a velocidade que já acumulou.
 - A colisão é calculada ao longo dos segmentos, na ordem percorrida. O disparo atravessa os alvos vivos. Cada entrada na região de um inimigo conta como um acerto. Permanecer dentro da região conta como um só contato.
 - O raio de acerto existente é medido a partir da posição de repouso do inimigo. A flutuação visual não muda as coordenadas de acerto. Se o Professor se teleportar ao receber dano, um contato previsto na posição anterior é ignorado.
 - Cada acerto aplica o dano e a perfuração da combinação. O primeiro acerto em cada inimigo aplica a quantidade integral de veneno e vulnerabilidade. Novas passagens adicionam uma carga de cada um desses efeitos se estiver presente na combinação.
@@ -59,6 +59,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão dos passos 6 a 8 com renderização | 10.793 verificações, zero falhas. Revisão visual de recompensa, descanso, espiral e espelho |
 | Regressão dos passos 9 e 10 com renderização | 11.774 verificações, zero falhas. Inclui a garantia de inimigo difícil, a expiração do espelho e a campanha completa |
 | Regressão do ajuste da Espiral | 11.745 verificações headless, zero falhas. Um disparo com cinco passagens aplica só três acertos e limita os efeitos |
+| Regressão da aceleração do projétil | 11.751 verificações headless, zero falhas. Inclui continuidade após acertos, limite de velocidade e posição ao longo da trajetória |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

@@ -10,7 +10,11 @@ const Generator = preload("res://core/run/run_generator.gd")
 const GAME_OVER = preload("res://interface/game_over_screen.tscn")
 const REWARD = preload("res://interface/reward_screen.tscn")
 const WATER_SHOT = preload("res://assets/projectiles/water_doodle.png")
-const PROJECTILE_SPEED := 1100.0
+const PROJECTILE_INITIAL_SPEED := 1100.0
+const PROJECTILE_ACCELERATION := 900.0
+const PROJECTILE_MAX_SPEED := 3600.0
+const PROJECTILE_ACCELERATION_TIME := (PROJECTILE_MAX_SPEED - PROJECTILE_INITIAL_SPEED) / PROJECTILE_ACCELERATION
+const PROJECTILE_ACCELERATION_DISTANCE := (PROJECTILE_INITIAL_SPEED + PROJECTILE_MAX_SPEED) * 0.5 * PROJECTILE_ACCELERATION_TIME
 const TURN_MIRROR_SLOTS := [Vector2(350, -258), Vector2(553, -319), Vector2(746, -307), Vector2(940, -280)]
 const MIRROR_LIMIT := 4
 enum Phase { SETUP, PLAYER, RESOLVING, ENEMIES, FINISHED }
@@ -191,16 +195,18 @@ func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dict
 		projectile.global_position = points[-1]
 		projectile.global_rotation = (points[-1] - points[-2]).angle()
 	for contact in contacts:
+		var enemy = contact.enemy
+		if not is_instance_valid(enemy) or not enemy.check_is_alive():
+			continue
+		var hits := int(hit_enemies.get(enemy, 0))
+		if uses_spiral and hits > Catalog.SPIRAL_REPEAT_LIMIT:
+			continue
 		await _move_projectile(position_projectile, traveled, contact.distance)
 		traveled = contact.distance
-		var enemy = contact.enemy
 		if not is_instance_valid(enemy) or not enemy.check_is_alive():
 			continue
 		# A reação do Professor pode invalidar uma segunda passagem prevista.
 		if not scenario_container.to_global(enemy.start_position).is_equal_approx(contact.center):
-			continue
-		var hits := int(hit_enemies.get(enemy, 0))
-		if uses_spiral and hits > Catalog.SPIRAL_REPEAT_LIMIT:
 			continue
 		hit_enemies[enemy] = hits + 1
 		var repeated := hits > 0
@@ -262,9 +268,25 @@ func _clear_turn_mirrors() -> void:
 
 func _move_projectile(position_projectile: Callable, from: float, to: float) -> void:
 	if to > from:
+		var start_time := _projectile_time_at(from)
+		var finish_time := _projectile_time_at(to)
 		var tween := create_tween()
-		tween.tween_method(position_projectile, from, to, (to - from) / PROJECTILE_SPEED)
+		var move_at_time := func(flight_time: float) -> void:
+			position_projectile.call(minf(_projectile_distance_at(flight_time), to))
+		tween.tween_method(move_at_time, start_time, finish_time, finish_time - start_time)
 		await tween.finished
+		position_projectile.call(to)
+
+static func _projectile_time_at(distance: float) -> float:
+	if distance > PROJECTILE_ACCELERATION_DISTANCE:
+		return PROJECTILE_ACCELERATION_TIME + (distance - PROJECTILE_ACCELERATION_DISTANCE) / PROJECTILE_MAX_SPEED
+	var speed := sqrt(PROJECTILE_INITIAL_SPEED * PROJECTILE_INITIAL_SPEED + 2.0 * PROJECTILE_ACCELERATION * distance)
+	return 2.0 * distance / (speed + PROJECTILE_INITIAL_SPEED)
+
+static func _projectile_distance_at(flight_time: float) -> float:
+	var accelerating := minf(flight_time, PROJECTILE_ACCELERATION_TIME)
+	return (accelerating * (PROJECTILE_INITIAL_SPEED + 0.5 * PROJECTILE_ACCELERATION * accelerating)
+		+ maxf(flight_time - accelerating, 0.0) * PROJECTILE_MAX_SPEED)
 
 func _hit_effect(amount: int, repeated: bool) -> int:
 	return mini(amount, 1) if repeated else amount

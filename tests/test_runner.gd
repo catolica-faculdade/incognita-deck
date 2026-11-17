@@ -490,6 +490,14 @@ func _test_retained_hand() -> void:
 
 func _test_projectile_contacts() -> void:
 	var battle = await _battle(1, false, ["cube", "cube"])
+	var first_leg: float = battle._projectile_time_at(600)
+	var second_leg: float = battle._projectile_time_at(1200) - first_leg
+	check(second_leg < first_leg and not is_zero_approx(second_leg), "o projétil acelera sem reiniciar após um contato")
+	var late_leg: float = battle._projectile_time_at(10600) - battle._projectile_time_at(10000)
+	check(is_equal_approx(late_leg, 600.0 / battle.PROJECTILE_MAX_SPEED), "projétil mantém o limite de velocidade")
+	for distance in [0.0, 600.0, 1200.0, 10000.0]:
+		check(is_equal_approx(battle._projectile_distance_at(battle._projectile_time_at(distance)), distance),
+			"aceleração preserva a posição de acerto ao longo do caminho")
 	var enemies := get_tree().get_nodes_in_group("enemies")
 	for enemy in enemies:
 		enemy.max_health = 100
