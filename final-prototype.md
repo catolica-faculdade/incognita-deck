@@ -7,7 +7,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 - A prévia e o projétil usam os mesmos segmentos calculados pelas cartas. O projétil parte a 1.100 unidades de cena por segundo e acelera até 3.600. A reação a cada acerto ainda faz uma pausa. Depois dela, o disparo continua com a velocidade que já acumulou.
 - A colisão é calculada ao longo dos segmentos, na ordem percorrida. O disparo atravessa os alvos vivos. Cada entrada na região de um inimigo conta como um acerto. Permanecer dentro da região conta como um só contato.
 - O raio de acerto existente é medido a partir da posição de repouso do inimigo. A flutuação visual não muda as coordenadas de acerto. Se o Professor se teleportar ao receber dano, um contato previsto na posição anterior é ignorado.
-- Cada acerto aplica o dano e a perfuração da combinação. O primeiro acerto em cada inimigo aplica a quantidade integral de veneno e vulnerabilidade. Novas passagens adicionam uma carga de cada um desses efeitos se estiver presente na combinação.
+- O primeiro acerto em cada inimigo causa dano integral e aplica toda a quantidade de veneno e vulnerabilidade. Novas passagens no mesmo disparo causam 70% do dano, arredondado para baixo, e adicionam uma carga de cada um desses efeitos presentes na combinação.
 - A próxima ação inimiga aparece ao manter o mouse sobre o inimigo ou sua barra de vida.
 
 ## Mão e descarte
@@ -33,7 +33,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 - **Elite.** Entre as três opções de recompensa há pelo menos uma carta rara. O jogo identifica as raras na tela de recompensa. O jogador ainda pode escolher qualquer uma das três ou pular.
 - **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
-- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem quatro voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 25% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos.
+- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem quatro voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 70% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos.
 - **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
 - **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo.
 

@@ -534,7 +534,7 @@ func _test_projectile_contacts() -> void:
 			"ordem de acerto segue a trajetória, independente da ordem dos inimigos na cena")
 	await battle.execute_turn_actions()
 	check(enemies[0].health == 81 and enemies[0].poison_amount == 3, "primeiro acerto aplica veneno integral")
-	check(enemies[1].health == 65 and enemies[1].poison_amount == 4, "segunda passagem dá dano e acrescenta um de veneno")
+	check(enemies[1].health == 70 and enemies[1].poison_amount == 4, "segunda passagem dá 70% de dano e acrescenta um de veneno")
 
 func _test_hard_enemy_turn() -> void:
 	var enemy_data := {"archetype":"compass", "position":Vector2(260, -240), "tier":3, "seed":17, "elite":false}
@@ -635,8 +635,8 @@ func _test_spiral_preview() -> void:
 	battle.evaluate_trajectory()
 	check(battle.trajectory_contacts.size() == 5, "trajeto da Espiral pode cruzar o mesmo inimigo várias vezes")
 	await battle.execute_turn_actions()
-	check(enemy.health == 73 and enemy.poison_amount == 5,
-		"Espiral aplica 15 + 3 + 3 de dano, limita efeitos aos três acertos e veneno causa mais 6")
+	check(enemy.health == 59 and enemy.poison_amount == 5,
+		"Espiral aplica 15 + 10 + 10 de dano, limita efeitos aos três acertos e veneno causa mais 6")
 
 func _test_mirror_preview() -> void:
 	var wall := PackedVector2Array([Vector2(350, -300), Vector2(350, -180)])
@@ -655,7 +655,7 @@ func _test_mirror_preview() -> void:
 		"prévia prevê ida e volta no primeiro alvo")
 	await _capture("final-prototype-mirror.png")
 	await battle.execute_turn_actions()
-	check(enemies[0].health == 70 and enemies[1].health == 100, "disparo usa a mesma trajetória refletida da prévia")
+	check(enemies[0].health == 75 and enemies[1].health == 100, "disparo usa a prévia refletida e reduz o dano na volta")
 
 func _test_arena_combinations() -> void:
 	var battle = await _battle(1, false, ["calculator", "slime"])

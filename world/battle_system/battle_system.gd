@@ -255,8 +255,8 @@ func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dict
 		var repeated := hits > 0
 		var damage: int = player.attack_damage(player_damage + int(effects.damage))
 		damage = enemy.projectile_damage(damage, shot)
-		if repeated and shot.spiral:
-			damage = floori(damage * Catalog.SPIRAL_REPEAT_DAMAGE)
+		if repeated:
+			damage = floori(damage * Catalog.REPEAT_HIT_DAMAGE)
 		enemy.receive_vulnerable(_hit_effect(int(effects.vulnerable), repeated))
 		await enemy.take_damage(damage, shot.pierce)
 		if is_instance_valid(enemy) and enemy.check_is_alive():
