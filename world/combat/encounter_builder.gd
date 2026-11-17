@@ -1,6 +1,9 @@
 extends RefCounted
 
 const Style = preload("res://interface/ui_style.gd")
+const Generator = preload("res://core/run/run_generator.gd")
+const Doodle = preload("res://world/enemy/enemy_combat/doodle_enemy.gd")
+const DOODLE_SCENE = preload("res://world/enemy/enemy_combat/doodle_enemy.tscn")
 
 const ENEMY_SCENES = {
 	"cube": preload("res://world/enemy/enemy_combat/cube/cube_combat.tscn"),
@@ -18,6 +21,7 @@ static func build(spec: Dictionary) -> Node2D:
 	arena.name = "GeneratedEncounter"
 	var background := TextureRect.new()
 	background.texture = preload("res://assets/backgrounds/background_combat.png")
+	background.modulate = Generator.WORLDS[int(spec.get("world", 0))].tint
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var backdrop := CanvasLayer.new()
@@ -32,14 +36,18 @@ static func build(spec: Dictionary) -> Node2D:
 	player.name = "player"
 	arena.add_child(player)
 	for data in spec.enemies:
-		var enemy = ENEMY_SCENES[data.archetype].instantiate()
+		var scene: PackedScene = ENEMY_SCENES.get(data.archetype, DOODLE_SCENE)
+		var enemy = scene.instantiate()
+		if enemy is Doodle:
+			enemy.archetype = data.archetype
 		enemy.position = data.position
 		enemy.scale = Vector2(0.62, 0.62)
 		enemy.enemy_seed = int(data.seed)
 		enemy.difficulty_tier = int(data.tier)
+		enemy.elite_unit = data.get("elite", false)
 		arena.add_child(enemy)
 	for mirror: PackedVector2Array in spec.get("mirrors", []):
-		_draw_mirror(arena, mirror)
+		draw_mirror(arena, mirror)
 	var music := AudioStreamPlayer.new()
 	music.stream = preload("res://assets/music/incognita_deck_combate.mp3")
 	music.bus = &"Music"
@@ -48,7 +56,10 @@ static func build(spec: Dictionary) -> Node2D:
 	arena.add_child(music)
 	return arena
 
-static func _draw_mirror(arena: Node2D, segment: PackedVector2Array) -> void:
+static func has_archetype(id: String) -> bool:
+	return ENEMY_SCENES.has(id) or Doodle.PROFILES.has(id)
+
+static func draw_mirror(arena: Node2D, segment: PackedVector2Array) -> Node2D:
 	var outline := Line2D.new()
 	outline.points = segment
 	outline.width = 10.0
@@ -69,3 +80,4 @@ static func _draw_mirror(arena: Node2D, segment: PackedVector2Array) -> void:
 	label.add_theme_color_override("font_outline_color", Color("fffdf5"))
 	label.add_theme_constant_override("outline_size", 4)
 	outline.add_child(label)
+	return outline

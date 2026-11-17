@@ -11,10 +11,11 @@ func _run() -> void:
 		var rooms := 0
 		var turns := 0
 		var alive := true
-		while not GameManager.run_complete and rooms < 7 and alive:
-			var node_id := _choose_node()
-			GameManager.select_map_node(node_id)
-			await get_tree().scene_changed
+		while not GameManager.run_complete and rooms < Generator.TOTAL_STAGES and alive:
+			if GameManager.current_context == GameManager.Context.MAP:
+				var node_id := _choose_node()
+				GameManager.select_map_node(node_id)
+				await get_tree().scene_changed
 			if GameManager.current_context == GameManager.Context.REST:
 				get_tree().current_scene._heal()
 				await get_tree().scene_changed

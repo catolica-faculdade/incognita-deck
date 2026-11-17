@@ -4,7 +4,8 @@ const Style = preload("res://interface/ui_style.gd")
 
 func _ready() -> void:
 	GameManager.current_context = GameManager.Context.FINISHED
-	var content := Style.screen(self, "Run concluída!", "Você venceu o Professor e completou o caminho.")
+	var subtitle := "Você atravessou os três mundos e venceu o ENEM." if GameManager.world_index == 2 else "Você completou a jornada."
+	var content := Style.screen(self, "Run concluída!", subtitle)
 	var center := CenterContainer.new()
 	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(center)

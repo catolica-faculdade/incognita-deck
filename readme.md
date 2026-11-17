@@ -48,19 +48,19 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 3. No mapa, escolha um nó disponível. Os encontros têm dificuldades sorteadas e composições geradas. Apenas rotas adjacentes ficam disponíveis.
 4. Arraste cartas para a área de preparo acima da mão para montar trajetória e efeitos. O número amarelo é o custo em energia. Devolva cartas ou use **Limpar** para desfazer.
 5. Clique em **Fim do turno**, selecione até duas cartas não jogadas para manter e clique em **Continuar**. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
-6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. O chefe da sétima etapa encerra a jornada.
+6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. Derrote o chefe de cada mundo para avançar e vença o ENEM para concluir a jornada.
 
 *Obs*: Use **Ver baralho** para revisar suas cartas e **Esc** para pausar. O modo difícil também vale nas recompensas e na visualização do baralho.
 
 ## Regras básicas
 
-- O objetivo é derrotar os inimigos de cada combate, avançar pelo mapa e vencer o Professor na sétima etapa.
+- A campanha tem três mapas: **O Plano Cartesiano** (6 etapas, Professor), **Sala de Aula** (7 etapas, Alunos) e **Diretoria** (8 etapas, Diretor). Ao sair da Diretoria, o próximo combate é o **ENEM**.
 - O jogador inicia a tentativa com **80 de vida** e possui **5 pontos de energia por turno**. A energia é restaurada no início de cada turno e não acumula entre turnos.
 - Cada carta possui um custo em energia. Combine cartas para montar uma trajetória que atinja os inimigos, ou utilize efeitos para auxiliar o personagem.
 - As cartas jogadas e as que você deixou sem marcar vão para o descarte. No início do próximo turno, compre até cinco cartas além das que escolheu manter. A mão pode chegar a sete cartas.
 - O combate termina em vitória quando todos os inimigos são derrotados. Caso a vida do jogador chegue a zero, a tentativa termina em derrota.
 - A vida restante é mantida entre combates. No **Descanso**, escolha entre curar **40% da vida máxima** (32 HP) e remover uma cópia de uma carta.
-- As recompensas de **Elite** incluem ao menos uma carta marcada como **Rara**. Nos encontros marcados com **Espelho**, a prévia já mostra o desvio do disparo.
+- Cada encontro de **Elite** inclui um inimigo difícil e oferece ao menos uma carta **Rara**. Nos encontros com espelho fixo ou colocado por um inimigo, a prévia mostra o desvio do disparo.
 - Ao vencer um combate, escolha uma carta para adicionar ao baralho durante a tentativa, ou pule a recompensa.
 - Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida, escudo e próxima ação. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
 
@@ -68,8 +68,8 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 
 - 32 cartas: deslocamentos, parábolas, ondas, espiral, reflexão em X, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
 - Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
-- Mapa de 7 etapas com bifurcações, descanso, encontros comuns, elite e chefe. Cada semente conserva suas opções durante a partida.
-- 8 arquétipos de inimigos, com comportamentos próprios, estratégias próprias e atributos escalados pela dificuldade do encontro.
+- Três mapas ramificados e um encontro final, com vida e baralho preservados entre mundos. Cada semente reproduz seus mapas e encontros.
+- 21 arquétipos de inimigos, incluindo cinco difíceis reservados aos Elites e quatro chefes.
 
 As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.
 
@@ -79,7 +79,6 @@ A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O
 
 ## Limitações da versão atual
 
-- A campanha atual possui sete etapas por tentativa, terminando no Professor. Os demais mundos ainda não foram implementados.
 - Não há salvamento e retomada de uma tentativa em andamento. Ao sair do jogo, não é possível continuar do mesmo ponto.
 - Os eventos aleatórios ainda não foram implementados.
 - Melhorias de cartas continuam fora do escopo da versão atual.

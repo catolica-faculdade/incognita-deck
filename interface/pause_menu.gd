@@ -74,7 +74,7 @@ func pause():
 		if is_instance_valid(battle) and battle.has_method("get_pause_details"):
 			run_info_label.text = battle.get_pause_details()
 	elif GameManager.current_context == GameManager.Context.MAP:
-		run_info_label.text = "Etapa %d/7 • Modo %s" % [mini(GameManager.level + 1, 7), "Difícil" if GameManager.hard_mode else "Normal"]
+		run_info_label.text = "%s • Modo %s" % [GameManager.stage_text(), "Difícil" if GameManager.hard_mode else "Normal"]
 	run_info_label.visible = not run_info_label.text.is_empty()
 	overlay.visible = true
 	get_tree().paused = true

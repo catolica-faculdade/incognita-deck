@@ -8,4 +8,4 @@ func configure_archetype() -> void:
 	apply_defend = 12
 
 func choose_action() -> String:
-	return ["guard_all", "charge", "heavy"][turns_taken % 3]
+	return ["guard_all", "charge", "heavy"][action_turn() % 3]

@@ -1,6 +1,8 @@
 extends Node2D
 ## As intenções são escolhidas antes do turno e executadas sem novo sorteio oculto.
 
+signal mirror_requested
+
 @export var idle_height := 6.0
 @export var idle_speed := 2.0
 @export var attack_distance := 40.0
@@ -27,6 +29,7 @@ var planned_action := "attack"
 var rng := RandomNumberGenerator.new()
 var enemy_seed := 1
 var difficulty_tier := 1
+var elite_unit := false
 var is_dying := false
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var hud: Node2D = $EnemyHud
@@ -40,6 +43,10 @@ func _ready() -> void:
 	rng.seed = enemy_seed
 	max_health = int(max_health * (1.0 + (difficulty_tier - 1) * 0.15))
 	base_damage += difficulty_tier - 1
+	if elite_unit:
+		max_health += maxi(6, roundi(max_health * 0.22))
+		base_damage += 2
+		display_name += " (Elite)"
 	health = max_health
 	start_position = position
 	anim_sprite.flip_h = false
@@ -49,8 +56,14 @@ func _ready() -> void:
 	hud.setup(health, max_health)
 	plan_next_action()
 	_refresh_hud()
+	_sync_hud_layout()
 
 func _process(_delta: float) -> void:
+	_sync_hud_layout()
+	if not is_attacking and check_is_alive():
+		position.y = start_position.y + sin(Time.get_ticks_msec() / 1000.0 * idle_speed) * idle_height
+
+func _sync_hud_layout() -> void:
 	hud.scale = Vector2(1.0 / scale.x, 1.0 / scale.y)
 	var texture := anim_sprite.sprite_frames.get_frame_texture(anim_sprite.animation, anim_sprite.frame)
 	var half_height := float(texture.get_height()) * absf(anim_sprite.scale.y * scale.y) * 0.5
@@ -60,8 +73,6 @@ func _process(_delta: float) -> void:
 	header_at.y = maxf(header_at.y, top_limit.y)
 	hud.global_position = header_at
 	hud.track_body(Rect2(anim_sprite.global_position - Vector2(half_width, half_height), Vector2(half_width * 2, half_height * 2)))
-	if not is_attacking and check_is_alive():
-		position.y = start_position.y + sin(Time.get_ticks_msec() / 1000.0 * idle_speed) * idle_height
 
 func check_is_alive() -> bool:
 	return health > 0 and not is_dying
@@ -70,8 +81,20 @@ func choose_action() -> String:
 	return "attack"
 
 func plan_next_action() -> void:
-	planned_action = choose_action()
+	var slot := turns_taken % 6
+	if elite_unit and slot == 2:
+		planned_action = "fortify"
+	elif elite_unit and slot == 5:
+		planned_action = "pressure"
+	else:
+		planned_action = choose_action()
 	_refresh_hud()
+
+func action_turn() -> int:
+	if not elite_unit:
+		return turns_taken
+	var slot := turns_taken % 6
+	return floori(turns_taken / 6.0) * 4 + slot - int(slot > 2)
 
 func intent_text() -> String:
 	match planned_action:
@@ -86,6 +109,9 @@ func intent_text() -> String:
 		"weak": return "Fraqueza: 2 turnos"
 		"charge": return "Força +3"
 		"teleport": return "Teleporte + escudo"
+		"mirror": return "Posiciona um espelho"
+		"fortify": return "Escudo +%d e Força +2" % apply_defend
+		"pressure": return "Ataque %d e Fraqueza" % (base_damage + strength)
 	return planned_action
 
 func take_turn() -> void:
@@ -121,6 +147,17 @@ func take_turn() -> void:
 		"teleport":
 			await defend()
 			await after_surviving_hit()
+		"mirror":
+			mirror_requested.emit()
+			await play_effect_animation()
+		"fortify":
+			strength += 2
+			await defend()
+		"pressure":
+			await attack()
+			var player := get_tree().get_first_node_in_group("Player")
+			if is_instance_valid(player) and player.check_is_alive():
+				player.receive_weak(1)
 	vulnerable = maxi(vulnerable - 1, 0)
 	turns_taken += 1
 	if check_is_alive():

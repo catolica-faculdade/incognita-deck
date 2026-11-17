@@ -6,7 +6,6 @@ const MAIN_SCENE := "res://main/main.tscn"
 const BATTLE_SCENE := "res://world/battle_system/battle_system.tscn"
 const MAP_SCENE := "res://world/map/procedural_map.tscn"
 const REST_SCENE := "res://interface/rest_screen.tscn"
-const FINAL_LEVEL := Generator.ROW_COUNT
 const REST_HEAL_FRACTION := 0.40
 
 enum Context { MAIN_MENU, MAP, COMBAT, SETUP, REWARD, FINISHED, REST }
@@ -16,6 +15,8 @@ var map_to_load := "map_1"
 var max_player_health := 80
 var player_health := max_player_health
 var level := 0
+var world_index := 0
+var world_cleared := false
 var hard_mode := false
 var run_seed := 0
 var run_deck: Array = []
@@ -36,6 +37,8 @@ func _ready() -> void:
 func reset_run() -> void:
 	player_health = max_player_health
 	level = 0
+	world_index = 0
+	world_cleared = false
 	hard_mode = false
 	run_seed = 0
 	run_deck.clear()
@@ -60,9 +63,24 @@ func prepare_run(difficult: bool, fixed_seed: int = -1) -> void:
 	rng.randomize()
 	run_seed = fixed_seed if fixed_seed >= 0 else int(rng.randi())
 	run_deck = Catalog.STARTER_DECK.duplicate()
-	map_rows = Generator.generate(run_seed)
+	_open_world(0)
+
+func _open_world(index: int) -> void:
+	world_index = index
+	level = 0
+	map_rows = Generator.generate(run_seed, world_index)
+	available_nodes.clear()
 	for node in map_rows[0]:
 		available_nodes.append(node.id)
+
+func world_info() -> Dictionary:
+	return Generator.WORLDS[world_index]
+
+func stage_text() -> String:
+	if current_encounter.get("kind", "") == "final":
+		return "Prova final • ENEM"
+	var stages: int = world_info().stages
+	return "%s • Etapa %d/%d" % [world_info().name, mini(level + 1, stages), stages]
 
 func begin_run(difficult: bool, fixed_seed: int = -1) -> void:
 	if _changing_scene:
@@ -101,8 +119,11 @@ func complete_combat(boss: bool) -> void:
 		return
 	victories += 1
 	reward_pending = true
-	run_complete = boss
-	_finish_node()
+	var kind: String = current_encounter.get("kind", "")
+	world_cleared = kind == "boss" and not current_node.is_empty()
+	run_complete = kind == "final" or (boss and kind.is_empty())
+	if kind != "final":
+		_finish_node()
 	var reward_seed := run_seed + victories * 7919 + int(current_encounter.get("seed", 0))
 	pending_rewards = Catalog.reward_choices(reward_seed, 3, current_encounter.get("kind", "") == "elite")
 
@@ -131,6 +152,14 @@ func continue_after_reward() -> void:
 		return
 	if run_complete:
 		_change_scene("res://interface/run_complete.tscn", Context.FINISHED)
+	elif world_cleared:
+		world_cleared = false
+		if world_index + 1 < Generator.WORLDS.size():
+			_open_world(world_index + 1)
+			return_to_map()
+		else:
+			current_encounter = Generator.encounter({"seed": run_seed + 314159, "world": world_index, "tier": 5, "kind": "final"})
+			_change_scene(BATTLE_SCENE, Context.COMBAT)
 	else:
 		return_to_map()
 

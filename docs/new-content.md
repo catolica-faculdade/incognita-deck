@@ -6,7 +6,7 @@ Implementação local sobre a reestruturação anterior, em 03/11/2026. A branch
 
 ## Fluxo da run
 
-Menu → escolha de modo → mapa gerado → combate/descanso → recompensa → mapa → Professor → recompensa final → resumo. Iniciar outra run sempre retorna à escolha de modo.
+Menu → escolha de modo → O Plano Cartesiano → Professor → Sala de Aula → Alunos → Diretoria → Diretor → ENEM → recompensa final → resumo. Iniciar outra run retorna à escolha de modo.
 
 O modo **Difícil** altera a apresentação das cartas: remove a arte de fundo e todos os pictogramas, inclusive nos efeitos, nas ofertas de recompensa e no visualizador do baralho. As expressões, nomes, destinos dos efeitos e custos continuam visíveis. A trajetória no campo permanece disponível. Esse modo não multiplica atributos dos inimigos; a dificuldade numérica vem do tier de cada encontro.
 
@@ -56,13 +56,13 @@ A Espiral usa o fim do percurso como centro e cresce linearmente em função do 
 
 ## Mapa e encontros
 
-Cada run gera 7 etapas: 6 etapas com 3 escolhas e uma etapa final com o Professor. Um nó libera nós da próxima etapa na mesma coluna ou nas colunas vizinhas; todos os caminhos têm continuidade e todos chegam ao chefe. Rotas disponíveis, visitadas e bloqueadas ficam indicadas na tela.
+Cada run gera três mapas de 6, 7 e 8 etapas. Um nó libera nós da próxima etapa na mesma coluna ou nas colunas vizinhas. Todos os caminhos chegam ao chefe daquele mundo. Após o Diretor, o ENEM acontece fora do mapa. Rotas disponíveis, visitadas e bloqueadas ficam indicadas na tela.
 
-Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier é sorteado com progressão por etapa; elites recebem um tier adicional, limitado a 5. Depois da primeira etapa há chance de descanso (16%) e, a partir da terceira, de elite (24%). A quinta etapa garante um descanso na coluna central; ele precisa ser alcançado pela rota escolhida.
+Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier sobe com o mundo e com a etapa. Elites recebem um tier adicional, limitado a 5. Após a primeira etapa há chance de Descanso e, a partir da terceira, de Elite. A penúltima etapa de cada mundo garante um Descanso na coluna central.
 
-Cada encontro comum é montado com 2 a 4 inimigos, escolhidos de pools compatíveis com o tier. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. O chefe usa Professor, Sentinela e Alquimista. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
+Cada encontro comum reúne 2 a 4 inimigos da lista do mundo. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. Todo Elite contém um inimigo difícil da lista do mundo, com 22% de HP extra (mínimo de 6), +2 de dano e ações extras. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
 
-Os nós marcados com **Espelho** têm um segmento refletor fixo. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
+Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos para o próximo turno do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
 
 O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na run. Entrar em um nó ou retornar da recompensa não muda os encontros restantes. É impossível selecionar um nó bloqueado usando apenas o ID. A semente exibida permite reproduzir o mapa pela API `GameManager.prepare_run(modo, semente)` em testes.
 
@@ -117,7 +117,7 @@ Validação: **10.712 verificações renderizadas, sem falhas**, incluindo soltu
 
 ## Verificação e limites
 
-A suíte cobre importação/compilação dos recursos, 60 sementes de mapa, determinismo das ofertas, conservação das pilhas, apresentação normal/difícil de todas as cartas, arraste real, cancelamento sem efeitos gratuitos, escudo/veneno/perfuração, ações inimigas, resultado único e navegação por sete etapas até o resumo. Uma regressão específica cobre um inimigo liberado enquanto outro ainda executa sua ação.
+A suíte cobre importação/compilação dos recursos, 60 combinações de mundo e semente, determinismo das ofertas, conservação das pilhas, apresentação normal/difícil, arraste real, escudo, veneno, perfuração, ações inimigas e navegação pelas 22 etapas até o resumo. Uma regressão específica cobre um inimigo liberado enquanto outro ainda executa sua ação.
 
 Validação do conteúdo antes da revisão visual, no Godot 4.6.3: **10.530 verificações headless e 10.537 renderizadas, sem falhas ou erros de script/runtime**. As sete verificações extras validam a gravação das capturas. O `git diff --check` também passou. Os totais incluem as verificações repetidas das 60 sementes, não representam essa quantidade de cenários de jogo diferentes. A rodada mais recente da revisão visual está registrada acima.
 

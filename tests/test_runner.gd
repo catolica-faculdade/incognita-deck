@@ -31,6 +31,7 @@ func _run() -> void:
 	await _test_cards()
 	await _test_legacy_scenes()
 	await _test_generated_enemies()
+	await _test_hard_enemy_turn()
 	await _test_pointer_input()
 	await _test_symbol_hud()
 	await _test_hover_and_pause()
@@ -136,9 +137,12 @@ func _test_generation() -> void:
 	check(Generator.generate(17) == Generator.generate(17), "mapa estável por semente")
 	check(Generator.generate(17) != Generator.generate(18), "sementes criam mapas diferentes")
 	var seen_archetypes: Dictionary = {}
-	for seed_value in range(60):
-		var rows: Array = Generator.generate(seed_value)
-		check(rows.size() == 7 and rows[-1].size() == 1 and rows[-1][0].kind == "boss", "chefe alcançável no final")
+	var elite_archetypes: Dictionary = {}
+	for sample in range(60):
+		var world := sample % Generator.WORLDS.size()
+		var rows: Array = Generator.generate(sample, world)
+		check(rows.size() == Generator.WORLDS[world].stages and rows[-1].size() == 1 and rows[-1][0].kind == "boss",
+			"chefe alcançável no final de cada mundo")
 		var reachable: Array = []
 		for node in rows[0]:
 			reachable.append(node.id)
@@ -147,7 +151,7 @@ func _test_generation() -> void:
 			for node in row:
 				check(reachable.has(node.id), "nó possui rota de entrada")
 				check(node.tier >= 1 and node.tier <= 5, "tier limitado")
-				if node.row < 6:
+				if node.row < rows.size() - 1:
 					check(not node.next.is_empty(), "rota sem beco sem saída")
 				for next_id in node.next:
 					var next: Dictionary = Generator.find_node(rows, next_id)
@@ -158,11 +162,17 @@ func _test_generation() -> void:
 					var encounter: Dictionary = Generator.encounter(node)
 					check(encounter == Generator.encounter(node), "encontro não rerrola")
 					check(encounter.enemies.size() >= 2 and encounter.enemies.size() <= 4, "composição limitada")
+					var elites := 0
 					for enemy in encounter.enemies:
 						seen_archetypes[enemy.archetype] = true
-						check(Builder.ENEMY_SCENES.has(enemy.archetype), "arquétipo existe")
+						check(Builder.has_archetype(enemy.archetype), "arquétipo existe")
+						if enemy.elite:
+							elites += 1
+							elite_archetypes[enemy.archetype] = true
+							check(Generator.ELITE_POOLS[world].has(enemy.archetype), "inimigo difícil pertence à pool Elite")
+					check(elites == (1 if node.kind == "elite" else 0), "todo Elite contém um inimigo difícil obrigatório")
 			reachable = following
-	check(seen_archetypes.size() == 8, "geração usa oito arquétipos")
+	check(seen_archetypes.size() == 20 and elite_archetypes.size() == 5, "mapas usam 20 arquétipos, cinco reservados aos Elites")
 
 func _clear_scene() -> void:
 	get_tree().paused = false
@@ -273,7 +283,9 @@ func _test_generated_enemies() -> void:
 	GameManager.level = 6
 	GameManager.current_encounter = Generator.encounter({"seed":17, "tier":5, "kind":"boss"})
 	var boss_battle = await _show_scene("res://world/battle_system/battle_system.tscn")
-	check(boss_battle.is_boss_fight and get_tree().get_nodes_in_group("enemies").size() == 3, "chefe procedural tem composição própria")
+	check(boss_battle.is_boss_fight and get_tree().get_nodes_in_group("enemies").size() == 2
+		and get_tree().get_nodes_in_group("enemies").any(func(enemy: Node): return enemy.display_name == "Professor"),
+		"chefe procedural tem composição própria")
 	await _capture("new-enemies.png")
 
 func _capture(filename: String) -> void:
@@ -398,7 +410,7 @@ func _test_hover_and_pause() -> void:
 	enemy._refresh_hud()
 	check(not enemy.hud.poison_marker.visible, "fim do veneno esconde marcador")
 	PauseMenu.pause()
-	check(PauseMenu.run_info_label.visible and "Turno 1" in PauseMenu.run_info_label.text and "Etapa 1/7" in PauseMenu.run_info_label.text and "Desafiador" in PauseMenu.run_info_label.text and "Modo Difícil" in PauseMenu.run_info_label.text, "pause reúne turno, etapa, dificuldade e modo")
+	check(PauseMenu.run_info_label.visible and "Turno 1" in PauseMenu.run_info_label.text and "Etapa 1/6" in PauseMenu.run_info_label.text and "Desafiador" in PauseMenu.run_info_label.text and "Modo Difícil" in PauseMenu.run_info_label.text, "pause reúne turno, etapa, dificuldade e modo")
 	await _capture("pause-run-info.png")
 	PauseMenu.resume()
 	battle = await _battle()
@@ -498,6 +510,43 @@ func _test_projectile_contacts() -> void:
 	await battle.execute_turn_actions()
 	check(enemies[0].health == 81 and enemies[0].poison_amount == 3, "primeiro acerto aplica veneno integral")
 	check(enemies[1].health == 65 and enemies[1].poison_amount == 4, "segunda passagem dá dano e acrescenta um de veneno")
+
+func _test_hard_enemy_turn() -> void:
+	var enemy_data := {"archetype":"compass", "position":Vector2(260, -240), "tier":3, "seed":17, "elite":false}
+	GameManager.prepare_run(false, 17)
+	var spec := Generator.encounter({"seed":17, "world":1, "tier":3, "kind":"elite"})
+	spec.enemies = [enemy_data]
+	GameManager.current_encounter = spec
+	await _show_scene("res://world/battle_system/battle_system.tscn")
+	var ordinary = get_tree().get_nodes_in_group("enemies")[0]
+	var hp: int = ordinary.max_health
+	var damage: int = ordinary.base_damage
+	enemy_data.elite = true
+	var battle = await _show_scene("res://world/battle_system/battle_system.tscn")
+	var elite = get_tree().get_nodes_in_group("enemies")[0]
+	check(elite.max_health > hp and elite.base_damage > damage, "difícil tem mais vida e dano no mesmo tier")
+	elite.turns_taken = 2
+	elite.plan_next_action()
+	check(elite.planned_action == "fortify", "difícil tem ação extra de escudo e força")
+	elite.turns_taken = 5
+	elite.plan_next_action()
+	check(elite.planned_action == "pressure", "difícil tem ação extra de ataque e fraqueza")
+	var intents: Dictionary = {}
+	for turn in range(12):
+		elite.turns_taken = turn
+		elite.plan_next_action()
+		intents[elite.planned_action] = true
+	check(intents.size() == 7, "duas intenções extras preservam as cinco ações originais do Compasso")
+	elite.turns_taken = 0
+	elite.plan_next_action()
+	await battle.execute_turn_actions()
+	check(battle.mirror_segments.size() == 1, "inimigo coloca espelho para o próximo disparo")
+	battle.rebuild_cards_formula([Catalog.get_card(1)])
+	check(battle.preview_shot.visible and battle.preview_shot.texture == battle.WATER_SHOT,
+		"prévia exibe o símbolo de água")
+	await _capture("campaign-elite-compass.png")
+	await battle.execute_turn_actions()
+	check(battle.mirror_segments.is_empty(), "espelho inimigo expira após o turno do jogador")
 
 func _test_spiral_preview() -> void:
 	var battle = await _battle()
@@ -627,7 +676,7 @@ func _test_rest() -> void:
 		GameManager.player_health = 30
 		var deck_before: Array = GameManager.run_deck.duplicate()
 		await _show_scene("res://world/map/procedural_map.tscn")
-		check(GameManager.select_map_node("0:0"), "nó de descanso abre a escolha")
+		check(GameManager.select_map_node("0:0:0"), "nó de descanso abre a escolha")
 		await get_tree().scene_changed
 		var screen := get_tree().current_scene
 		check(GameManager.current_context == GameManager.Context.REST and GameManager.player_health == 30,
@@ -644,7 +693,7 @@ func _test_rest() -> void:
 		check(not GameManager.complete_rest(), "descanso não permite acumular benefícios")
 		await get_tree().scene_changed
 		check(GameManager.player_health == (30 if remove_card else 62), "descanso aplica apenas o benefício escolhido")
-		check(GameManager.run_deck == deck_before and GameManager.visited_nodes == ["0:0"],
+		check(GameManager.run_deck == deck_before and GameManager.visited_nodes == ["0:0:0"],
 			"descanso conclui o nó e remove até uma cópia escolhida")
 
 func _test_freed_enemy_during_turn() -> void:
@@ -678,12 +727,12 @@ func _test_navigation() -> void:
 	get_tree().current_scene.hard_button.pressed.emit()
 	await get_tree().scene_changed
 	check(GameManager.hard_mode and GameManager.current_context == GameManager.Context.MAP, "difícil abre mapa")
-	check(get_tree().current_scene.node_buttons.size() == 19, "mapa renderiza todos os nós")
+	check(get_tree().current_scene.node_buttons.size() == 16, "mapa renderiza todos os nós")
 	var background = get_tree().current_scene.get_node("DoodleBackground")
 	check(background.texture.resource_path == "res://assets/backgrounds/background_map.png", "mapa usa background original")
 	check(background.get_rect().size.is_equal_approx(get_viewport().get_visible_rect().size), "background do mapa preenche viewport")
 	await _capture("new-procedural-map.png")
-	check(not GameManager.select_map_node("6:0"), "não pula direto ao chefe")
+	check(not GameManager.select_map_node("0:5:0"), "não pula direto ao chefe")
 	var map_before: Array = GameManager.map_rows.duplicate(true)
 	var node_id: String = GameManager.available_nodes[0]
 	check(not get_tree().current_scene.node_buttons[node_id].disabled, "nó disponível tem botão ativo")
@@ -700,25 +749,40 @@ func _test_full_run() -> void:
 	GameManager.begin_run(false, 991)
 	await get_tree().scene_changed
 	var steps := 0
-	while not GameManager.run_complete and steps < 8:
-		var id: String = GameManager.available_nodes[0]
-		check(GameManager.select_map_node(id), "run completa escolhe próximo nó")
-		await get_tree().scene_changed
+	var bosses: Array[String] = []
+	while not GameManager.run_complete and steps < Generator.TOTAL_STAGES:
+		if GameManager.current_context == GameManager.Context.MAP:
+			var id: String = GameManager.available_nodes[0]
+			check(GameManager.select_map_node(id), "run completa escolhe próximo nó")
+			await get_tree().scene_changed
 		if GameManager.current_context == GameManager.Context.REST:
 			get_tree().current_scene._heal()
 			await get_tree().scene_changed
 		if GameManager.current_context == GameManager.Context.COMBAT:
 			var battle := get_tree().current_scene
+			var boss_name: String = GameManager.current_encounter.boss_name
+			if not boss_name.is_empty():
+				bosses.append(boss_name)
+				await _capture("campaign-boss-%d.png" % bosses.size())
 			for enemy in get_tree().get_nodes_in_group("enemies"):
 				enemy.health = 0
 			await battle.execute_turn_actions()
 			var screen = battle.get_node("RewardScreen")
-			screen._choose(-1)
+			var expected_deck: Array = GameManager.run_deck.duplicate()
+			var reward: int = GameManager.pending_rewards[0].id
+			expected_deck.append(reward)
+			var hp: int = GameManager.player_health
+			screen._choose(reward)
 			await get_tree().scene_changed
+			check(GameManager.run_deck == expected_deck and GameManager.player_health == hp,
+				"transições preservam a vida e a recompensa no baralho")
+			if boss_name in ["Professor", "Alunos"]:
+				await _capture("campaign-world-%d.png" % (GameManager.world_index + 1))
 		steps += 1
-	check(steps == 7 and GameManager.run_complete, "sete etapas alcançam conclusão")
+	check(steps == Generator.TOTAL_STAGES and GameManager.run_complete, "22 etapas alcançam conclusão")
+	check(bosses == ["Professor", "Alunos", "Diretor", "ENEM"], "ordem dos chefes termina na prova final")
 	check(GameManager.current_context == GameManager.Context.FINISHED, "chefe leva ao resumo após recompensa")
-	check(GameManager.visited_nodes.size() == 7, "cada etapa concluída uma vez")
+	check(GameManager.visited_nodes.size() == 21, "cada nó dos três mapas é concluído uma vez")
 	await _capture("new-run-complete.png")
 	GameManager.start_run()
 	await get_tree().scene_changed

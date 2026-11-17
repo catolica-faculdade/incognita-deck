@@ -25,7 +25,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 ## Campanha e entrega
 
-- A campanha da entrega base consiste nas sete etapas do mapa atual e termina no Professor. Ambos os modos usam as mesmas regras de combate. O modo Difícil oculta as ilustrações das cartas.
+- A primeira entrega base usava sete etapas até o Professor. A campanha atual está descrita nos passos 9 e 10. Ambos os modos usam as mesmas regras de combate. O modo Difícil oculta as ilustrações das cartas.
 - Rigidez, a regra de borda de 3× da arena e o salto da animação longa ficam para a definição da expansão de trajetórias.
 - O responsável pela entrega vai gerar o executável com o preset **Windows Desktop**.
 
@@ -35,7 +35,16 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 - **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
 - **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem dez voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. A composição simultânea fica para uma etapa posterior.
 - **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
-- **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo. A colocação de espelhos por inimigos fica para o passo 9.
+- **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo.
+
+## Passos 9 e 10
+
+- **Campanha.** O Plano Cartesiano tem seis etapas e termina no Professor. Sala de Aula tem sete e termina nos Alunos. Diretoria tem oito e termina no Diretor. O ENEM é a 22ª etapa e acontece fora do mapa. Vida e baralho, incluindo a recompensa do chefe, continuam na transição. Cada mundo tem quatro inimigos comuns exclusivos e usa uma tonalidade própria no papel do mapa e da arena.
+- **Pool de Elites.** Sentinela e Alquimista no Plano Cartesiano. Tesoura, Compasso e Sentinela na Sala de Aula. Relógio, Compasso e Alquimista na Diretoria. Todo nó Elite reserva uma vaga a um deles. Esse inimigo recebe +22% de vida (ao menos +6 HP), +2 de dano e duas intenções adicionais intercaladas com suas ações originais.
+- **Chefes e espelhos.** Compasso, Alunos, Diretor e ENEM podem posicionar espelhos para o próximo turno do jogador. O espelho temporário entra na prévia e some ao fim desse turno. A arena mantém no máximo quatro espelhos simultâneos.
+- **Arte.** Treze sprites transparentes de inimigos em `assets/enemies/doodle/`. O jato preto e branco, em `assets/projectiles/water_doodle.png`, aponta para a direção final da prévia e gira com o disparo durante o percurso.
+
+As artes foram geradas com o ImageGen integrado e recortadas em sprites individuais. Os três pedidos de geração foram um atlas 3×3 com Lápis, Régua, Tesoura, Caderno, Compasso, Relógio, Alunos, Diretor e ENEM, um atlas 2×2 com Borracha, Clipe, Transferidor e Grampeador e um jato d'água horizontal voltado à direita com gotas atrás. Para os três, a direção visual foi contorno preto irregular de caneta, preenchimento branco, silhueta legível em tamanho reduzido, fundo transparente, sem texto ou cenário.
 
 ## Validação
 
@@ -48,16 +57,18 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão da regra atual com renderização | 10.732 verificações, zero falhas. Revisão visual das cartas selecionadas para manter |
 | Regressão do painel de mensagens com renderização | 10.739 verificações, zero falhas. Revisão visual dos efeitos e dos espaços de retenção |
 | Regressão dos passos 6 a 8 com renderização | 10.793 verificações, zero falhas. Revisão visual de recompensa, descanso, espiral e espelho |
+| Regressão dos passos 9 e 10 com renderização | 11.774 verificações, zero falhas. Inclui a garantia de inimigo difícil, a expiração do espelho e a campanha completa |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |
 | Playtest após os passos 6 a 8 | 4 vitórias em 4 runs, zero falhas de execução |
+| Playtest da campanha de três mundos | 3 vitórias em 4 runs, zero falhas de execução. A semente 991 terminou em derrota na 18ª etapa, na Diretoria |
 
-| Semente | Modo | Turnos | HP final | Resultado |
+| Semente | Modo | Turnos na campanha atual | HP final | Resultado |
 | --- | --- | ---: | ---: | --- |
-| 17 | Normal | 27 | 38 | Vitória |
-| 42 | Difícil | 19 | 80 | Vitória |
-| 991 | Normal | 31 | 59 | Vitória |
-| 12345 | Difícil | 35 | 80 | Vitória |
+| 17 | Normal | 96 | 55 | Vitória |
+| 42 | Difícil | 68 | 64 | Vitória |
+| 991 | Normal | 83 | 0 | Derrota na Diretoria |
+| 12345 | Difícil | 81 | 80 | Vitória |
 
-O playtest usa as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. A heurística mantém até duas cartas com base no valor atribuído a elas nas recompensas e escolhe cura no Descanso. Os atributos das cartas e dos inimigos existentes foram preservados.
+O playtest usa as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. A heurística mantém até duas cartas com base no valor atribuído a elas nas recompensas e escolhe cura no Descanso.

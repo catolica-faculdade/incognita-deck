@@ -13,7 +13,8 @@ func _ready() -> void:
 	GameManager.current_context = GameManager.Context.REWARD
 	var root := Control.new()
 	add_child(root)
-	var title := "Professor derrotado!" if GameManager.run_complete else "Vitória!"
+	var boss_name: String = GameManager.current_encounter.get("boss_name", "")
+	var title := "Vitória contra %s!" % boss_name if not boss_name.is_empty() else "Vitória!"
 	var elite: bool = GameManager.current_encounter.get("kind", "") == "elite"
 	var content := Style.screen(root, title, "Escolha 1 carta. Recompensa de Elite com rara garantida." if elite else "Escolha 1 carta.")
 	var center := CenterContainer.new()
