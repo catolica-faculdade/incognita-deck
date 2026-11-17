@@ -17,6 +17,11 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 - Cartas jogadas e cartas deixadas sem marcar vão para a pilha de descarte. Manter cartas custa zero energia. Se a pilha de compra esgotar durante a compra, a pilha de descarte é embaralhada para completá-la.
 - O HUD indica o tamanho da mão e das duas pilhas. Quando a mão cresce, as cartas se sobrepõem parcialmente e a carta apontada aparece na frente.
 
+## Painel de mensagens
+
+- As instruções e os efeitos das cartas preparadas, como veneno e escudo, aparecem num painel de papel no canto superior direito.
+- Em **Fim do turno**, o painel mostra dois espaços em formato de carta. O símbolo `+` indica um espaço disponível e a marca verde com `✓` confirma cada carta escolhida para manter.
+
 ## Campanha e entrega
 
 - A campanha da entrega base consiste nas sete etapas do mapa atual e termina no Professor. Ambos os modos usam as mesmas regras de combate. O modo Difícil oculta as ilustrações das cartas.
@@ -32,6 +37,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão antes das mudanças | 10.701 verificações, zero falhas |
 | Regressão da versão anterior com renderização | 10.736 verificações, zero falhas |
 | Regressão da regra atual com renderização | 10.732 verificações, zero falhas. Revisão visual das cartas selecionadas para manter |
+| Regressão do painel de mensagens com renderização | 10.739 verificações, zero falhas. Revisão visual dos efeitos e dos espaços de retenção |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

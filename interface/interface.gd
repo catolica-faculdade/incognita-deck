@@ -12,6 +12,7 @@ const CARD_SCENE = preload("res://card/card.tscn")
 const PLAYER_HUD = preload("res://world/player/player_interface.tscn")
 const CARDS_PER_TURN := 5
 const RETENTION_LIMIT := 2
+const MESSAGE_PANEL_WIDTH := 296.0
 const ENERGY_IMAGES = [
 	preload("res://energy/energy_0.png"), preload("res://energy/energy_1.png"),
 	preload("res://energy/energy_2.png"), preload("res://energy/energy_3.png"),
@@ -30,7 +31,13 @@ var energy_icons: Array[AtlasTexture] = []
 var player_interface: Control
 var buff_label: Label
 var deck_label: Label
+var message_panel: PanelContainer
+var message_title: Label
 var effect_label: Label
+var retention_row: HBoxContainer
+var retention_slots: Array[Label] = []
+var empty_slot_style: StyleBoxFlat
+var filled_slot_style: StyleBoxFlat
 var end_turn_button: Button
 var confirm_keep_button: Button
 var clear_button: Button
@@ -71,9 +78,7 @@ func _build_ui() -> void:
 	played_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(played_container)
 	played_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	effect_label = Style.label("Arraste as cartas para esta área", 15)
-	effect_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	root.add_child(effect_label)
+	_build_message_panel()
 	hand_panel = Panel.new()
 	hand_panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	hand_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -109,6 +114,55 @@ func _build_ui() -> void:
 	view_deck.name = "ViewDeck"
 	root.add_child(view_deck)
 
+func _build_message_panel() -> void:
+	message_panel = PanelContainer.new()
+	message_panel.custom_minimum_size.x = MESSAGE_PANEL_WIDTH
+	message_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("fffcf3")
+	paper.border_color = Color("b7ab91")
+	paper.set_border_width_all(1)
+	paper.set_corner_radius_all(10)
+	paper.shadow_color = Color(0.20, 0.16, 0.10, 0.16)
+	paper.shadow_size = 4
+	paper.shadow_offset = Vector2(0, 2)
+	paper.set_content_margin(SIDE_LEFT, 14)
+	paper.set_content_margin(SIDE_RIGHT, 14)
+	paper.set_content_margin(SIDE_TOP, 10)
+	paper.set_content_margin(SIDE_BOTTOM, 12)
+	message_panel.add_theme_stylebox_override("panel", paper)
+	root.add_child(message_panel)
+
+	var content := VBoxContainer.new()
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_theme_constant_override("separation", 6)
+	message_panel.add_child(content)
+	message_title = Style.readable_label("", 19)
+	content.add_child(message_title)
+	effect_label = Style.readable_label("", 15)
+	effect_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	content.add_child(effect_label)
+
+	retention_row = HBoxContainer.new()
+	retention_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	retention_row.add_theme_constant_override("separation", 8)
+	content.add_child(retention_row)
+	empty_slot_style = StyleBoxFlat.new()
+	empty_slot_style.bg_color = Color("f4eddb")
+	empty_slot_style.border_color = Color("a79a7d")
+	empty_slot_style.set_border_width_all(1)
+	empty_slot_style.set_corner_radius_all(5)
+	filled_slot_style = empty_slot_style.duplicate() as StyleBoxFlat
+	filled_slot_style.bg_color = Color("d6ebd2")
+	filled_slot_style.border_color = Color("47724a")
+	for i in range(RETENTION_LIMIT):
+		var slot := Style.readable_label("+", 19)
+		slot.custom_minimum_size = Vector2(34, 44)
+		slot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		slot.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		retention_row.add_child(slot)
+		retention_slots.append(slot)
+
 func _layout() -> void:
 	var dimensions := get_viewport().get_visible_rect().size
 	player_interface.position = Vector2(roundf((dimensions.x - 600) * 0.5), 8)
@@ -121,8 +175,7 @@ func _layout() -> void:
 	drop_zone.size = Vector2(dimensions.x - 340, dimensions.y - 348)
 	played_container.position = Vector2(roundf((dimensions.x - 672) * 0.5), dimensions.y - 424)
 	played_container.size = Vector2(672, 196)
-	effect_label.position = Vector2(16, 188)
-	effect_label.size = Vector2(280, 90)
+	message_panel.position = Vector2(dimensions.x - MESSAGE_PANEL_WIDTH - 16, 10)
 	hand_panel.position = Vector2(0, dimensions.y - 216)
 	hand_panel.size = Vector2(dimensions.x, 216)
 	var hand_width := maxf(dimensions.x - 480, 1.0)
@@ -266,19 +319,29 @@ func _refresh_cards() -> void:
 			card.set_affordable(affordable or card.can_select_retention)
 			if retained_cards.has(card):
 				card.modulate = Color(0.70, 1.0, 0.72)
+	_refresh_message_panel()
+
+func _refresh_message_panel() -> void:
+	message_panel.visible = selection.enabled
+	retention_row.visible = choosing_retention
 	if choosing_retention:
-		effect_label.text = "Escolha até %d cartas para manter.\nAs demais serão descartadas.\nSelecionadas: %d/%d" % [
-			RETENTION_LIMIT, retained_cards.size(), RETENTION_LIMIT
-		]
-		effect_label.show()
+		message_title.text = "Manter cartas"
+		effect_label.text = "Escolha até %d cartas da mão.\nAs demais vão para o descarte." % RETENTION_LIMIT
+		for i in range(retention_slots.size()):
+			var slot := retention_slots[i]
+			var filled := i < retained_cards.size()
+			slot.text = "✓" if filled else "+"
+			slot.add_theme_stylebox_override("normal", filled_slot_style if filled else empty_slot_style)
+		message_panel.reset_size()
 		return
 	var effects: Dictionary = Effects.aggregate(selection.cards_data())
 	var parts: Array[String] = []
 	for key in ["heal", "shield", "poison", "damage"]:
 		if int(effects[key]) > 0:
 			parts.append({"heal":"Cura", "shield":"Escudo", "poison":"Veneno nos alvos", "damage":"Dano extra"}[key] + " +%d" % effects[key])
-	effect_label.text = " • ".join(parts)
-	effect_label.visible = not parts.is_empty()
+	message_title.text = "Preparar jogada" if parts.is_empty() else "Efeitos da jogada"
+	effect_label.text = "Arraste cartas para a área de preparo." if parts.is_empty() else "\n".join(parts)
+	message_panel.reset_size()
 
 func update_equation(text: String) -> void:
 	equation_label.text = text

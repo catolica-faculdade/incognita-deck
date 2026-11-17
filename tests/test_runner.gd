@@ -351,6 +351,8 @@ func _test_hover_and_pause() -> void:
 	check(enemy.hud.health_label.text == "5/%d" % enemy.max_health and enemy.hud.shield_label.text == "4", "hover mostra totais de vida e escudo")
 	check(enemy.hud.name_label.text == "Cubo", "hover mostra somente nome sem papel")
 	check(enemy.hud.hover_info.get_child(1).size.is_equal_approx(Vector2(22, 22)), "símbolo de escudo mantém tamanho do hover")
+	enemy.idle_height = 0
+	await _mouse_move(Vector2(24, 150))
 	await _mouse_move(enemy.hud.body_hover.get_global_transform_with_canvas() * (enemy.hud.body_hover.size * 0.5))
 	await get_tree().process_frame
 	check(enemy.hud.hover_info.visible, "hover do sprite mostra nome e valores")
@@ -417,14 +419,22 @@ func _test_retained_hand() -> void:
 	var ui = battle.combat_ui
 	var hand: Array = ui.card_container.get_children()
 	check(hand.size() == 5, "mão inicial de cinco cartas")
+	check(is_equal_approx(ui.message_panel.get_global_rect().end.x, get_viewport().get_visible_rect().end.x - 16),
+		"mensagens ficam no canto superior direito")
 	ui.end_turn_button.pressed.emit()
+	check(ui.retention_row.visible and ui.retention_slots[0].text == "+" and ui.retention_slots[1].text == "+",
+		"dois espaços vazios indicam a capacidade de retenção")
 	for i in range(3):
 		var card := hand[i] as Control
 		var point := card.get_global_rect().position + Vector2(22, 55)
 		await _mouse_move(point)
 		await _mouse_button(point, true)
 		await _mouse_button(point, false)
+		if i == 0:
+			check(ui.retention_slots[0].text == "✓" and ui.retention_slots[1].text == "+",
+				"primeira carta preenche um espaço")
 	check(ui.retained_cards == [hand[0], hand[1]], "mouse seleciona no máximo duas cartas para manter")
+	check(ui.retention_slots[0].text == "✓" and ui.retention_slots[1].text == "✓", "segunda carta completa os espaços")
 	check(ui.selection.current_energy == 5 and ui.deck.discard_pile.is_empty(), "escolher cartas para manter não altera a energia nem as pilhas")
 	await _capture("final-prototype-keep.png")
 	ui.confirm_keep_button.pressed.emit()
@@ -432,6 +442,7 @@ func _test_retained_hand() -> void:
 		"mantém as duas escolhidas e descarta as três restantes")
 	await _wait_turn(battle)
 	check(ui.card_container.get_child_count() == 7, "compra cinco além das duas conservadas")
+	check(not ui.retention_row.visible, "espaços somem ao voltar para a preparação")
 	check(hand[0].get_parent() == ui.card_container and hand[1].get_parent() == ui.card_container, "cartas escolhidas chegam ao novo turno")
 	await _capture("final-prototype-hand.png")
 	ui.end_turn_button.pressed.emit()
@@ -475,6 +486,8 @@ func _test_effect_resolution() -> void:
 	await _set_hand(ui, [1, 16, 17, 18, 19])
 	for card in ui.card_container.get_children():
 		ui._on_card_played(card)
+	check(ui.message_panel.visible and "Veneno nos alvos" in ui.effect_label.text, "painel mostra o veneno da jogada")
+	await _capture("final-prototype-effects.png")
 	check(battle.player.health == 40 and battle.player.shield_amount == 0, "seleção não aplica efeitos antecipados")
 	ui.return_all_cards_to_hand()
 	check(battle.player.health == 40 and ui.selection.current_energy == 5, "cancelar não permite cura gratuita")
