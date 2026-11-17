@@ -32,7 +32,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 ## Passos 6 a 8
 
 - **Elite.** Entre as três opções de recompensa há pelo menos uma carta rara. O jogo identifica as raras na tela de recompensa. O jogador ainda pode escolher qualquer uma das três ou pular.
-- **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
+- **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. A remoção usa a mesma apresentação de cartas do visualizador do baralho, agrupando cópias com um botão **Remover 1**. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
 - **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem quatro voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 70% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos.
 - **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
 - **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo.

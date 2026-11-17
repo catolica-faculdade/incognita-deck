@@ -805,8 +805,13 @@ func _test_rest() -> void:
 		check(not GameManager.complete_rest(9999), "descanso rejeita carta que não pertence ao baralho")
 		if remove_card:
 			screen._show_removal(true)
+			var grid := screen.find_child("RemovalCards", true, false) as HFlowContainer
+			var first := grid.get_child(0)
+			var card := first.find_child("CardPreview", true, false)
+			check(card.card_data.id == 1 and first.get_node("Copies").text == "2 cópias",
+				"remoção mostra a carta original e agrupa as cópias")
 			await _capture("final-prototype-rest-remove.png")
-			screen._remove(1)
+			first.get_node("RemoveCopy").pressed.emit()
 			deck_before.erase(1)
 		else:
 			await _capture("final-prototype-rest.png")
