@@ -27,6 +27,7 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 	for row in range(stages):
 		var nodes: Array = []
 		var boss := row == stages - 1
+		var has_challenging_opening := false
 		for lane in range(1 if boss else 3):
 			var tier := clampi(1 + world + floori(row / 3.0) + rng.randi_range(0, 1), 1, 5)
 			var kind := "boss" if boss else "combat"
@@ -42,6 +43,14 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 			if boss:
 				tier = 3 + world
 			var node_seed := int(rng.randi())
+			if row == 0:
+				tier = 1
+			elif row == 1:
+				var opening_roll := node_seed % 100
+				tier = 1 if opening_roll < 40 else 2
+				if opening_roll >= 80 and kind != "rest" and not has_challenging_opening:
+					tier = 3
+					has_challenging_opening = true
 			var rules := arena_rules(world, row, kind, node_seed)
 			nodes.append({"id": "%d:%d:%d" % [world, row, lane], "world": world, "row": row, "lane": lane,
 				"kind": kind, "tier": tier, "seed": node_seed, "mirror": rules.mirror,
@@ -59,7 +68,7 @@ static func arena_rules(world: int, row: int, kind: String, seed_value: int) -> 
 	return {
 		"shift": eligible and world == 0 and seed_value % 100 < 16 + row * 9,
 		"mirror": eligible and world >= 1 and seed_value % 100 < 20 + world * 7 + row * 6,
-		"barrier": eligible and world == 2 and floori(seed_value / 100.0) % 100 < 17 + row * 8
+		"barrier": eligible and world == 2 and row >= 2 and floori(seed_value / 100.0) % 100 < 17 + row * 8
 	}
 
 static func arena_label(node: Dictionary) -> String:
