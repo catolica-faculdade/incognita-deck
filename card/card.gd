@@ -13,6 +13,8 @@ const SYMBOLS = {
 	"diagonal": preload("res://assets/cards/general/symbol_up.png"),
 	"quadratic": preload("res://assets/cards/general/symbol_arc.png"),
 	"special": preload("res://assets/cards/general/symbol_wave.png"),
+	"spiral": preload("res://assets/cards/general/symbol_wave.png"),
+	"reflection": preload("res://assets/cards/general/symbol_up.png"),
 	"heal": preload("res://assets/interface/hearth_icon.png"),
 	"shield": preload("res://assets/interface/shield_icon.png"),
 	"poison": preload("res://assets/interface/poison_icon.png"),

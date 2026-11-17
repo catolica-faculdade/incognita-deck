@@ -14,7 +14,8 @@ func _ready() -> void:
 	var root := Control.new()
 	add_child(root)
 	var title := "Professor derrotado!" if GameManager.run_complete else "Vitória!"
-	var content := Style.screen(root, title, "Escolha 1 carta.")
+	var elite: bool = GameManager.current_encounter.get("kind", "") == "elite"
+	var content := Style.screen(root, title, "Escolha 1 carta. Recompensa de Elite com rara garantida." if elite else "Escolha 1 carta.")
 	var center := CenterContainer.new()
 	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(center)
@@ -32,6 +33,11 @@ func _ready() -> void:
 		card_center.add_child(card)
 		card.setup(data)
 		offered_cards.append(card)
+		var rarity := Style.readable_label("Rara" if data.get("rare", false) else "", 15)
+		rarity.custom_minimum_size.y = 22
+		rarity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		rarity.add_theme_color_override("font_color", Color("755325"))
+		column.add_child(rarity)
 		var button := Style.button("Escolher", _choose.bind(int(data.id)))
 		column.add_child(button)
 		choice_buttons.append(button)

@@ -2,6 +2,7 @@ extends Node
 
 const Formula = preload("res://core/combat/trajectory_formula.gd")
 const Targeting = preload("res://core/combat/trajectory_targeting.gd")
+const Reflection = preload("res://core/combat/trajectory_reflection.gd")
 const Effects = preload("res://core/combat/card_effects.gd")
 const Builder = preload("res://world/combat/encounter_builder.gd")
 const Generator = preload("res://core/run/run_generator.gd")
@@ -14,6 +15,7 @@ var formula = Formula.new()
 var current_enemies: Array = []
 var trajectory_contacts: Array[Dictionary] = []
 var trajectory_points := PackedVector2Array()
+var mirror_segments: Array[PackedVector2Array] = []
 var player: Node2D
 var trajectory: Line2D
 var combat_ui: CanvasLayer
@@ -25,11 +27,12 @@ var is_boss_fight := false
 
 func _ready() -> void:
 	GameManager.current_context = GameManager.Context.COMBAT
+	var spec: Dictionary = {}
 	if not GameManager.scenario_to_load.is_empty():
 		scenario_container = load(GameManager.scenario_to_load).instantiate()
 		is_boss_fight = GameManager.scenario_to_load.contains("boss")
 	else:
-		var spec: Dictionary = GameManager.current_encounter
+		spec = GameManager.current_encounter
 		if spec.is_empty():
 			spec = Generator.encounter({"seed": 42,"tier": 1,"kind": "combat"})
 		scenario_container = Builder.build(spec)
@@ -38,6 +41,11 @@ func _ready() -> void:
 	_name_enemies()
 	player = scenario_container.get_node("player")
 	trajectory = player.trajectory
+	for segment: PackedVector2Array in spec.get("mirrors", []):
+		mirror_segments.append(PackedVector2Array([
+			trajectory.to_local(scenario_container.to_global(segment[0])),
+			trajectory.to_local(scenario_container.to_global(segment[1]))
+		]))
 	combat_ui = combat_ui_scene.instantiate()
 	add_child(combat_ui)
 	combat_ui.end_turn_requested.connect(execute_turn_actions)
@@ -84,9 +92,12 @@ func rebuild_cards_formula(cards: Array) -> void:
 	if not can_edit_selection():
 		return
 	formula.rebuild(cards)
-	trajectory.show_formula(formula)
+	trajectory.points = projected_path(formula)
 	combat_ui.update_equation(formula.equation_text())
 	evaluate_trajectory()
+
+func projected_path(composition: RefCounted) -> PackedVector2Array:
+	return Reflection.reflect_path(trajectory.sample_formula(composition), mirror_segments)
 
 func evaluate_trajectory() -> void:
 	clear_target()

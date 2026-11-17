@@ -5,9 +5,11 @@ const Generator = preload("res://core/run/run_generator.gd")
 const MAIN_SCENE := "res://main/main.tscn"
 const BATTLE_SCENE := "res://world/battle_system/battle_system.tscn"
 const MAP_SCENE := "res://world/map/procedural_map.tscn"
+const REST_SCENE := "res://interface/rest_screen.tscn"
 const FINAL_LEVEL := Generator.ROW_COUNT
+const REST_HEAL_FRACTION := 0.40
 
-enum Context { MAIN_MENU, MAP, COMBAT, SETUP, REWARD, FINISHED }
+enum Context { MAIN_MENU, MAP, COMBAT, SETUP, REWARD, FINISHED, REST }
 var current_context := Context.MAIN_MENU
 var scenario_to_load := "" # Somente para abrir os cenários antigos no editor.
 var map_to_load := "map_1"
@@ -72,14 +74,14 @@ func get_run_deck() -> Array:
 	return Catalog.STARTER_DECK.duplicate() if run_deck.is_empty() else run_deck.duplicate()
 
 func select_map_node(id: String) -> bool:
-	if _changing_scene or reward_pending or run_complete or not available_nodes.has(id):
+	if _changing_scene or current_context == Context.REST or reward_pending or run_complete or not available_nodes.has(id):
 		return false
 	var node := Generator.find_node(map_rows, id)
 	if node.is_empty() or visited_nodes.has(id):
 		return false
 	current_node = node.duplicate(true)
 	if node.kind == "rest":
-		complete_rest()
+		open_rest()
 	else:
 		current_encounter = Generator.encounter(node)
 		scenario_to_load = ""
@@ -101,7 +103,8 @@ func complete_combat(boss: bool) -> void:
 	reward_pending = true
 	run_complete = boss
 	_finish_node()
-	pending_rewards = Catalog.reward_choices(run_seed + victories * 7919 + int(current_encounter.get("seed", 0)))
+	var reward_seed := run_seed + victories * 7919 + int(current_encounter.get("seed", 0))
+	pending_rewards = Catalog.reward_choices(reward_seed, 3, current_encounter.get("kind", "") == "elite")
 
 func claim_reward(card_id: int = -1) -> bool:
 	if not reward_pending:
@@ -131,11 +134,26 @@ func continue_after_reward() -> void:
 	else:
 		return_to_map()
 
-func complete_rest() -> void:
-	player_health = mini(player_health + int(max_player_health * 0.30), max_player_health)
+func open_rest() -> void:
+	_change_scene(REST_SCENE, Context.REST)
+
+func rest_heal_amount() -> int:
+	return int(max_player_health * REST_HEAL_FRACTION)
+
+func complete_rest(remove_card_id: int = -1) -> bool:
+	if _changing_scene or current_context != Context.REST:
+		return false
+	if remove_card_id == -1:
+		player_health = mini(player_health + rest_heal_amount(), max_player_health)
+	else:
+		var index := run_deck.find(remove_card_id)
+		if index < 0 or run_deck.size() <= 1:
+			return false
+		run_deck.remove_at(index)
 	_finish_node()
 	current_node.clear()
 	return_to_map()
+	return true
 
 func _finish_node() -> void:
 	if current_node.is_empty():

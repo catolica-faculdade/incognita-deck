@@ -1,5 +1,7 @@
 extends RefCounted
 
+const Style = preload("res://interface/ui_style.gd")
+
 const ENEMY_SCENES = {
 	"cube": preload("res://world/enemy/enemy_combat/cube/cube_combat.tscn"),
 	"ghost": preload("res://world/enemy/enemy_combat/ghost/ghost_combat.tscn"),
@@ -36,6 +38,8 @@ static func build(spec: Dictionary) -> Node2D:
 		enemy.enemy_seed = int(data.seed)
 		enemy.difficulty_tier = int(data.tier)
 		arena.add_child(enemy)
+	for mirror: PackedVector2Array in spec.get("mirrors", []):
+		_draw_mirror(arena, mirror)
 	var music := AudioStreamPlayer.new()
 	music.stream = preload("res://assets/music/incognita_deck_combate.mp3")
 	music.bus = &"Music"
@@ -43,3 +47,25 @@ static func build(spec: Dictionary) -> Node2D:
 	music.autoplay = true
 	arena.add_child(music)
 	return arena
+
+static func _draw_mirror(arena: Node2D, segment: PackedVector2Array) -> void:
+	var outline := Line2D.new()
+	outline.points = segment
+	outline.width = 10.0
+	outline.default_color = Color("27596a")
+	outline.antialiased = true
+	arena.add_child(outline)
+	var glass := Line2D.new()
+	glass.points = segment
+	glass.width = 4.0
+	glass.default_color = Color("bdefff")
+	glass.antialiased = true
+	outline.add_child(glass)
+	var label := Style.readable_label("Espelho", 14)
+	label.size.x = 88
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2((segment[0].x + segment[1].x) * 0.5 - label.size.x * 0.5, minf(segment[0].y, segment[1].y) - 24)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_color_override("font_outline_color", Color("fffdf5"))
+	label.add_theme_constant_override("outline_size", 4)
+	outline.add_child(label)

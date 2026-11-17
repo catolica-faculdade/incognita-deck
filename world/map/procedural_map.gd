@@ -46,7 +46,7 @@ func _ready() -> void:
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.custom_minimum_size = Vector2(32, 32)
 		legend.add_child(icon)
-		legend.add_child(Style.label({"combat":"Combate / Elite", "rest":"Descanso (+24 HP)", "boss":"Professor"}[kind], 14))
+		legend.add_child(Style.label({"combat":"Combate / Elite", "rest":"Descanso", "boss":"Professor"}[kind], 14))
 	footer = Style.label("Siga os círculos de lápis. A dificuldade está abaixo de cada encontro.  •  Semente %d" % GameManager.run_seed, 13)
 	add_child(footer)
 	deck_button = Style.button("Ver baralho", _show_deck)
@@ -84,7 +84,10 @@ func _create_node(node: Dictionary) -> void:
 	caption.size = Vector2(136, 26)
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	holder.add_child(caption)
-	var tier := Style.label("+24 HP" if node.kind == "rest" else Generator.TIERS[int(node.tier) - 1], 12)
+	var detail: String = "Curar ou remover" if node.kind == "rest" else Generator.TIERS[int(node.tier) - 1]
+	if node.get("mirror", false):
+		detail += " • Espelho"
+	var tier := Style.label(detail, 12)
 	tier.position = Vector2(-9, 113)
 	tier.size = Vector2(136, 24)
 	tier.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -95,6 +98,8 @@ func _create_node(node: Dictionary) -> void:
 	if icon.disabled and not visited:
 		holder.modulate = Color(0.75, 0.75, 0.75, 0.58)
 	icon.tooltip_text = "%s • %s\n%s" % [kind, tier.text, "Concluído" if visited else ("Escolher este caminho" if not icon.disabled else "Siga uma rota adjacente para chegar aqui")]
+	if node.kind == "elite":
+		icon.tooltip_text += "\nRecompensa com carta rara garantida."
 
 func _layout() -> void:
 	var dimensions := get_viewport_rect().size

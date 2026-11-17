@@ -12,7 +12,7 @@ O modo **Difícil** altera a apresentação das cartas: remove a arte de fundo e
 
 ## Cartas e baralho
 
-O catálogo tem 30 cartas, incluindo 15 adições. Cada carta possui custo permanente no canto superior direito; cartas sem energia suficiente ficam acinzentadas. Jogar/remover cartas somente prepara a seleção. Cura, escudo e outros efeitos só são aplicados ao confirmar o turno.
+O catálogo tem 32 cartas, incluindo Espiral e Reflexão em X. Cada carta possui custo no canto superior direito. Cartas sem energia suficiente ficam acinzentadas. Jogar uma carta ou devolvê-la à mão altera a seleção. Cura, escudo e outros efeitos são aplicados ao confirmar o turno.
 
 | Nova carta | Custo | Efeito |
 | --- | ---: | --- |
@@ -52,13 +52,17 @@ Na composição matemática, ondas agora conservam sua frequência/comprimento e
 
 A convenção herdada para composições com curva é mantida: o deslocamento Y entra como termo constante, enquanto uma seleção apenas linear define o ponto final. A equipe ainda pode revisar essa convenção pedagógica separadamente.
 
+A Espiral usa o fim do percurso como centro e cresce linearmente em função do ângulo até completar dez voltas. A Reflexão em X inverte a coordenada Y de todo o percurso já montado. O jogo compõe primeiro as cartas de deslocamento, parábola e onda, depois aplica Espiral e Reflexão na ordem em que foram preparadas.
+
 ## Mapa e encontros
 
 Cada run gera 7 etapas: 6 etapas com 3 escolhas e uma etapa final com o Professor. Um nó libera nós da próxima etapa na mesma coluna ou nas colunas vizinhas; todos os caminhos têm continuidade e todos chegam ao chefe. Rotas disponíveis, visitadas e bloqueadas ficam indicadas na tela.
 
 Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier é sorteado com progressão por etapa; elites recebem um tier adicional, limitado a 5. Depois da primeira etapa há chance de descanso (16%) e, a partir da terceira, de elite (24%). A quinta etapa garante um descanso na coluna central; ele precisa ser alcançado pela rota escolhida.
 
-Cada encontro comum é montado com 2 a 4 inimigos, escolhidos de pools compatíveis com o tier, em posições sorteadas e limitadas à arena. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. O chefe usa Professor, Sentinela e Alquimista. O descanso recupera 30% da vida máxima (24 HP), sem ultrapassar o máximo.
+Cada encontro comum é montado com 2 a 4 inimigos, escolhidos de pools compatíveis com o tier. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. O chefe usa Professor, Sentinela e Alquimista. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
+
+Os nós marcados com **Espelho** têm um segmento refletor fixo. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
 
 O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na run. Entrar em um nó ou retornar da recompensa não muda os encontros restantes. É impossível selecionar um nó bloqueado usando apenas o ID. A semente exibida permite reproduzir o mapa pela API `GameManager.prepare_run(modo, semente)` em testes.
 

@@ -15,6 +15,9 @@ func _run() -> void:
 			var node_id := _choose_node()
 			GameManager.select_map_node(node_id)
 			await get_tree().scene_changed
+			if GameManager.current_context == GameManager.Context.REST:
+				get_tree().current_scene._heal()
+				await get_tree().scene_changed
 			if GameManager.current_context == GameManager.Context.COMBAT:
 				var battle := get_tree().current_scene
 				var fight_turns := 0
@@ -91,7 +94,7 @@ func _score_play(battle: Node, cards: Array) -> float:
 	formula.rebuild(cards)
 	var effects: Dictionary = Effects.aggregate(cards)
 	var points := PackedVector2Array()
-	for point in formula.sample():
+	for point in battle.projected_path(formula):
 		points.append(battle.trajectory.to_global(point))
 	var value := minf(effects.heal, 80 - battle.player.health) * 2.0
 	value += effects.strength * 5.0

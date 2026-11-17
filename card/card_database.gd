@@ -23,16 +23,18 @@ const CARDS = [
 	{"id":18,"name":"Tinta tóxica","type":"effect","energy_cost":1,"icon":"poison","effects":{"poison":4}},
 	{"id":19,"name":"Giz afiado","type":"effect","energy_cost":1,"icon":"attack","effects":{"damage":8}},
 	{"id":20,"name":"Antídoto","type":"effect","energy_cost":1,"icon":"heal","effects":{"cleanse":1,"heal":3}},
-	{"id":21,"name":"Muralha","type":"effect","energy_cost":2,"icon":"shield","effects":{"shield":16}},
-	{"id":22,"name":"Recuperação","type":"effect","energy_cost":2,"icon":"heal","effects":{"heal":12}},
-	{"id":23,"name":"Contágio","type":"effect","energy_cost":2,"icon":"poison","effects":{"poison":9}},
-	{"id":24,"name":"Compasso","type":"effect","energy_cost":2,"icon":"attack","effects":{"damage":12,"pierce":1}},
+	{"id":21,"name":"Muralha","type":"effect","energy_cost":2,"icon":"shield","rare":true,"effects":{"shield":16}},
+	{"id":22,"name":"Recuperação","type":"effect","energy_cost":2,"icon":"heal","rare":true,"effects":{"heal":12}},
+	{"id":23,"name":"Contágio","type":"effect","energy_cost":2,"icon":"poison","rare":true,"effects":{"poison":9}},
+	{"id":24,"name":"Compasso","type":"effect","energy_cost":2,"icon":"attack","rare":true,"effects":{"damage":12,"pierce":1}},
 	{"id":25,"name":"Espinhos","type":"effect","energy_cost":1,"icon":"thorns","effects":{"shield":4,"thorns":4}},
 	{"id":26,"name":"Ponto fraco","type":"effect","energy_cost":1,"icon":"attack","effects":{"vulnerable":2}},
 	{"id":27,"name":"Concentração","type":"effect","energy_cost":1,"icon":"attack","effects":{"strength":3}},
 	{"id":28,"name":"Abrigo","type":"effect","energy_cost":2,"icon":"heal","effects":{"heal":6,"shield":8}},
 	{"id":29,"name":"Descida","type":"diagonal","x":5.0,"y":-2.0,"energy_cost":1},
-	{"id":30,"name":"Rampa","type":"quadratic","coefficient":"b","value":0.5,"energy_cost":1}
+	{"id":30,"name":"Rampa","type":"quadratic","coefficient":"b","value":0.5,"energy_cost":1},
+	{"id":31,"name":"Espiral","type":"spiral","turns":10,"radius":3.0,"energy_cost":2,"rare":true},
+	{"id":32,"name":"Reflexão em X","type":"reflection","energy_cost":1}
 ]
 
 static func get_card(id: int) -> Dictionary:
@@ -41,12 +43,18 @@ static func get_card(id: int) -> Dictionary:
 			return card.duplicate(true)
 	return {}
 
-static func reward_choices(reward_seed: int, count: int = 3) -> Array:
+static func reward_choices(reward_seed: int, count: int = 3, guarantee_rare: bool = false) -> Array:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = reward_seed
 	var pool: Array = CARDS.duplicate(true)
 	var result: Array = []
-	for i in range(mini(count, pool.size())):
+	if guarantee_rare and count > 0:
+		var rares := pool.filter(func(card: Dictionary): return card.get("rare", false))
+		if not rares.is_empty():
+			var rare: Dictionary = rares[rng.randi_range(0, rares.size() - 1)]
+			result.append(rare)
+			pool.erase(rare)
+	for i in range(mini(count - result.size(), pool.size())):
 		result.append(pool.pop_at(rng.randi_range(0, pool.size() - 1)))
 	return result
 
@@ -59,6 +67,10 @@ static func math_text(card: Dictionary) -> String:
 			return "Δy = %.2f%s" % [float(card.value), power]
 		"special":
 			return "Δy = %s·sen(kx)\nk = %sπ/%s" % [str(card.amplitude).trim_suffix(".0"), str(2.0 * float(card.frequency)).trim_suffix(".0"), str(card.length).trim_suffix(".0")]
+		"spiral":
+			return "r = %.0fθ/(%dπ)\nθ ∈ [0, %dπ]" % [card.radius, int(card.turns) * 2, int(card.turns) * 2]
+		"reflection":
+			return "(x, y) → (x, −y)"
 	var effects: Dictionary = card.get("effects", {})
 	var lines: Array[String] = []
 	for key in effects:
@@ -95,6 +107,8 @@ static func description(card: Dictionary) -> String:
 		"linear", "diagonal": return "Desloca o ponto final da trajetória."
 		"quadratic": return "Soma o coeficiente em y = ax² + bx + c."
 		"special": return "Soma uma onda: A · sen(2π · f · x/L)."
+		"spiral": return "Acrescenta %d voltas ao redor do fim do percurso, até um raio de %.0f unidades da grade." % [card.turns, card.radius]
+		"reflection": return "Reflete o percurso montado até aqui em torno do eixo X. Precisa de uma trajetória."
 	return ""
 
 static func hits_targets(card: Dictionary) -> bool:

@@ -28,8 +28,10 @@ static func generate(run_seed: int) -> Array:
 					tier = mini(tier + 1, 5)
 			if boss:
 				tier = 5
+			var node_seed := int(rng.randi())
+			var has_mirror := kind in ["combat", "elite"] and row >= 2 and (node_seed % 3 == 0 or (row == 2 and lane == 1))
 			nodes.append({"id": "%d:%d" % [row, lane], "row": row, "lane": lane,
-				"kind": kind, "tier": tier, "seed": int(rng.randi()), "next": []})
+				"kind": kind, "tier": tier, "seed": node_seed, "mirror": has_mirror, "next": []})
 		rows.append(nodes)
 	for row in range(ROW_COUNT - 1):
 		for node in rows[row]:
@@ -59,7 +61,12 @@ static func encounter(node: Dictionary) -> Dictionary:
 		var pos: Vector2 = slots[i] + Vector2(rng.randf_range(-25, 25), rng.randf_range(-30, 30))
 		pos.y = clampf(pos.y, -370.0, -250.0)
 		enemies.append({"archetype": archetype, "position": pos, "tier": tier, "seed": int(rng.randi())})
-	return {"seed": int(node.seed), "tier": tier, "boss": boss, "kind": node.kind, "enemies": enemies}
+	var mirrors: Array[PackedVector2Array] = []
+	if node.get("mirror", false):
+		var center := Vector2(350, -259)
+		var half_segment := Vector2(29, -29 if int(node.seed) % 2 == 0 else 29)
+		mirrors.append(PackedVector2Array([center - half_segment, center + half_segment]))
+	return {"seed": int(node.seed), "tier": tier, "boss": boss, "kind": node.kind, "enemies": enemies, "mirrors": mirrors}
 
 static func find_node(rows: Array, id: String) -> Dictionary:
 	for row in rows:

@@ -29,6 +29,14 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 - Rigidez, a regra de borda de 3× da arena e o salto da animação longa ficam para a definição da expansão de trajetórias.
 - O responsável pela entrega vai gerar o executável com o preset **Windows Desktop**.
 
+## Passos 6 a 8
+
+- **Elite.** Entre as três opções de recompensa há pelo menos uma carta rara. O jogo identifica as raras na tela de recompensa. O jogador ainda pode escolher qualquer uma das três ou pular.
+- **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
+- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem dez voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. A composição simultânea fica para uma etapa posterior.
+- **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
+- **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo. A colocação de espelhos por inimigos fica para o passo 9.
+
 ## Validação
 
 Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 para abrir o projeto.
@@ -39,15 +47,17 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão da versão anterior com renderização | 10.736 verificações, zero falhas |
 | Regressão da regra atual com renderização | 10.732 verificações, zero falhas. Revisão visual das cartas selecionadas para manter |
 | Regressão do painel de mensagens com renderização | 10.739 verificações, zero falhas. Revisão visual dos efeitos e dos espaços de retenção |
+| Regressão dos passos 6 a 8 com renderização | 10.793 verificações, zero falhas. Revisão visual de recompensa, descanso, espiral e espelho |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |
+| Playtest após os passos 6 a 8 | 4 vitórias em 4 runs, zero falhas de execução |
 
 | Semente | Modo | Turnos | HP final | Resultado |
 | --- | --- | ---: | ---: | --- |
-| 17 | Normal | 23 | 19 | Vitória |
-| 42 | Difícil | 20 | 80 | Vitória |
-| 991 | Normal | 22 | 32 | Vitória |
-| 12345 | Difícil | 22 | 0 | Derrota na sexta etapa |
+| 17 | Normal | 27 | 38 | Vitória |
+| 42 | Difícil | 19 | 80 | Vitória |
+| 991 | Normal | 31 | 59 | Vitória |
+| 12345 | Difícil | 35 | 80 | Vitória |
 
-O playtest usa as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. Na regra atual, a heurística escolhe até duas cartas para manter com base no valor dado a cada carta na recompensa. Os atributos das cartas e dos inimigos foram preservados.
+O playtest usa as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. A heurística mantém até duas cartas com base no valor atribuído a elas nas recompensas e escolhe cura no Descanso. Os atributos das cartas e dos inimigos existentes foram preservados.

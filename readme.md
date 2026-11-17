@@ -59,13 +59,14 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - Cada carta possui um custo em energia. Combine cartas para montar uma trajetória que atinja os inimigos, ou utilize efeitos para auxiliar o personagem.
 - As cartas jogadas e as que você deixou sem marcar vão para o descarte. No início do próximo turno, compre até cinco cartas além das que escolheu manter. A mão pode chegar a sete cartas.
 - O combate termina em vitória quando todos os inimigos são derrotados. Caso a vida do jogador chegue a zero, a tentativa termina em derrota.
-- A vida restante é mantida entre combates. Os nós de descanso recuperam **24 de vida**, sem ultrapassar o máximo de 80.
+- A vida restante é mantida entre combates. No **Descanso**, escolha entre curar **40% da vida máxima** (32 HP) e remover uma cópia de uma carta.
+- As recompensas de **Elite** incluem ao menos uma carta marcada como **Rara**. Nos encontros marcados com **Espelho**, a prévia já mostra o desvio do disparo.
 - Ao vencer um combate, escolha uma carta para adicionar ao baralho durante a tentativa, ou pule a recompensa.
 - Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida, escudo e próxima ação. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
 
 ## Conteúdo
 
-- 30 cartas: deslocamentos, parábolas, ondas, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
+- 32 cartas: deslocamentos, parábolas, ondas, espiral, reflexão em X, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
 - Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
 - Mapa de 7 etapas com bifurcações, descanso, encontros comuns, elite e chefe. Cada semente conserva suas opções durante a partida.
 - 8 arquétipos de inimigos, com comportamentos próprios, estratégias próprias e atributos escalados pela dificuldade do encontro.
@@ -81,8 +82,7 @@ A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O
 - A campanha atual possui sete etapas por tentativa, terminando no Professor. Os demais mundos ainda não foram implementados.
 - Não há salvamento e retomada de uma tentativa em andamento. Ao sair do jogo, não é possível continuar do mesmo ponto.
 - Os eventos aleatórios ainda não foram implementados.
-- Não é possível remover ou melhorar cartas do baralho durante a tentativa.
-- Os encontros de elite ainda não oferecem recompensas diferenciadas em relação aos combates comuns.
+- Melhorias de cartas continuam fora do escopo da versão atual.
 - As ações principais são realizadas com o mouse. O jogo possui **Esc** para pausar, mas os demais atalhos de teclado previstos ainda não foram implementados.
 - O jogo ainda não possui tutorial interno. Utilize as orientações deste guia para iniciar e jogar.
 

@@ -3,6 +3,7 @@ extends Node
 const Selection = preload("res://core/combat/card_selection.gd")
 const Formula = preload("res://core/combat/trajectory_formula.gd")
 const Targeting = preload("res://core/combat/trajectory_targeting.gd")
+const Reflection = preload("res://core/combat/trajectory_reflection.gd")
 const Effects = preload("res://core/combat/card_effects.gd")
 const Deck = preload("res://core/cards/combat_deck.gd")
 const Catalog = preload("res://card/card_database.gd")
@@ -37,10 +38,13 @@ func _run() -> void:
 	await _test_deck_viewer()
 	await _test_retained_hand()
 	await _test_projectile_contacts()
+	await _test_spiral_preview()
+	await _test_mirror_preview()
 	await _test_effect_resolution()
 	await _test_status_and_intents()
 	await _test_freed_enemy_during_turn()
 	await _test_rewards()
+	await _test_rest()
 	await _test_navigation()
 	await _test_full_run()
 	await _clear_scene()
@@ -86,6 +90,23 @@ func _test_selection_and_formula() -> void:
 	check(is_equal_approx(formula.sample(1.0, 8)[1].y, -1.0 - sqrt(0.5)), "ondas somam funções sem inventar frequência")
 	formula.rebuild([Catalog.get_card(17), Catalog.get_card(18)])
 	check(not formula.has_cards and formula.sample().size() == 1, "efeitos não inventam trajetória")
+	formula.rebuild([Catalog.get_card(2), Catalog.get_card(31), Catalog.get_card(32)])
+	var reflected_spiral: PackedVector2Array = formula.sample()
+	check(reflected_spiral.size() == 322 and reflected_spiral[1].is_equal_approx(Vector2(375, 150)),
+		"espiral de dez voltas inicia no fim da base e a reflexão inverte o eixo Y")
+	check(reflected_spiral[-1].is_equal_approx(Vector2(600, 150)), "espiral termina a três unidades do seu centro")
+	formula.rebuild([Catalog.get_card(2), Catalog.get_card(32), Catalog.get_card(31)])
+	check(is_equal_approx(formula.sample()[50].y + reflected_spiral[50].y, 300.0), "ordem dos modificadores define o sentido da espiral")
+	formula.rebuild([Catalog.get_card(32)])
+	check(formula.sample().size() == 1, "reflexão sozinha não inventa trajetória")
+	var wall := PackedVector2Array([Vector2(5, -5), Vector2(5, 5)])
+	var path_to_wall := PackedVector2Array([Vector2.ZERO, Vector2(10, 0), Vector2(12, 3)])
+	var bounced := Reflection.reflect_path(path_to_wall, [wall])
+	check(bounced == PackedVector2Array([Vector2.ZERO, Vector2(5, 0), Vector2.ZERO, Vector2(-2, 3)]),
+		"espelho reflete a sobra do segmento e preserva a rotação da curva subsequente")
+	var left_wall := PackedVector2Array([Vector2(-5, -5), Vector2(-5, 5)])
+	var corridor := Reflection.reflect_path(PackedVector2Array([Vector2.ZERO, Vector2(500, 0)]), [wall, left_wall])
+	check(corridor.size() == Reflection.MAX_BOUNCES + 1, "trajeto entre dois espelhos respeita o limite de ricochetes")
 	var line := PackedVector2Array([Vector2.ZERO, Vector2(100, 0)])
 	check(Targeting.hits(line, Vector2(50, 65), 65), "raio inclusivo")
 	check(not Targeting.hits(line, Vector2(50, 66), 65), "fora do raio")
@@ -168,10 +189,11 @@ func _show_scene(path: String) -> Node:
 	await get_tree().process_frame
 	return scene
 
-func _battle(tier: int = 1, hard: bool = false, archetypes: Array = ["cube"]) -> Node:
+func _battle(tier: int = 1, hard: bool = false, archetypes: Array = ["cube"], mirrors: Array = []) -> Node:
 	GameManager.prepare_run(hard, 17)
 	var spec: Dictionary = Generator.encounter({"seed":101, "tier":tier, "kind":"combat"})
 	spec.enemies.clear()
+	spec.mirrors = mirrors
 	for i in range(archetypes.size()):
 		spec.enemies.append({"archetype":archetypes[i],"position":Vector2(260 + i * 180, -240),"tier":tier,"seed":30 + i})
 	GameManager.current_encounter = spec
@@ -217,7 +239,7 @@ func _test_cards() -> void:
 		check(not card.symbol.visible and not card.texture_rect.visible and card.value.visible, "difícil remove toda ilustração da carta")
 		check(card.cost_label.text == str(data.energy_cost), "difícil preserva custo")
 		card.queue_free()
-	check(Catalog.CARDS.size() == 30, "30 cartas no catálogo")
+	check(Catalog.CARDS.size() == 32, "32 cartas no catálogo")
 
 func _test_legacy_scenes() -> void:
 	for filename in DirAccess.get_files_at("res://world/combat"):
@@ -477,6 +499,36 @@ func _test_projectile_contacts() -> void:
 	check(enemies[0].health == 81 and enemies[0].poison_amount == 3, "primeiro acerto aplica veneno integral")
 	check(enemies[1].health == 65 and enemies[1].poison_amount == 4, "segunda passagem dá dano e acrescenta um de veneno")
 
+func _test_spiral_preview() -> void:
+	var battle = await _battle()
+	var ui = battle.combat_ui
+	await _set_hand(ui, [7, 31])
+	ui._on_card_played(_card(ui, 7))
+	ui._on_card_played(_card(ui, 31))
+	check(battle.trajectory.points.size() == 322 and battle.trajectory.points[1].is_equal_approx(Vector2(225, 0)),
+		"carta Espiral acrescenta a curva ao fim da prévia no combate")
+	check("Espiral (10 voltas)" in ui.equation_label.text, "HUD identifica a espiral preparada")
+	await _capture("final-prototype-spiral.png")
+
+func _test_mirror_preview() -> void:
+	var wall := PackedVector2Array([Vector2(350, -300), Vector2(350, -180)])
+	var battle = await _battle(1, false, ["cube", "cube"], [wall])
+	var ui = battle.combat_ui
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		enemy.health = 100
+		enemy.max_health = 100
+		enemy.planned_action = "defend"
+	await _set_hand(ui, [1])
+	ui._on_card_played(_card(ui, 1))
+	check(battle.trajectory.points.size() == 3 and battle.trajectory_points[1].is_equal_approx(Vector2(350, -240)),
+		"prévia dobra no ponto de contato com o espelho")
+	check(battle.trajectory_contacts.size() == 2 and battle.current_enemies == [enemies[0]],
+		"prévia prevê ida e volta no primeiro alvo")
+	await _capture("final-prototype-mirror.png")
+	await battle.execute_turn_actions()
+	check(enemies[0].health == 70 and enemies[1].health == 100, "disparo usa a mesma trajetória refletida da prévia")
+
 func _test_effect_resolution() -> void:
 	var battle = await _battle()
 	var ui = battle.combat_ui
@@ -544,11 +596,13 @@ func _test_status_and_intents() -> void:
 
 func _test_rewards() -> void:
 	var battle = await _battle(1, true)
+	GameManager.current_encounter.kind = "elite"
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.health = 0
 	await battle.execute_turn_actions()
 	check(GameManager.reward_pending and GameManager.pending_rewards.size() == 3, "vitória sorteia três cartas")
 	var offers: Array = GameManager.pending_rewards.duplicate(true)
+	check(offers.any(func(card: Dictionary): return card.get("rare", false)), "recompensa Elite contém uma carta rara")
 	check(offers[0].id != offers[1].id and offers[1].id != offers[2].id and offers[0].id != offers[2].id, "oferta sem duplicatas")
 	await battle._finish_if_needed()
 	check(GameManager.pending_rewards == offers and GameManager.victories == 1, "resultado não rerrola nem duplica recompensa")
@@ -565,6 +619,33 @@ func _test_rewards() -> void:
 	check(not GameManager.claim_reward(offers[1].id), "não aceita segunda recompensa")
 	GameManager.reset_run()
 	check(GameManager.run_deck.is_empty() and not GameManager.hard_mode, "nova run não herda cartas nem modo")
+
+func _test_rest() -> void:
+	for remove_card in [false, true]:
+		GameManager.prepare_run(false, 17)
+		GameManager.map_rows[0][0].kind = "rest"
+		GameManager.player_health = 30
+		var deck_before: Array = GameManager.run_deck.duplicate()
+		await _show_scene("res://world/map/procedural_map.tscn")
+		check(GameManager.select_map_node("0:0"), "nó de descanso abre a escolha")
+		await get_tree().scene_changed
+		var screen := get_tree().current_scene
+		check(GameManager.current_context == GameManager.Context.REST and GameManager.player_health == 30,
+			"entrar no descanso ainda não consome benefício")
+		check(not GameManager.complete_rest(9999), "descanso rejeita carta que não pertence ao baralho")
+		if remove_card:
+			screen._show_removal(true)
+			await _capture("final-prototype-rest-remove.png")
+			screen._remove(1)
+			deck_before.erase(1)
+		else:
+			await _capture("final-prototype-rest.png")
+			screen._heal()
+		check(not GameManager.complete_rest(), "descanso não permite acumular benefícios")
+		await get_tree().scene_changed
+		check(GameManager.player_health == (30 if remove_card else 62), "descanso aplica apenas o benefício escolhido")
+		check(GameManager.run_deck == deck_before and GameManager.visited_nodes == ["0:0"],
+			"descanso conclui o nó e remove até uma cópia escolhida")
 
 func _test_freed_enemy_during_turn() -> void:
 	var battle = await _battle(1, false, ["cube", "cube"])
@@ -623,6 +704,9 @@ func _test_full_run() -> void:
 		var id: String = GameManager.available_nodes[0]
 		check(GameManager.select_map_node(id), "run completa escolhe próximo nó")
 		await get_tree().scene_changed
+		if GameManager.current_context == GameManager.Context.REST:
+			get_tree().current_scene._heal()
+			await get_tree().scene_changed
 		if GameManager.current_context == GameManager.Context.COMBAT:
 			var battle := get_tree().current_scene
 			for enemy in get_tree().get_nodes_in_group("enemies"):
