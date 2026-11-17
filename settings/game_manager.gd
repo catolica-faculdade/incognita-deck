@@ -139,6 +139,8 @@ func complete_combat(boss: bool) -> void:
 	reward_pending = true
 	var kind: String = current_encounter.get("kind", "")
 	world_cleared = kind == "boss" and not current_node.is_empty()
+	if world_cleared:
+		player_health = max_player_health
 	run_complete = kind == "final" or (boss and kind.is_empty())
 	if kind != "final":
 		_finish_node()
@@ -315,7 +317,7 @@ func resume_run() -> bool:
 	run_seed = data.seed
 	_open_world(data.world)
 	level = data.level
-	player_health = data.hp
+	player_health = max_player_health if data.world_cleared else data.hp
 	victories = data.victories
 	hard_mode = data.hard
 	world_cleared = data.world_cleared

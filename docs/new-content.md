@@ -47,7 +47,7 @@ Em cada combate o baralho é embaralhado com a semente do encontro. O jogador co
 - Vulnerabilidade aumenta dano de ataques em 50%, inclusive no ataque que a aplica, e perde uma carga depois da ação inimiga. Não amplia o dano do veneno ou dos espinhos.
 - Força aumenta o dano de todos os seus ataques durante aquele combate. Fraqueza reduz esse dano em 25% e perde uma carga após seu turno.
 - Espinhos retornam dano a cada inimigo que ataca, mesmo quando o ataque foi bloqueado. Expiram no seu próximo turno.
-- Cura respeita HP máximo; vida não fica negativa. Não há cura automática após vitórias: cura depende de cartas e descanso.
+- Cura respeita o HP máximo. Durante o mundo, a recuperação vem de cartas e descanso. Derrotar o chefe do mundo restaura toda a vida antes da recompensa.
 
 Na composição matemática, ondas agora conservam sua frequência/comprimento e são somadas como funções individuais. Adicionar Avanço não altera a frequência escrita na carta. O maior alcance entre deslocamento X e ondas determina o intervalo desenhado. As cartas Colina/Mergulho usam coeficientes ±0,20 e Vale altera o termo constante em -2, tornando essas opções distintas das anteriores.
 

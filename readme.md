@@ -69,7 +69,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - 36 cartas, incluindo Rotação, Fenda, Prisma e Catalisador. Combine as cartas de trajetória e efeitos para lidar com as defesas dos inimigos e as regras da arena.
 - O Plano Cartesiano pode ter um alvo móvel, a Sala de Aula pode ter espelhos e a Diretoria pode combinar espelhos e barreiras. A chance sobe ao avançar em cada mundo.
 - Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
-- Três mapas ramificados e um encontro final, com vida e baralho preservados entre mundos. Cada semente reproduz seus mapas e encontros.
+- Três mapas ramificados e um encontro final. Derrotar o Professor, os Alunos ou o Diretor restaura toda a vida. O baralho continua entre mundos, e cada semente reproduz seus mapas e encontros.
 - 21 arquétipos de inimigos, incluindo cinco difíceis reservados aos Elites e quatro chefes.
 
 As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.

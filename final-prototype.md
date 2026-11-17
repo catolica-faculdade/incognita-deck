@@ -39,7 +39,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 ## Passos 9 e 10
 
-- **Campanha.** O Plano Cartesiano tem seis etapas e termina no Professor. Sala de Aula tem sete e termina nos Alunos. Diretoria tem oito e termina no Diretor. O ENEM é a 22ª etapa e acontece fora do mapa. Vida e baralho, incluindo a recompensa do chefe, continuam na transição. Cada mundo tem quatro inimigos comuns exclusivos e usa uma tonalidade própria no papel do mapa e da arena.
+- **Campanha.** O Plano Cartesiano tem seis etapas e termina no Professor. Sala de Aula tem sete e termina nos Alunos. Diretoria tem oito e termina no Diretor. O ENEM é a 22ª etapa e acontece fora do mapa. Derrotar o chefe do mundo restaura toda a vida antes da recompensa. O baralho continua na transição. Cada mundo tem quatro inimigos comuns exclusivos e usa uma tonalidade própria no papel do mapa e da arena.
 - **Pool de Elites.** Sentinela e Alquimista no Plano Cartesiano. Tesoura, Compasso e Sentinela na Sala de Aula. Relógio, Compasso e Alquimista na Diretoria. Todo nó Elite reserva uma vaga a um deles. Esse inimigo recebe +22% de vida (ao menos +6 HP), +2 de dano e duas intenções adicionais intercaladas com suas ações originais.
 - **Chefes.** Alunos, Diretor e ENEM agem duas vezes em dois de cada três turnos. A ação extra é de defesa ou suporte e aparece abaixo da primeira intenção ao passar o mouse. O Professor age uma vez.
 - **Espelhos.** Compasso, Alunos, Diretor e ENEM podem posicionar espelhos que duram de 4 a 12 turnos do jogador. A duração é sorteada pela semente do encontro e aparece no espelho. Ele entra na prévia desde o primeiro turno e conta para o limite de quatro espelhos simultâneos na arena.

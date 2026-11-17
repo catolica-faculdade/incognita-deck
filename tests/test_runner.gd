@@ -1003,9 +1003,15 @@ func _test_full_run() -> void:
 			if not boss_name.is_empty():
 				bosses.append(boss_name)
 				await _capture("campaign-boss-%d.png" % bosses.size())
+				battle.player.health = 37
+				GameManager.player_health = 37
 			for enemy in get_tree().get_nodes_in_group("enemies"):
 				enemy.health = 0
 			await battle.execute_turn_actions()
+			if not boss_name.is_empty():
+				var expected_hp: int = 37 if boss_name == "ENEM" else GameManager.max_player_health
+				check(GameManager.player_health == expected_hp and GameManager._read_checkpoint().hp == expected_hp,
+					"chefe de mundo cura toda a vida antes da recompensa e registra o HP no slot")
 			var screen = battle.get_node("RewardScreen")
 			var expected_deck: Array = GameManager.run_deck.duplicate()
 			var reward: int = GameManager.pending_rewards[0].id
