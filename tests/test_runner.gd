@@ -148,23 +148,18 @@ func _test_generation() -> void:
 	check(Generator.generate(17) != Generator.generate(18), "sementes criam mapas diferentes")
 	var seen_archetypes: Dictionary = {}
 	var elite_archetypes: Dictionary = {}
-	var challenging_openings: Dictionary = {}
+	var opening_tiers: Dictionary = {}
 	for sample in range(60):
 		var world := sample % Generator.WORLDS.size()
 		var rows: Array = Generator.generate(sample, world)
 		check(rows.size() == Generator.WORLDS[world].stages and rows[-1].size() == 1 and rows[-1][0].kind == "boss",
 			"chefe alcançável no final de cada mundo")
-		for node in rows[0]:
-			check(node.kind == "combat" and node.tier == 1 and Generator.arena_label(node).is_empty(),
-				"primeira fase de cada mundo é sempre Leve")
-		var challenging_count := 0
-		for node in rows[1]:
-			check(node.tier <= 3 and node.kind != "elite" and not node.barrier,
-				"segunda fase não sorteia Elites, barreiras ou tiers acima de Desafiador")
-			challenging_count += int(node.tier == 3)
-			if node.kind == "combat" and node.tier == 3:
-				challenging_openings[world] = true
-		check(challenging_count <= 1, "segunda fase oferece no máximo um caminho Desafiador")
+		for row in range(Generator.SAFE_OPENING_STAGES):
+			for node in rows[row]:
+				check(node.tier in [1, 2] and node.kind != "elite" and Generator.arena_label(node).is_empty(),
+					"faixa segura sorteia somente Leve ou Moderado e não aplica regras de arena")
+				if node.kind == "combat":
+					opening_tiers["%d:%d:%d" % [world, row, node.tier]] = true
 		var reachable: Array = []
 		for node in rows[0]:
 			reachable.append(node.id)
@@ -195,7 +190,8 @@ func _test_generation() -> void:
 					check(elites == (1 if node.kind == "elite" else 0), "todo Elite contém um inimigo difícil obrigatório")
 			reachable = following
 	check(seen_archetypes.size() == 20 and elite_archetypes.size() == 5, "mapas usam 20 arquétipos, cinco reservados aos Elites")
-	check(challenging_openings.size() == Generator.WORLDS.size(), "segunda fase pode ter combate Desafiador nos três mundos")
+	check(opening_tiers.size() == Generator.WORLDS.size() * Generator.SAFE_OPENING_STAGES * 2,
+		"cada fase segura pode ter combates Leves e Moderados nos três mundos")
 	check(Generator.arena_rules(0, 4, "combat", 0).shift and not Generator.arena_rules(0, 4, "combat", 0).mirror, "mundo 1 apresenta alvo móvel")
 	check(Generator.arena_rules(1, 5, "combat", 0).mirror and not Generator.arena_rules(1, 5, "combat", 0).barrier, "mundo 2 tem espelhos sem barreiras")
 	check(Generator.arena_rules(2, 6, "combat", 0).mirror and Generator.arena_rules(2, 6, "combat", 0).barrier, "mundo 3 combina espelho e barreira")

@@ -7,6 +7,7 @@ const WORLDS := [
 	{"name":"Diretoria", "stages":8, "boss":"Diretor", "boss_id":"principal", "tint":Color("e3e9ed")}
 ]
 const TOTAL_STAGES := 22
+const SAFE_OPENING_STAGES := 2
 const TIERS = ["Leve", "Moderado", "Desafiador", "Difícil", "Extremo"]
 const POOLS = [
 	["slime", "cube", "ghost", "pencil"],
@@ -27,15 +28,16 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 	for row in range(stages):
 		var nodes: Array = []
 		var boss := row == stages - 1
-		var has_challenging_opening := false
+		var safe_opening := row < SAFE_OPENING_STAGES
 		for lane in range(1 if boss else 3):
-			var tier := clampi(1 + world + floori(row / 3.0) + rng.randi_range(0, 1), 1, 5)
+			var base_tier := 1 + rng.randi_range(0, 1)
+			var tier := base_tier if safe_opening else mini(base_tier + world + floori(row / 3.0), 5)
 			var kind := "boss" if boss else "combat"
 			if not boss and row > 0:
 				var roll := rng.randf()
 				if (row == stages - 2 and lane == 1) or roll < 0.16:
 					kind = "rest"
-				elif row >= 2 and roll > 0.76:
+				elif not safe_opening and roll > 0.76:
 					kind = "elite"
 					tier = mini(tier + 1, 5)
 				elif roll < 0.25:
@@ -43,14 +45,6 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 			if boss:
 				tier = 3 + world
 			var node_seed := int(rng.randi())
-			if row == 0:
-				tier = 1
-			elif row == 1:
-				var opening_roll := node_seed % 100
-				tier = 1 if opening_roll < 40 else 2
-				if opening_roll >= 80 and kind != "rest" and not has_challenging_opening:
-					tier = 3
-					has_challenging_opening = true
 			var rules := arena_rules(world, row, kind, node_seed)
 			nodes.append({"id": "%d:%d:%d" % [world, row, lane], "world": world, "row": row, "lane": lane,
 				"kind": kind, "tier": tier, "seed": node_seed, "mirror": rules.mirror,
@@ -64,11 +58,11 @@ static func generate(run_seed: int, world: int = 0) -> Array:
 	return rows
 
 static func arena_rules(world: int, row: int, kind: String, seed_value: int) -> Dictionary:
-	var eligible := kind in ["combat", "elite"] and row >= 1
+	var eligible := kind in ["combat", "elite"] and row >= SAFE_OPENING_STAGES
 	return {
 		"shift": eligible and world == 0 and seed_value % 100 < 16 + row * 9,
 		"mirror": eligible and world >= 1 and seed_value % 100 < 20 + world * 7 + row * 6,
-		"barrier": eligible and world == 2 and row >= 2 and floori(seed_value / 100.0) % 100 < 17 + row * 8
+		"barrier": eligible and world == 2 and floori(seed_value / 100.0) % 100 < 17 + row * 8
 	}
 
 static func arena_label(node: Dictionary) -> String:
