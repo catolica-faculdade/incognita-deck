@@ -12,9 +12,9 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 ## Mão e descarte
 
-- O jogador compra até seis cartas no início de cada turno, incluindo o primeiro, com teto de 12 cartas na mão. As cartas não usadas permanecem entre turnos.
-- Em **Fim do turno**, clique em até duas cartas não jogadas para marcá-las. Clique novamente em uma carta para desmarcá-la. **Continuar** encerra a seleção e resolve o turno. Quando a mão está vazia, **Fim do turno** resolve o turno diretamente.
-- As cartas jogadas e os descartes opcionais vão para a pilha de descarte. O descarte opcional tem custo zero e a compra acontece normalmente no turno seguinte. Se a pilha de compra esgotar durante a compra, a pilha de descarte é embaralhada para completá-la.
+- O jogador compra até cinco cartas no início de cada turno, incluindo o primeiro. A mão pode chegar a sete cartas quando duas foram mantidas do turno anterior.
+- Em **Fim do turno**, clique em até duas cartas não jogadas para mantê-las na mão. Clique novamente em uma carta para desmarcá-la. **Continuar** resolve o turno. Se a mão estiver vazia, **Fim do turno** resolve o turno diretamente.
+- Cartas jogadas e cartas deixadas sem marcar vão para a pilha de descarte. Manter cartas custa zero energia. Se a pilha de compra esgotar durante a compra, a pilha de descarte é embaralhada para completá-la.
 - O HUD indica o tamanho da mão e das duas pilhas. Quando a mão cresce, as cartas se sobrepõem parcialmente e a carta apontada aparece na frente.
 
 ## Campanha e entrega
@@ -30,15 +30,17 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Verificação | Resultado |
 | --- | --- |
 | Regressão antes das mudanças | 10.701 verificações, zero falhas |
-| Regressão do protótipo com renderização | 10.736 verificações, zero falhas. Revisão visual da mão cheia e da seleção de descarte |
+| Regressão da versão anterior com renderização | 10.736 verificações, zero falhas |
+| Regressão da regra atual com renderização | 10.732 verificações, zero falhas. Revisão visual das cartas selecionadas para manter |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
-| Playtest do protótipo | 4 vitórias em 4 runs, zero falhas de execução |
+| Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
+| Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |
 
-| Semente | Modo no protótipo | Turnos | HP ao derrotar o Professor |
-| --- | --- | ---: | ---: |
-| 17 | Normal | 21 | 36 |
-| 42 | Difícil | 15 | 80 |
-| 991 | Normal | 19 | 57 |
-| 12345 | Difícil | 22 | 16 |
+| Semente | Modo | Turnos | HP final | Resultado |
+| --- | --- | ---: | ---: | --- |
+| 17 | Normal | 23 | 19 | Vitória |
+| 42 | Difícil | 20 | 80 | Vitória |
+| 991 | Normal | 22 | 32 | Vitória |
+| 12345 | Difícil | 22 | 0 | Derrota na sexta etapa |
 
-O playtest automatizado usa uma heurística e as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. A conservação de cartas e a compra aumentaram as opções da heurística. Os atributos das cartas e dos inimigos foram preservados nesta entrega.
+O playtest usa as mesmas quatro sementes da referência. A referência executou as quatro no modo Normal. Na regra atual, a heurística escolhe até duas cartas para manter com base no valor dado a cada carta na recompensa. Os atributos das cartas e dos inimigos foram preservados.

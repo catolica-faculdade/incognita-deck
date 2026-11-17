@@ -415,14 +415,8 @@ func _test_deck_viewer() -> void:
 func _test_retained_hand() -> void:
 	var battle = await _battle()
 	var ui = battle.combat_ui
-	var original: Array = ui.card_container.get_children()
-	check(original.size() == 6, "mão inicial de seis cartas")
-	await battle.execute_turn_actions()
-	check(ui.card_container.get_child_count() == 12, "nova compra preserva cartas e enche a mão até doze")
-	for card in original:
-		check(card.get_parent() == ui.card_container, "carta não usada permanece na mão")
-	await _capture("final-prototype-hand.png")
 	var hand: Array = ui.card_container.get_children()
+	check(hand.size() == 5, "mão inicial de cinco cartas")
 	ui.end_turn_button.pressed.emit()
 	for i in range(3):
 		var card := hand[i] as Control
@@ -430,13 +424,21 @@ func _test_retained_hand() -> void:
 		await _mouse_move(point)
 		await _mouse_button(point, true)
 		await _mouse_button(point, false)
-	check(ui.selected_discards.size() == 2 and not ui.selected_discards.has(hand[2]), "mouse seleciona no máximo dois descartes")
-	check(ui.selection.current_energy == 5 and ui.deck.discard_pile.is_empty(), "escolher descarte não gasta energia nem troca carta")
-	await _capture("final-prototype-discard.png")
-	ui.confirm_discard_button.pressed.emit()
-	check(ui.card_container.get_child_count() == 10 and ui.deck.discard_pile.size() == 2, "confirma dois descartes sem reposição imediata")
+	check(ui.retained_cards == [hand[0], hand[1]], "mouse seleciona no máximo duas cartas para manter")
+	check(ui.selection.current_energy == 5 and ui.deck.discard_pile.is_empty(), "escolher cartas para manter não altera a energia nem as pilhas")
+	await _capture("final-prototype-keep.png")
+	ui.confirm_keep_button.pressed.emit()
+	check(ui.card_container.get_children() == [hand[0], hand[1]] and ui.deck.discard_pile.size() == 3,
+		"mantém as duas escolhidas e descarta as três restantes")
 	await _wait_turn(battle)
-	check(ui.card_container.get_child_count() == 12, "compra só na rodada seguinte e respeita o teto")
+	check(ui.card_container.get_child_count() == 7, "compra cinco além das duas conservadas")
+	check(hand[0].get_parent() == ui.card_container and hand[1].get_parent() == ui.card_container, "cartas escolhidas chegam ao novo turno")
+	await _capture("final-prototype-hand.png")
+	ui.end_turn_button.pressed.emit()
+	ui.confirm_keep_button.pressed.emit()
+	check(ui.card_container.get_child_count() == 0, "continuar sem selecionar descarta a mão toda")
+	await _wait_turn(battle)
+	check(ui.card_container.get_child_count() == 5, "compra recicla o descarte e repõe cinco cartas")
 
 func _test_projectile_contacts() -> void:
 	var battle = await _battle(1, false, ["cube", "cube"])

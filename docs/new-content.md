@@ -36,7 +36,7 @@ Os conceitos de bloqueio, veneno acumulado, vulnerabilidade, compra/descarte e e
 
 O baralho inicial contém 12 cartas: Avanço ×2; Elevar, Arco, Queda, Onda e Degrau ×1; Remendo ×1; Guarda ×2; Tinta tóxica e Giz afiado ×1. A run começa com 80 HP e cada turno tem 5 de energia. Os efeitos temporários são reiniciados em cada combate; HP e baralho persistem entre encontros.
 
-Em cada combate o baralho é embaralhado com a semente do encontro. A mão começa com até seis cartas. Nos turnos seguintes, são compradas até seis cartas sem exceder 12 na mão. Ao confirmar a jogada, vão para o descarte as cartas preparadas e até duas cartas escolhidas da mão. Se uma compra esgotar a pilha, o descarte é embaralhado para concluir a compra. As ofertas de recompensa têm três IDs diferentes e podem incluir uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez por vitória.
+Em cada combate o baralho é embaralhado com a semente do encontro. O jogador compra até cinco cartas no início de cada turno. Ao confirmar a jogada, pode manter até duas cartas não jogadas e descarta as demais, incluindo as cartas preparadas. Com as cartas mantidas e a nova compra, a mão pode chegar a sete cartas. Se uma compra esgotar a pilha, o descarte é embaralhado para concluir a compra. As ofertas de recompensa têm três IDs diferentes e podem incluir uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez por vitória.
 
 ## Regras dos efeitos
 

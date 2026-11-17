@@ -10,9 +10,8 @@ const Effects = preload("res://core/combat/card_effects.gd")
 const Style = preload("res://interface/ui_style.gd")
 const CARD_SCENE = preload("res://card/card.tscn")
 const PLAYER_HUD = preload("res://world/player/player_interface.tscn")
-const CARDS_PER_TURN := 6
-const HAND_LIMIT := 12
-const DISCARD_LIMIT := 2
+const CARDS_PER_TURN := 5
+const RETENTION_LIMIT := 2
 const ENERGY_IMAGES = [
 	preload("res://energy/energy_0.png"), preload("res://energy/energy_1.png"),
 	preload("res://energy/energy_2.png"), preload("res://energy/energy_3.png"),
@@ -21,8 +20,8 @@ const ENERGY_IMAGES = [
 var selection = Selection.new(5)
 var deck = Deck.new()
 var turn_count := 0
-var choosing_discards := false
-var selected_discards: Array[Control] = []
+var choosing_retention := false
+var retained_cards: Array[Control] = []
 var card_container: HBoxContainer
 var played_container: HBoxContainer
 var equation_label: Label
@@ -33,7 +32,7 @@ var buff_label: Label
 var deck_label: Label
 var effect_label: Label
 var end_turn_button: Button
-var confirm_discard_button: Button
+var confirm_keep_button: Button
 var clear_button: Button
 var drop_zone: Control
 var root: Control
@@ -103,9 +102,9 @@ func _build_ui() -> void:
 	end_turn_button = Style.illustrated_button(preload("res://assets/button.png"), _on_end_turn_requested)
 	end_turn_button.tooltip_text = "Fim do turno"
 	root.add_child(end_turn_button)
-	confirm_discard_button = Style.button("Continuar", _confirm_discards)
-	confirm_discard_button.hide()
-	root.add_child(confirm_discard_button)
+	confirm_keep_button = Style.button("Continuar", _confirm_retention)
+	confirm_keep_button.hide()
+	root.add_child(confirm_keep_button)
 	var view_deck := Style.button("Ver baralho", _show_deck)
 	view_deck.name = "ViewDeck"
 	root.add_child(view_deck)
@@ -137,14 +136,13 @@ func _layout() -> void:
 	clear_button.size = Vector2(160, 42)
 	end_turn_button.position = Vector2(dimensions.x - 210, dimensions.y - 112)
 	end_turn_button.size = Vector2(184, 52)
-	confirm_discard_button.position = end_turn_button.position
-	confirm_discard_button.size = end_turn_button.size
+	confirm_keep_button.position = end_turn_button.position
+	confirm_keep_button.size = end_turn_button.size
 	root.get_node("ViewDeck").position = Vector2(dimensions.x - 190, dimensions.y - 50)
 	root.get_node("ViewDeck").size = Vector2(170, 40)
 
 func _draw_hand() -> void:
-	var space := HAND_LIMIT - card_container.get_child_count()
-	for data in deck.draw(mini(CARDS_PER_TURN, space)):
+	for data in deck.draw(CARDS_PER_TURN):
 		create_card(data)
 
 func _fit_hand() -> void:
@@ -162,7 +160,7 @@ func create_card(data: Dictionary) -> void:
 	card.drop_zone = drop_zone
 	card.card_played.connect(_on_card_played)
 	card.card_removed.connect(_on_card_removed)
-	card.discard_selected.connect(_toggle_discard)
+	card.retention_selected.connect(_toggle_retention)
 	card.card_hovered.connect(func(): card_hover_changed.emit(true))
 	card.card_exited.connect(func(): card_hover_changed.emit(false))
 	card.set_interaction_enabled(selection.enabled)
@@ -176,34 +174,36 @@ func set_player_turn(enabled: bool) -> void:
 	_refresh_cards()
 
 func _on_end_turn_requested() -> void:
-	if not selection.enabled or choosing_discards:
+	if not selection.enabled or choosing_retention:
 		return
 	if card_container.get_child_count() == 0:
 		end_turn_requested.emit()
 		return
-	choosing_discards = true
+	choosing_retention = true
 	end_turn_button.hide()
 	clear_button.disabled = true
-	confirm_discard_button.show()
+	confirm_keep_button.show()
 	_refresh_cards()
 
-func _toggle_discard(card: Control) -> void:
-	if not choosing_discards or card.get_parent() != card_container:
+func _toggle_retention(card: Control) -> void:
+	if not choosing_retention or card.get_parent() != card_container:
 		return
-	if selected_discards.has(card):
-		selected_discards.erase(card)
-	elif selected_discards.size() < DISCARD_LIMIT:
-		selected_discards.append(card)
+	if retained_cards.has(card):
+		retained_cards.erase(card)
+	elif retained_cards.size() < RETENTION_LIMIT:
+		retained_cards.append(card)
 	_refresh_cards()
 
-func _confirm_discards() -> void:
-	if choosing_discards:
+func _confirm_retention() -> void:
+	if choosing_retention:
 		end_turn_requested.emit()
 
 func commit_selection() -> Array:
 	var cards: Array = selection.cards_data()
 	var discarded := cards.duplicate()
-	for card in selected_discards:
+	for card in card_container.get_children():
+		if retained_cards.has(card):
+			continue
 		discarded.append(card.card_data)
 		card_container.remove_child(card)
 		card.queue_free()
@@ -211,9 +211,9 @@ func commit_selection() -> Array:
 		played_container.remove_child(card)
 		card.queue_free()
 	deck.discard(discarded)
-	selected_discards.clear()
-	choosing_discards = false
-	confirm_discard_button.hide()
+	retained_cards.clear()
+	choosing_retention = false
+	confirm_keep_button.hide()
 	end_turn_button.show()
 	_refresh_cards()
 	return cards
@@ -224,7 +224,7 @@ func start_new_player_round() -> void:
 	_refresh_cards()
 
 func _on_card_played(card: Control) -> void:
-	if choosing_discards or card.get_parent() != card_container or not selection.try_play(card.get_instance_id(), card.card_data):
+	if choosing_retention or card.get_parent() != card_container or not selection.try_play(card.get_instance_id(), card.card_data):
 		card.return_to_slot()
 		return
 	card.is_played = true
@@ -233,7 +233,7 @@ func _on_card_played(card: Control) -> void:
 	selection_changed.emit(selection.cards_data())
 
 func _on_card_removed(card: Control) -> void:
-	if choosing_discards or card.get_parent() != played_container or not selection.try_remove(card.get_instance_id()):
+	if choosing_retention or card.get_parent() != played_container or not selection.try_remove(card.get_instance_id()):
 		card.return_to_slot()
 		return
 	card.is_played = false
@@ -242,7 +242,7 @@ func _on_card_removed(card: Control) -> void:
 	selection_changed.emit(selection.cards_data())
 
 func return_all_cards_to_hand() -> void:
-	if choosing_discards or not selection.clear():
+	if choosing_retention or not selection.clear():
 		return
 	for card in played_container.get_children():
 		card.is_played = false
@@ -254,21 +254,21 @@ func _refresh_cards() -> void:
 	_fit_hand()
 	energy_texture.texture = energy_icons[selection.current_energy]
 	energy_texture.tooltip_text = "Energia: %d/%d" % [selection.current_energy, selection.max_energy]
-	deck_label.text = "Mão: %d/%d\nCompra: %d\nDescarte: %d" % [
-		card_container.get_child_count(), HAND_LIMIT, deck.draw_pile.size(), deck.discard_pile.size()
+	deck_label.text = "Mão: %d\nCompra: %d\nDescarte: %d" % [
+		card_container.get_child_count(), deck.draw_pile.size(), deck.discard_pile.size()
 	]
 	for container in [card_container, played_container]:
 		container.queue_sort()
 		for card in container.get_children():
 			var affordable: bool = int(card.card_data.energy_cost) <= selection.current_energy
-			card.can_select_discard = choosing_discards and selection.enabled and container == card_container
-			card.set_interaction_enabled(selection.enabled and not choosing_discards and (affordable or card.is_played))
-			card.set_affordable(affordable or card.can_select_discard)
-			if selected_discards.has(card):
-				card.modulate = Color(1.0, 0.60, 0.60)
-	if choosing_discards:
-		effect_label.text = "Clique em até %d cartas da mão para descartar.\nSelecionadas: %d/%d" % [
-			DISCARD_LIMIT, selected_discards.size(), DISCARD_LIMIT
+			card.can_select_retention = choosing_retention and selection.enabled and container == card_container
+			card.set_interaction_enabled(selection.enabled and not choosing_retention and (affordable or card.is_played))
+			card.set_affordable(affordable or card.can_select_retention)
+			if retained_cards.has(card):
+				card.modulate = Color(0.70, 1.0, 0.72)
+	if choosing_retention:
+		effect_label.text = "Escolha até %d cartas para manter.\nAs demais serão descartadas.\nSelecionadas: %d/%d" % [
+			RETENTION_LIMIT, retained_cards.size(), RETENTION_LIMIT
 		]
 		effect_label.show()
 		return

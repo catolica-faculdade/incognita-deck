@@ -47,7 +47,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 2. Clique em iniciar e escolha **Normal** ou **Difícil** antes de cada run. Difícil esconde as ilustrações das cartas e mantém fórmulas, alvos e custos.
 3. No mapa, escolha um nó disponível. Os encontros têm dificuldades sorteadas e composições geradas. Apenas rotas adjacentes ficam disponíveis.
 4. Arraste cartas para a área de preparo acima da mão para montar trajetória e efeitos. O número amarelo é o custo em energia. Devolva cartas ou use **Limpar** para desfazer.
-5. Clique em **Fim do turno**, selecione até duas cartas da mão para descartar e clique em **Continuar**. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
+5. Clique em **Fim do turno**, selecione até duas cartas não jogadas para manter e clique em **Continuar**. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
 6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. O chefe da sétima etapa encerra a jornada.
 
 *Obs*: Use **Ver baralho** para revisar suas cartas e **Esc** para pausar. O modo difícil também vale nas recompensas e na visualização do baralho.
@@ -57,7 +57,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - O objetivo é derrotar os inimigos de cada combate, avançar pelo mapa e vencer o Professor na sétima etapa.
 - O jogador inicia a tentativa com **80 de vida** e possui **5 pontos de energia por turno**. A energia é restaurada no início de cada turno e não acumula entre turnos.
 - Cada carta possui um custo em energia. Combine cartas para montar uma trajetória que atinja os inimigos, ou utilize efeitos para auxiliar o personagem.
-- As cartas jogadas e os descartes opcionais vão para a pilha de descarte. As demais cartas ficam na mão. No início do turno, compre até seis cartas, respeitando o limite de 12. Os descartes opcionais não consomem energia nem dão compra imediata.
+- As cartas jogadas e as que você deixou sem marcar vão para o descarte. No início do próximo turno, compre até cinco cartas além das que escolheu manter. A mão pode chegar a sete cartas.
 - O combate termina em vitória quando todos os inimigos são derrotados. Caso a vida do jogador chegue a zero, a tentativa termina em derrota.
 - A vida restante é mantida entre combates. Os nós de descanso recuperam **24 de vida**, sem ultrapassar o máximo de 80.
 - Ao vencer um combate, escolha uma carta para adicionar ao baralho durante a tentativa, ou pule a recompensa.
@@ -115,6 +115,6 @@ Na raiz do projeto, informe o caminho do Godot se ele não estiver no PATH:
 ./tests/run_tests.ps1 -Godot 'C:/caminho/Godot_console.exe' -Playtest
 ```
 
-A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, projétil, descarte opcional com mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, duas em cada modo e sem alterar HP ou eliminar inimigos artificialmente.
+A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, projétil, seleção de cartas para manter com mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, duas em cada modo e sem alterar HP ou eliminar inimigos artificialmente.
 
 O wrapper retorna falha também se o Godot emitir erros de script/runtime, mesmo quando o processo da engine retorna 0. Testes e documentação ficam excluídos dos presets de exportação.

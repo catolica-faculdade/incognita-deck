@@ -20,6 +20,7 @@ func _run() -> void:
 				var fight_turns := 0
 				while battle.phase == battle.Phase.PLAYER and fight_turns < 50:
 					_play_hand(battle)
+					_keep_cards(battle.combat_ui)
 					await battle.execute_turn_actions()
 					fight_turns += 1
 				turns += fight_turns
@@ -75,6 +76,15 @@ func _play_hand(battle: Node) -> void:
 	for i in range(hand.size()):
 		if best_mask & (1 << i):
 			battle.combat_ui._on_card_played(hand[i])
+
+func _keep_cards(ui: CanvasLayer) -> void:
+	var remaining: Array = ui.card_container.get_children()
+	if remaining.is_empty():
+		return
+	ui._on_end_turn_requested()
+	remaining.sort_custom(func(a: Control, b: Control): return _reward_score(a.card_data) > _reward_score(b.card_data))
+	for card in remaining.slice(0, 2):
+		ui._toggle_retention(card)
 
 func _score_play(battle: Node, cards: Array) -> float:
 	var formula = Formula.new()
