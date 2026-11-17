@@ -886,6 +886,14 @@ func _press_key(code: Key) -> void:
 func _test_keyboard() -> void:
 	var battle = await _battle()
 	var ui = battle.combat_ui
+	var first = ui.card_container.get_child(0)
+	var second = ui.card_container.get_child(1)
+	check(first.get_node("ShortcutKey").text == "1" and ui.turn_keys_label.visible, "HUD mostra atalhos da mão e do fim do turno")
+	await _press_key(KEY_1)
+	check(first.get_parent() == ui.played_container and second.get_node("ShortcutKey").text == "2",
+		"atalho prepara a carta e os demais atalhos ficam estáveis")
+	await _press_key(KEY_1)
+	check(ui.card_container.get_child(0) == first, "mesmo atalho devolve a carta à posição original")
 	await _press_key(KEY_CTRL)
 	check(ui.message_title.text == "Cartas preparadas", "Ctrl abre revisão das cartas")
 	await _press_key(KEY_TAB)
@@ -894,10 +902,25 @@ func _test_keyboard() -> void:
 	check(not get_tree().paused, "Tab fecha o baralho")
 	await _press_key(KEY_E)
 	check(ui.choosing_retention, "E abre a seleção do fim de turno")
+	await _press_key(KEY_1)
+	check(ui.retained_cards == [first], "tecla numérica marca a carta para manter")
 	await _press_key(KEY_SPACE)
 	if battle.phase != battle.Phase.PLAYER:
 		await _wait_turn(battle)
 	check(ui.turn_count == 2 and not ui.choosing_retention, "Espaço confirma e resolve o turno")
+	check(first.get_parent() == ui.card_container and first.get_node("ShortcutKey").text == "1",
+		"carta mantida recebe o número da nova mão")
+	await _set_hand(ui, [1, 1, 1, 1, 1])
+	for i in range(5):
+		ui.create_card(Catalog.get_card(1))
+	ui._draw_hand()
+	ui._refresh_cards()
+	var tenth = ui.card_container.get_child(9)
+	check(tenth.get_node("ShortcutKey").text == "0", "a décima carta recebe a tecla zero")
+	await _press_key(KEY_KP_0)
+	check(tenth.get_parent() == ui.played_container, "zero do teclado numérico prepara a décima carta")
+	await _press_key(KEY_0)
+	check(ui.card_container.get_child(9) == tenth, "zero da fileira superior devolve a mesma carta")
 
 func _test_full_run() -> void:
 	await _show_scene("res://interface/run_setup.tscn")

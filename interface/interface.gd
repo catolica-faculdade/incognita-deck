@@ -12,6 +12,8 @@ const CARD_SCENE = preload("res://card/card.tscn")
 const PLAYER_HUD = preload("res://world/player/player_interface.tscn")
 const CARDS_PER_TURN := 5
 const RETENTION_LIMIT := 2
+const CARD_KEYS := [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0]
+const KEYPAD_CARD_KEYS := [KEY_KP_1, KEY_KP_2, KEY_KP_3, KEY_KP_4, KEY_KP_5, KEY_KP_6, KEY_KP_7, KEY_KP_8, KEY_KP_9, KEY_KP_0]
 const MESSAGE_PANEL_WIDTH := 296.0
 const ENERGY_IMAGES = [
 	preload("res://energy/energy_0.png"), preload("res://energy/energy_1.png"),
@@ -35,11 +37,13 @@ var deck_label: Label
 var message_panel: PanelContainer
 var message_title: Label
 var effect_label: Label
+var shortcut_help: Label
 var retention_row: HBoxContainer
 var retention_slots: Array[Label] = []
 var empty_slot_style: StyleBoxFlat
 var filled_slot_style: StyleBoxFlat
 var end_turn_button: Button
+var turn_keys_label: Label
 var confirm_keep_button: Button
 var clear_button: Button
 var drop_zone: Control
@@ -108,12 +112,27 @@ func _build_ui() -> void:
 	end_turn_button = Style.illustrated_button(preload("res://assets/button.png"), _on_end_turn_requested)
 	end_turn_button.tooltip_text = "Fim do turno (E ou Espaço)"
 	root.add_child(end_turn_button)
+	turn_keys_label = _key_hint("E  /  Espaço")
+	root.add_child(turn_keys_label)
 	confirm_keep_button = Style.button("Continuar", _confirm_retention)
 	confirm_keep_button.hide()
 	root.add_child(confirm_keep_button)
-	var view_deck := Style.button("Ver baralho", _show_deck)
+	var view_deck := Style.button("Ver baralho  [Tab]", _show_deck)
 	view_deck.name = "ViewDeck"
 	root.add_child(view_deck)
+
+func _key_hint(text: String) -> Label:
+	var hint := Style.readable_label(text, 14)
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("fff8e6")
+	paper.border_color = Color("7d6b50")
+	paper.set_border_width_all(1)
+	paper.set_corner_radius_all(4)
+	hint.add_theme_stylebox_override("normal", paper)
+	return hint
 
 func _build_message_panel() -> void:
 	var corner := VBoxContainer.new()
@@ -171,6 +190,8 @@ func _build_message_panel() -> void:
 		slot.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		retention_row.add_child(slot)
 		retention_slots.append(slot)
+	shortcut_help = Style.readable_label("", 13)
+	content.add_child(shortcut_help)
 
 func _layout() -> void:
 	var dimensions := get_viewport().get_visible_rect().size
@@ -197,6 +218,8 @@ func _layout() -> void:
 	clear_button.size = Vector2(160, 42)
 	end_turn_button.position = Vector2(dimensions.x - 210, dimensions.y - 112)
 	end_turn_button.size = Vector2(184, 52)
+	turn_keys_label.position = end_turn_button.position + Vector2(43, -25)
+	turn_keys_label.size = Vector2(98, 22)
 	confirm_keep_button.position = end_turn_button.position
 	confirm_keep_button.size = end_turn_button.size
 	root.get_node("ViewDeck").position = Vector2(dimensions.x - 190, dimensions.y - 50)
@@ -205,6 +228,24 @@ func _layout() -> void:
 func _draw_hand() -> void:
 	for data in deck.draw(CARDS_PER_TURN):
 		create_card(data)
+	var hand := card_container.get_children()
+	for i in range(hand.size()):
+		var card := hand[i]
+		var hint := card.get_node_or_null("ShortcutKey") as Label
+		if i >= CARD_KEYS.size():
+			if hint != null:
+				card.remove_child(hint)
+				hint.queue_free()
+			continue
+		if hint == null:
+			hint = _key_hint("")
+			hint.name = "ShortcutKey"
+			hint.position = Vector2(7, -12)
+			hint.size = Vector2(23, 23)
+			hint.z_index = 3
+			card.add_child(hint)
+		hint.text = str((i + 1) % 10)
+		hint.set_meta("slot", i)
 
 func _fit_hand() -> void:
 	var count := card_container.get_child_count()
@@ -300,7 +341,7 @@ func _on_card_removed(card: Control) -> void:
 		card.return_to_slot()
 		return
 	card.is_played = false
-	card.reparent(card_container, false)
+	_restore_hand_position(card)
 	_refresh_cards()
 	selection_changed.emit(selection.cards_data())
 
@@ -309,12 +350,24 @@ func return_all_cards_to_hand() -> void:
 		return
 	for card in played_container.get_children():
 		card.is_played = false
-		card.reparent(card_container, false)
+		_restore_hand_position(card)
 	_refresh_cards()
 	selection_changed.emit(selection.cards_data())
 
+func _restore_hand_position(card: Control) -> void:
+	card.reparent(card_container, false)
+	var hint := card.get_node_or_null("ShortcutKey")
+	if hint == null:
+		return
+	for other in card_container.get_children():
+		var other_hint := other.get_node_or_null("ShortcutKey")
+		if other_hint == null or int(other_hint.get_meta("slot")) > int(hint.get_meta("slot")):
+			card_container.move_child(card, other.get_index())
+			break
+
 func _refresh_cards() -> void:
 	_fit_hand()
+	turn_keys_label.visible = selection.enabled
 	energy_texture.texture = energy_icons[selection.current_energy]
 	energy_texture.tooltip_text = "Energia: %d/%d" % [selection.current_energy, selection.max_energy]
 	deck_label.text = "Mão: %d\nCompra: %d\nDescarte: %d" % [
@@ -327,6 +380,11 @@ func _refresh_cards() -> void:
 			card.can_select_retention = choosing_retention and selection.enabled and container == card_container
 			card.set_interaction_enabled(selection.enabled and not choosing_retention and (affordable or card.is_played))
 			card.set_affordable(affordable or card.can_select_retention)
+			var hint := card.get_node_or_null("ShortcutKey") as Label
+			if hint != null:
+				hint.visible = selection.enabled and (not choosing_retention or card.can_select_retention)
+				var can_keep: bool = card.can_select_retention and (retained_cards.has(card) or retained_cards.size() < RETENTION_LIMIT)
+				hint.modulate.a = 1.0 if card.interaction_enabled or can_keep else 0.55
 			if retained_cards.has(card):
 				card.modulate = Color(0.70, 1.0, 0.72)
 	_refresh_message_panel()
@@ -334,9 +392,10 @@ func _refresh_cards() -> void:
 func _refresh_message_panel() -> void:
 	message_panel.visible = selection.enabled
 	retention_row.visible = choosing_retention
+	shortcut_help.text = "Esc  Pausar" if choosing_retention else "Ctrl  Revisar cartas    •    Esc  Pausar"
 	if choosing_retention:
 		message_title.text = "Manter cartas"
-		effect_label.text = "Escolha até %d cartas da mão.\nAs demais vão para o descarte." % RETENTION_LIMIT
+		effect_label.text = "Clique ou use a tecla da carta para manter até %d. As demais vão para o descarte." % RETENTION_LIMIT
 		for i in range(retention_slots.size()):
 			var slot := retention_slots[i]
 			var filled := i < retained_cards.size()
@@ -356,7 +415,7 @@ func _refresh_message_panel() -> void:
 		if int(effects[key]) > 0:
 			parts.append({"heal":"Cura", "shield":"Escudo", "poison":"Veneno nos alvos", "damage":"Dano extra"}[key] + " +%d" % effects[key])
 	message_title.text = "Preparar jogada" if parts.is_empty() else "Efeitos da jogada"
-	effect_label.text = "Arraste cartas para a área de preparo." if parts.is_empty() else "\n".join(parts)
+	effect_label.text = "Arraste uma carta ou pressione a tecla indicada nela." if parts.is_empty() else "\n".join(parts)
 
 func update_equation(text: String) -> void:
 	equation_label.text = text
@@ -382,6 +441,13 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		_show_deck()
 	elif selection.enabled:
+		var slot := CARD_KEYS.find(event.keycode)
+		if slot == -1:
+			slot = KEYPAD_CARD_KEYS.find(event.keycode)
+		if slot >= 0:
+			get_viewport().set_input_as_handled()
+			_use_card_key(slot)
+			return
 		match event.keycode:
 			KEY_E, KEY_SPACE:
 				get_viewport().set_input_as_handled()
@@ -390,6 +456,24 @@ func _input(event: InputEvent) -> void:
 				else:
 					_on_end_turn_requested()
 			KEY_CTRL:
+				if choosing_retention:
+					return
 				get_viewport().set_input_as_handled()
 				reviewing_cards = not reviewing_cards
 				_refresh_message_panel()
+
+func _use_card_key(slot: int) -> void:
+	var cards := card_container.get_children() + played_container.get_children()
+	if cards.any(func(card): return card.dragging):
+		return
+	for card in cards:
+		var hint := card.get_node_or_null("ShortcutKey") as Label
+		if hint == null or hint.get_meta("slot") != slot:
+			continue
+		if choosing_retention:
+			_toggle_retention(card)
+		elif card.is_played and card.interaction_enabled:
+			_on_card_removed(card)
+		elif card.interaction_enabled:
+			_on_card_played(card)
+		return

@@ -27,7 +27,7 @@ func _ready() -> void:
 		grid.add_child(card)
 		card.setup(Catalog.get_card(id))
 		card_views.append(card)
-	content.add_child(Style.button("Fechar baralho", _close))
+	content.add_child(Style.button("Fechar baralho  [Tab]", _close))
 
 func _close() -> void:
 	get_tree().paused = _was_paused

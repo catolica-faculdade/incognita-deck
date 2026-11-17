@@ -89,6 +89,7 @@ O jogo usa um slot. O menu exibe **Continuar run** quando há um progresso váli
 ## Atalhos e eventos
 
 - **E** ou **Espaço** abre a seleção de fim de turno e confirma as cartas a manter.
+- **1 a 9**, depois **0**, acionam as cartas que exibem esses números. Pressione de novo para devolver a carta preparada ou desmarcá-la na seleção de fim de turno. O teclado numérico também funciona.
 - **Tab** abre e fecha o baralho no mapa e no combate. **Ctrl** alterna a revisão das cartas preparadas. **Esc** pausa.
 - Nos nós de **Evento**, o Monitor propõe uma questão de função linear. Acerte para escolher uma carta, treine em combate ou siga viagem.
 

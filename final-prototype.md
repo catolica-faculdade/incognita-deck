@@ -51,6 +51,7 @@ As artes foram geradas com o ImageGen integrado e recortadas em sprites individu
 
 - **Salvamento.** Um slot em `user://incognita-run.save` registra a semente, o mapa, o nó, o mundo, o modo, o HP e o baralho. A pausa permite gravar manualmente, e o menu oferece **Continuar run**. Ao retomar no combate, o encontro reinicia no turno 1 com o HP de entrada. Se houver recompensa pendente, o jogo reabre as mesmas opções. Começar outra run substitui o slot, e derrota ou conclusão encerram o salvamento.
 - **Atalhos.** E ou Espaço abre ou confirma o fim do turno. Tab abre ou fecha o baralho. Ctrl alterna a revisão das cartas preparadas. Esc pausa.
+- **Indicadores de teclado.** O HUD mostra os atalhos das ações e marca as cartas de 1 a 9 e depois 0. A tecla de uma carta permite prepará-la, devolvê-la ou selecioná-la para manter. Os números ficam estáveis durante o turno e também aceitam o teclado numérico.
 - **Evento.** Alguns nós mostram o **Desafio do Monitor**. A função e as opções de resposta dependem da semente do nó. O jogador pode acertar o cálculo para escolher uma carta sem combate, treinar contra inimigos ou seguir.
 
 ## Validação
