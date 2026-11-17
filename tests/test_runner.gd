@@ -551,13 +551,28 @@ func _test_hard_enemy_turn() -> void:
 func _test_spiral_preview() -> void:
 	var battle = await _battle()
 	var ui = battle.combat_ui
-	await _set_hand(ui, [7, 31])
+	await _set_hand(ui, [7, 18, 31])
 	ui._on_card_played(_card(ui, 7))
 	ui._on_card_played(_card(ui, 31))
 	check(battle.trajectory.points.size() == 322 and battle.trajectory.points[1].is_equal_approx(Vector2(225, 0)),
 		"carta Espiral acrescenta a curva ao fim da prévia no combate")
 	check("Espiral (10 voltas)" in ui.equation_label.text, "HUD identifica a espiral preparada")
 	await _capture("final-prototype-spiral.png")
+	ui._on_card_played(_card(ui, 18))
+	var enemy = get_tree().get_nodes_in_group("enemies")[0]
+	enemy.health = 100
+	enemy.max_health = 100
+	enemy.planned_action = "defend"
+	var center: Vector2 = battle.trajectory.to_local(enemy.global_position)
+	var path := PackedVector2Array()
+	for i in range(6):
+		path.append(center + Vector2(100 if i % 2 == 0 else -100, 0))
+	battle.trajectory.points = path
+	battle.evaluate_trajectory()
+	check(battle.trajectory_contacts.size() == 5, "trajeto da Espiral pode cruzar o mesmo inimigo várias vezes")
+	await battle.execute_turn_actions()
+	check(enemy.health == 73 and enemy.poison_amount == 5,
+		"Espiral aplica 15 + 3 + 3 de dano, limita efeitos aos três acertos e veneno causa mais 6")
 
 func _test_mirror_preview() -> void:
 	var wall := PackedVector2Array([Vector2(350, -300), Vector2(350, -180)])

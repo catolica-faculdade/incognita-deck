@@ -33,7 +33,7 @@ Branch `feat/final-prototype`. Registro das alterações da entrega base e compl
 
 - **Elite.** Entre as três opções de recompensa há pelo menos uma carta rara. O jogo identifica as raras na tela de recompensa. O jogador ainda pode escolher qualquer uma das três ou pular.
 - **Descanso.** O jogador escolhe entre curar 40% da vida máxima, até o limite de HP, e remover uma cópia de uma carta. Um benefício conclui o nó. O jogo preserva pelo menos uma carta no baralho.
-- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem dez voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. A composição simultânea fica para uma etapa posterior.
+- **Espiral de Arquimedes.** Custa 2 de energia e é rara. Tem dez voltas e raio máximo de três unidades da grade. Começa no fim do percurso ou na origem se for a única carta de trajetória. Em um disparo com Espiral, o primeiro acerto em cada inimigo causa dano integral. Até dois acertos adicionais causam 25% do dano, arredondado para baixo. Passagens seguintes não causam dano nem aplicam efeitos. A composição simultânea fica para uma etapa posterior.
 - **Reflexão em X.** Custa 1 de energia e inverte o Y do percurso montado até esse ponto. Espiral e Reflexão são aplicadas na ordem da seleção, depois de compor a trajetória base.
 - **Espelhos na arena.** Alguns encontros exibem um espelho diagonal fixo, identificado no mapa. O espelho reflete o caminho restante a partir do contato e dura o combate. A prévia e o disparo compartilham o resultado. O percurso termina ao atingir o limite de 16 reflexões no mesmo disparo.
 
@@ -58,6 +58,7 @@ Os testes foram executados no Godot 4.6.1 para Windows. O README indica 4.6.3 pa
 | Regressão do painel de mensagens com renderização | 10.739 verificações, zero falhas. Revisão visual dos efeitos e dos espaços de retenção |
 | Regressão dos passos 6 a 8 com renderização | 10.793 verificações, zero falhas. Revisão visual de recompensa, descanso, espiral e espelho |
 | Regressão dos passos 9 e 10 com renderização | 11.774 verificações, zero falhas. Inclui a garantia de inimigo difícil, a expiração do espelho e a campanha completa |
+| Regressão do ajuste da Espiral | 11.745 verificações headless, zero falhas. Um disparo com cinco passagens aplica só três acertos e limita os efeitos |
 | Playtest antes das mudanças | 1 vitória em 4 runs, zero falhas de execução |
 | Playtest da versão anterior | 4 vitórias em 4 runs, zero falhas de execução |
 | Playtest da regra atual | 3 vitórias em 4 runs, zero falhas de execução |

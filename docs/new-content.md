@@ -41,6 +41,7 @@ Em cada combate o baralho é embaralhado com a semente do encontro. O jogador co
 ## Regras dos efeitos
 
 - O projétil percorre os mesmos segmentos da prévia e resolve contatos por ordem de distância percorrida. O ataque base causa 15 de dano por passagem. Uma nova passagem pelo mesmo inimigo dá dano novamente e adiciona até uma carga de cada efeito acumulável presente no ataque.
+- Num disparo com Espiral, cada inimigo recebe o primeiro acerto com dano integral e até dois acertos adicionais com 25% do dano. As passagens seguintes não aplicam dano nem efeitos.
 - Escudo absorve dano normal e expira no início do próximo turno do seu dono. Perfuração ignora o escudo sem consumi-lo.
 - Veneno causa dano igual às cargas no início do turno do alvo, ignora escudo e perde uma carga. Pode se acumular. Veneno letal impede a ação do alvo.
 - Vulnerabilidade aumenta dano de ataques em 50%, inclusive no ataque que a aplica, e perde uma carga depois da ação inimiga. Não amplia o dano do veneno ou dos espinhos.

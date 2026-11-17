@@ -2,6 +2,8 @@ extends RefCounted
 ## IDs são persistentes dentro da run. Dados retornados são cópias independentes.
 
 const STARTER_DECK = [1, 1, 2, 3, 4, 5, 7, 16, 17, 17, 18, 19]
+const SPIRAL_REPEAT_LIMIT := 2
+const SPIRAL_REPEAT_DAMAGE := 0.25
 const CARDS = [
 	{"id":1,"name":"Avanço","type":"linear","x":8.0,"y":0.0,"energy_cost":1},
 	{"id":2,"name":"Elevar","type":"diagonal","x":5.0,"y":2.0,"energy_cost":1},
@@ -107,7 +109,10 @@ static func description(card: Dictionary) -> String:
 		"linear", "diagonal": return "Desloca o ponto final da trajetória."
 		"quadratic": return "Soma o coeficiente em y = ax² + bx + c."
 		"special": return "Soma uma onda: A · sen(2π · f · x/L)."
-		"spiral": return "Acrescenta %d voltas ao redor do fim do percurso, até um raio de %.0f unidades da grade." % [card.turns, card.radius]
+		"spiral":
+			return "Acrescenta %d voltas ao fim do percurso, com raio de %.0f unidades.\nPor inimigo: primeiro acerto com dano integral e até %d adicionais com %d%% do dano." % [
+				card.turns, card.radius, SPIRAL_REPEAT_LIMIT, roundi(SPIRAL_REPEAT_DAMAGE * 100.0)
+			]
 		"reflection": return "Reflete o percurso montado até aqui em torno do eixo X. Precisa de uma trajetória."
 	return ""
 

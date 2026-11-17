@@ -1,6 +1,7 @@
 extends Node
 
 const Formula = preload("res://core/combat/trajectory_formula.gd")
+const Catalog = preload("res://card/card_database.gd")
 const Targeting = preload("res://core/combat/trajectory_targeting.gd")
 const Reflection = preload("res://core/combat/trajectory_reflection.gd")
 const Effects = preload("res://core/combat/card_effects.gd")
@@ -143,12 +144,13 @@ func execute_turn_actions() -> void:
 	var points := trajectory_points.duplicate()
 	var cards: Array = combat_ui.commit_selection()
 	var effects := Effects.aggregate(cards)
+	var uses_spiral := cards.any(func(card: Dictionary): return card.type == "spiral")
 	clear_target()
 	preview_shot.hide()
 	player.apply_effects(effects)
 	if points.size() >= 2:
 		await player.play_attack()
-		await _fire_projectile(points, contacts, effects)
+		await _fire_projectile(points, contacts, effects, uses_spiral)
 	trajectory.clear_points()
 	_clear_turn_mirrors()
 	player.finish_turn()
@@ -164,7 +166,7 @@ func execute_turn_actions() -> void:
 			await get_tree().create_timer(0.25).timeout
 	await _start_player_turn(true)
 
-func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dictionary) -> void:
+func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dictionary, uses_spiral: bool) -> void:
 	var distances := PackedFloat32Array([0.0])
 	for i in range(1, points.size()):
 		distances.append(distances[-1] + points[i - 1].distance_to(points[i]))
@@ -197,10 +199,16 @@ func _fire_projectile(points: PackedVector2Array, contacts: Array, effects: Dict
 		# A reação do Professor pode invalidar uma segunda passagem prevista.
 		if not scenario_container.to_global(enemy.start_position).is_equal_approx(contact.center):
 			continue
-		var repeated := hit_enemies.has(enemy)
-		hit_enemies[enemy] = true
+		var hits := int(hit_enemies.get(enemy, 0))
+		if uses_spiral and hits > Catalog.SPIRAL_REPEAT_LIMIT:
+			continue
+		hit_enemies[enemy] = hits + 1
+		var repeated := hits > 0
+		var damage: int = player.attack_damage(player_damage + int(effects.damage))
+		if repeated and uses_spiral:
+			damage = floori(damage * Catalog.SPIRAL_REPEAT_DAMAGE)
 		enemy.receive_vulnerable(_hit_effect(int(effects.vulnerable), repeated))
-		await enemy.take_damage(player.attack_damage(player_damage + int(effects.damage)), int(effects.pierce) > 0)
+		await enemy.take_damage(damage, int(effects.pierce) > 0)
 		if is_instance_valid(enemy) and enemy.check_is_alive():
 			enemy.receive_poison(_hit_effect(int(effects.poison), repeated))
 	await _move_projectile(position_projectile, traveled, distances[-1])
