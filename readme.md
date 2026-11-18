@@ -2,7 +2,7 @@
 
 Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.6 / GDScript**.
 
-**Atualizado em 18/11/2026 - Entrega do protótipo final.** Guia do estado atual da branch `feat/final-prototype`.
+**Atualizado em 18/11/2026 - Entrega do protótipo final.** Guia do estado atual da branch `main`.
 
 ## Requisitos
 
@@ -22,7 +22,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 
 ### Quero baixar o projeto
 
-1. Na tela principal do repositório, selecione a branch **feat/final-prototype**, correspondente ao protótipo descrito neste guia. Selecione a opção "Code" e depois "Download ZIP" ou "Baixar ZIP". Para uma release específica, utilize o código-fonte associado àquela versão.
+1. Na tela principal do repositório, selecione a branch **main** (normalmente selecionada por padrão). Selecione a opção "Code" e depois "Download ZIP" ou "Baixar ZIP". Para uma release específica, utilize o código-fonte associado àquela versão.
 2. Após baixar o ZIP, selecione ele na pasta de Downloads (no próprio computador), aperte com o botão direito e selecione a opção extrair.
 3. Após extrair, abra o aplicativo *Godot* e selecione a opção "Importar". Selecione o arquivo `project.godot` na pasta extraída, confirme a importação, abra o projeto e aguarde a importação dos recursos. 
 4. Continue para o capítulo "Jogar". 
@@ -34,12 +34,12 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 3. Selecione *Clone from Github*.
 4. Copie e cole esta url: "https://github.com/catolica-faculdade/incognita-deck", pressione enter.
 5. Selecione a pasta de destino.
-6. Após clonar, selecione a branch **feat/final-prototype** no controle de versão da IDE. Abra o Godot e selecione "Importar". Escolha `project.godot` na pasta clonada, confirme a importação e aguarde a importação dos recursos.
+6. Após clonar, abra o Godot e selecione "Importar". Escolha `project.godot` na pasta clonada, confirme a importação e aguarde a importação dos recursos.
 7. Continue para o capítulo "Jogar". 
 
 ### Utilizando o executável
 
-1. Caso haja uma versão executável publicada, abra a seção [Releases do repositório](https://github.com/catolica-faculdade/incognita-deck/releases), o release "Protótipo Final" ([Url direta](https://github.com/catolica-faculdade/incognita-deck/releases/tag/Prototipo_final)) e baixe o pacote para Windows referente à entrega.
+1. Caso haja uma versão executável publicada, abra a seção [Releases do repositório](https://github.com/catolica-faculdade/incognita-deck/releases), o release mais atualizado é o "Protótipo Final" (disponível aqui: [Url direta](https://github.com/catolica-faculdade/incognita-deck/releases/tag/Prototipo_final)) selecione-o e baixe o pacote para Windows referente à entrega.
 2. Extraia o pacote completo para uma pasta no computador, mantendo todos os arquivos juntos.
 3. Abra o arquivo com extensão `.exe` do jogo com dois cliques e divirta-se! Não é necessário abrir o Godot. Caso não haja um executável disponível, utilize uma das opções de baixar ou clonar o projeto.
 
@@ -82,10 +82,6 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - Painel de orientações e efeitos no combate, indicadores das cartas mantidas e atalhos visíveis na interface.
 - Hovers de cartas e inimigos com texto ampliado, fundo opaco e informações organizadas para análise.
 - Configurações de volume separadas para música e efeitos sonoros, pausa e alternância entre janela e tela cheia.
-
-As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.
-
-O registro da segunda entrega está em [docs/new-content.md](docs/new-content.md). Para as regras posteriores e o estado do protótipo final, consulte [final-prototype.md](final-prototype.md). O documento da reestruturação anterior foi mantido como histórico. Esses caminhos são relativos à raiz do repositório.
 
 A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O mapa desenha caminhos tracejados sobre `background_map.png`, sem usar a imagem do mapa pré-montado. O menu usa layout centralizado, sem câmera ou sobreposição entre botões.
 
