@@ -13,6 +13,7 @@ var shield_label: Label
 var name_label: Label
 var poison_marker: Control
 var poison_label: Label
+var target_marker: Label
 
 func _ready() -> void:
 	body_hover = Control.new()
@@ -33,6 +34,15 @@ func _ready() -> void:
 	health_bar.add_theme_stylebox_override("fill", fill)
 	add_child(health_bar)
 	health_bar.size = Vector2(112, 10)
+
+	target_marker = Style.readable_label("◆", 13)
+	target_marker.position = Vector2(-18, -4)
+	target_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	target_marker.add_theme_color_override("font_color", Color("a12d25"))
+	target_marker.add_theme_color_override("font_outline_color", Color.WHITE)
+	target_marker.add_theme_constant_override("outline_size", 3)
+	target_marker.hide()
+	add_child(target_marker)
 
 	hover_info = Control.new()
 	hover_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -89,7 +99,10 @@ func _label(at: Vector2, dimensions: Vector2) -> Label:
 	return label
 
 func _update_hover() -> void:
-	var target := get_viewport().gui_get_hovered_control()
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var target := viewport.gui_get_hovered_control()
 	hover_info.visible = target == body_hover or target == health_bar
 
 func setup(current: int, maximum: int) -> void:
@@ -115,6 +128,10 @@ func update_shield(amount: int) -> void:
 
 func update_name(enemy_name: String) -> void:
 	name_label.text = enemy_name
+
+func update_intent(intent: String) -> void:
+	body_hover.tooltip_text = "Próxima ação: " + intent
+	health_bar.tooltip_text = body_hover.tooltip_text
 
 func update_poison(amount: int) -> void:
 	poison_marker.visible = amount > 0

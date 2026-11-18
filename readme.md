@@ -47,30 +47,32 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 2. Clique em iniciar e escolha **Normal** ou **Difícil** antes de cada run. Difícil esconde as ilustrações das cartas e mantém fórmulas, alvos e custos.
 3. No mapa, escolha um nó disponível. Os encontros têm dificuldades sorteadas e composições geradas. Apenas rotas adjacentes ficam disponíveis.
 4. Arraste cartas para a área de preparo acima da mão para montar trajetória e efeitos. O número amarelo é o custo em energia. Devolva cartas ou use **Limpar** para desfazer.
-5. **Fim do turno** confirma a jogada. Efeitos ofensivos precisam acertar os inimigos para serem efetivados, demais efeitos de cura e bloqueio afetam o player independente disso.
-6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. O chefe da sétima etapa encerra a jornada.
+5. Clique em **Fim do turno**, selecione até duas cartas não jogadas para manter e clique em **Continuar**. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
+6. Ao vencer, escolha **uma de três cartas** para o baralho, ou pule a recompensa. Derrote o chefe de cada mundo para avançar e vença o ENEM para concluir a jornada.
 
 *Obs*: Use **Ver baralho** para revisar suas cartas e **Esc** para pausar. O modo difícil também vale nas recompensas e na visualização do baralho.
 
 ## Regras básicas
 
-- O objetivo é derrotar os inimigos de cada combate, avançar pelo mapa e vencer o Professor na sétima etapa.
+- A campanha tem três mapas: **O Plano Cartesiano** (6 etapas, Professor), **Sala de Aula** (7 etapas, Alunos) e **Diretoria** (8 etapas, Diretor). Ao sair da Diretoria, o próximo combate é o **ENEM**.
 - O jogador inicia a tentativa com **80 de vida** e possui **5 pontos de energia por turno**. A energia é restaurada no início de cada turno e não acumula entre turnos.
 - Cada carta possui um custo em energia. Combine cartas para montar uma trajetória que atinja os inimigos, ou utilize efeitos para auxiliar o personagem.
-- Ao selecionar **Fim do turno**, a jogada é confirmada e os inimigos sobreviventes realizam suas ações. As cartas jogadas e as que permaneceram na mão são descartadas, e uma nova mão é comprada no próximo turno.
+- As cartas jogadas e as que você deixou sem marcar vão para o descarte. No início do próximo turno, compre até cinco cartas além das que escolheu manter. A mão pode chegar a sete cartas.
 - O combate termina em vitória quando todos os inimigos são derrotados. Caso a vida do jogador chegue a zero, a tentativa termina em derrota.
-- A vida restante é mantida entre combates. Os nós de descanso recuperam **24 de vida**, sem ultrapassar o máximo de 80.
+- A vida restante é mantida entre combates. No **Descanso**, escolha entre curar **40% da vida máxima** (32 HP) e remover uma cópia de uma carta.
+- Cada encontro de **Elite** inclui um inimigo difícil e oferece ao menos uma carta **Rara**. Nos encontros com espelho fixo ou colocado por um inimigo, a prévia mostra o desvio do disparo.
 - Ao vencer um combate, escolha uma carta para adicionar ao baralho durante a tentativa, ou pule a recompensa.
-- Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida e escudo. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
+- Ao passar o mouse por cima de um inimigo, é possível verificar seu nome, vida, escudo e próxima ação. A barra de vida fica azul enquanto ele possui escudo, e o marcador de veneno aparece enquanto ele estiver envenenado.
 
 ## Conteúdo
 
-- 30 cartas: deslocamentos, parábolas, ondas, cura, bloqueio, veneno, perfuração, vulnerabilidade, força e espinhos.
-- Baralho inicial de 12 cartas; compra de 5 por turno, descarte de toda a mão, embaralhamento quando a compra esgota e recompensas persistentes durante a run.
-- Mapa de 7 etapas com bifurcações, descanso, encontros comuns, elite e chefe. Cada semente conserva suas opções durante a partida.
-- 8 arquétipos de inimigos, com comportamentos próprios, estratégias próprias e atributos escalados pela dificuldade do encontro.
+- 36 cartas, incluindo Rotação, Fenda, Prisma e Catalisador. Combine as cartas de trajetória e efeitos para lidar com as defesas dos inimigos e as regras da arena.
+- O Plano Cartesiano pode ter um alvo móvel, a Sala de Aula pode ter espelhos e a Diretoria pode combinar espelhos e barreiras. A chance sobe ao avançar em cada mundo.
+- Baralho inicial de 12 cartas, embaralhamento do descarte quando a compra esgota e recompensas persistentes durante a run.
+- Três mapas ramificados e um encontro final. Derrotar o Professor, os Alunos ou o Diretor restaura toda a vida. O baralho continua entre mundos, e cada semente reproduz seus mapas e encontros.
+- 21 arquétipos de inimigos, incluindo cinco difíceis reservados aos Elites e quatro chefes.
 
-O **GDD atualizado** deve ser consultado pelo link indicado a seguir: **[INSERIR LINK DO GDD ATUALIZADO ANTES DA ENTREGA]**.
+As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.
 
 As regras, valores e pontos para avaliação estão em [docs/new-content.md](docs/new-content.md). O documento da reestruturação anterior foi mantido como histórico.
 
@@ -78,13 +80,20 @@ A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O
 
 ## Limitações da versão atual
 
-- A campanha atual possui sete etapas por tentativa, terminando no Professor. Os demais mundos ainda não foram implementados.
-- Não há salvamento e retomada de uma tentativa em andamento. Ao sair do jogo, não é possível continuar do mesmo ponto.
-- Os eventos aleatórios ainda não foram implementados.
-- Não é possível remover ou melhorar cartas do baralho durante a tentativa.
-- Os encontros de elite ainda não oferecem recompensas diferenciadas em relação aos combates comuns.
-- As ações principais são realizadas com o mouse. O jogo possui **Esc** para pausar, mas os demais atalhos de teclado previstos ainda não foram implementados.
+- Melhorias de cartas continuam fora do escopo da versão atual.
 - O jogo ainda não possui tutorial interno. Utilize as orientações deste guia para iniciar e jogar.
+
+## Continuar uma run
+
+O jogo usa um slot. O menu exibe **Continuar run** quando há um progresso válido. O jogo salva automaticamente ao avançar e também oferece **Salvar run** no menu de pausa. Retomar durante um combate reinicia aquele encontro com o HP de entrada. Se a recompensa já estiver disponível, a retomada abre as mesmas cartas. Uma nova run substitui o slot. Derrota ou conclusão apagam o salvamento.
+
+## Atalhos e eventos
+
+- **E** ou **Espaço** abre a seleção de fim de turno e confirma as cartas a manter.
+- **1 a 9**, depois **0**, acionam as cartas que exibem esses números. Pressione de novo para devolver a carta preparada ou desmarcá-la na seleção de fim de turno. O teclado numérico também funciona.
+- Na recompensa, **1**, **2** ou **3** escolhe a carta indicada, da esquerda para a direita.
+- **Tab** abre e fecha o baralho no mapa e no combate. **Ctrl** alterna a revisão das cartas preparadas. **Esc** pausa.
+- Nos nós de **Evento**, o Monitor propõe uma questão de função linear. Acerte para escolher uma carta, treine em combate ou siga viagem.
 
 ## Organização
 
@@ -115,6 +124,6 @@ Na raiz do projeto, informe o caminho do Godot se ele não estiver no PATH:
 ./tests/run_tests.ps1 -Godot 'C:/caminho/Godot_console.exe' -Playtest
 ```
 
-A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, efeitos, entrada de mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, sem alterar HP ou eliminar inimigos artificialmente.
+A primeira suíte valida scripts/cenas, 60 sementes de mapa, cartas, pilhas, projétil, seleção de cartas para manter com mouse, resultados e navegação até a conclusão. A segunda executa os mesmos casos com renderização e salva capturas. A terceira joga quatro runs com uma heurística, duas em cada modo e sem alterar HP ou eliminar inimigos artificialmente.
 
 O wrapper retorna falha também se o Godot emitir erros de script/runtime, mesmo quando o processo da engine retorna 0. Testes e documentação ficam excluídos dos presets de exportação.

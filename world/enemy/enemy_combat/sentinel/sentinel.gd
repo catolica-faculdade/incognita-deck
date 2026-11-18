@@ -8,4 +8,7 @@ func configure_archetype() -> void:
 	apply_defend = 12
 
 func choose_action() -> String:
-	return ["guard_all", "charge", "heavy"][turns_taken % 3]
+	return ["guard_all", "charge", "heavy"][action_turn() % 3]
+
+func strategy_text() -> String:
+	return "Acumula força antes do ataque pesado. Reserve escudo quando ele carregar."

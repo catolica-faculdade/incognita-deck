@@ -17,6 +17,9 @@ func choose_action() -> String:
 		return ["heavy", "poison", "heal_all", "teleport"][turns_taken % 4]
 	return ["teleport", "attack", "poison", "guard_all"][turns_taken % 4]
 
+func strategy_text() -> String:
+	return "Teleporta ao sobreviver a um acerto. Um disparo potente é mais eficaz que contar com a volta."
+
 func after_surviving_hit() -> void:
 	anim_sprite.play("teleport")
 	_play_sound("TeleportSound")

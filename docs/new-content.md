@@ -6,13 +6,13 @@ Implementação local sobre a reestruturação anterior, em 03/11/2026. A branch
 
 ## Fluxo da run
 
-Menu → escolha de modo → mapa gerado → combate/descanso → recompensa → mapa → Professor → recompensa final → resumo. Iniciar outra run sempre retorna à escolha de modo.
+Menu → escolha de modo → O Plano Cartesiano → Professor → Sala de Aula → Alunos → Diretoria → Diretor → ENEM → recompensa final → resumo. Iniciar outra run retorna à escolha de modo.
 
 O modo **Difícil** altera a apresentação das cartas: remove a arte de fundo e todos os pictogramas, inclusive nos efeitos, nas ofertas de recompensa e no visualizador do baralho. As expressões, nomes, destinos dos efeitos e custos continuam visíveis. A trajetória no campo permanece disponível. Esse modo não multiplica atributos dos inimigos; a dificuldade numérica vem do tier de cada encontro.
 
 ## Cartas e baralho
 
-O catálogo tem 30 cartas, incluindo 15 adições. Cada carta possui custo permanente no canto superior direito; cartas sem energia suficiente ficam acinzentadas. Jogar/remover cartas somente prepara a seleção. Cura, escudo e outros efeitos só são aplicados ao confirmar o turno.
+O catálogo tem 36 cartas. Cada carta possui custo no canto superior direito. Cartas sem energia suficiente ficam acinzentadas. Jogar uma carta ou devolvê-la à mão altera a seleção. Cura, escudo e outros efeitos são aplicados ao confirmar o turno.
 
 | Nova carta | Custo | Efeito |
 | --- | ---: | --- |
@@ -36,29 +36,44 @@ Os conceitos de bloqueio, veneno acumulado, vulnerabilidade, compra/descarte e e
 
 O baralho inicial contém 12 cartas: Avanço ×2; Elevar, Arco, Queda, Onda e Degrau ×1; Remendo ×1; Guarda ×2; Tinta tóxica e Giz afiado ×1. A run começa com 80 HP e cada turno tem 5 de energia. Os efeitos temporários são reiniciados em cada combate; HP e baralho persistem entre encontros.
 
-Em cada combate o baralho é embaralhado com a semente do encontro. A mão tem 5 cartas. Ao confirmar, tanto cartas preparadas quanto cartas não usadas vão para o descarte; ao esgotar a compra, o descarte é embaralhado. As ofertas de recompensa têm três IDs diferentes; é possível adicionar uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez, sem rerrolar ao reavaliar o resultado.
+Em cada combate o baralho é embaralhado com a semente do encontro. O jogador compra até cinco cartas no início de cada turno. Ao confirmar a jogada, pode manter até duas cartas não jogadas e descarta as demais, incluindo as cartas preparadas. Com as cartas mantidas e a nova compra, a mão pode chegar a sete cartas. Se uma compra esgotar a pilha, o descarte é embaralhado para concluir a compra. As ofertas de recompensa têm três IDs diferentes e podem incluir uma cópia de uma carta que já existe no baralho. Apenas uma escolha ou pulo é aceito por vitória. A oferta é sorteada uma vez por vitória.
 
 ## Regras dos efeitos
 
-- O ataque base causa 15 de dano a cada inimigo interceptado. Dano extra e veneno exigem uma trajetória que atinja o inimigo; não atingem automaticamente toda a sala.
+- O projétil percorre os mesmos segmentos da prévia e resolve contatos por ordem de distância percorrida. O primeiro acerto por inimigo usa o dano integral (base 15). Uma nova passagem pelo mesmo inimigo causa 70% do dano, arredondado para baixo, e adiciona até uma carga de cada efeito acumulável presente no ataque.
+- Num disparo com Espiral, cada inimigo recebe o primeiro acerto e até dois adicionais. As passagens seguintes não aplicam dano nem efeitos.
 - Escudo absorve dano normal e expira no início do próximo turno do seu dono. Perfuração ignora o escudo sem consumi-lo.
 - Veneno causa dano igual às cargas no início do turno do alvo, ignora escudo e perde uma carga. Pode se acumular. Veneno letal impede a ação do alvo.
 - Vulnerabilidade aumenta dano de ataques em 50%, inclusive no ataque que a aplica, e perde uma carga depois da ação inimiga. Não amplia o dano do veneno ou dos espinhos.
 - Força aumenta o dano de todos os seus ataques durante aquele combate. Fraqueza reduz esse dano em 25% e perde uma carga após seu turno.
 - Espinhos retornam dano a cada inimigo que ataca, mesmo quando o ataque foi bloqueado. Expiram no seu próximo turno.
-- Cura respeita HP máximo; vida não fica negativa. Não há cura automática após vitórias: cura depende de cartas e descanso.
+- Cura respeita o HP máximo. Durante o mundo, a recuperação vem de cartas e descanso. Derrotar o chefe do mundo restaura toda a vida antes da recompensa.
 
 Na composição matemática, ondas agora conservam sua frequência/comprimento e são somadas como funções individuais. Adicionar Avanço não altera a frequência escrita na carta. O maior alcance entre deslocamento X e ondas determina o intervalo desenhado. As cartas Colina/Mergulho usam coeficientes ±0,20 e Vale altera o termo constante em -2, tornando essas opções distintas das anteriores.
 
 A convenção herdada para composições com curva é mantida: o deslocamento Y entra como termo constante, enquanto uma seleção apenas linear define o ponto final. A equipe ainda pode revisar essa convenção pedagógica separadamente.
 
+A Espiral usa o fim do percurso como centro e cresce linearmente em função do ângulo até completar quatro voltas e alcançar três unidades da grade. A Reflexão em X inverte Y. A Rotação gira o trajeto em 15° em torno da origem. O jogo compõe a base primeiro e aplica Espiral, Reflexão e Rotação na ordem em que foram preparadas.
+
+A Fenda atravessa barreiras e permite ricochetes nos espelhos. O Prisma acrescenta 7 de dano quando a jogada inclui uma Reflexão em X ou ricocheteia. O Catalisador acrescenta 3 cargas de veneno quando combinado com uma carta que já aplica veneno.
+
 ## Mapa e encontros
 
-Cada run gera 7 etapas: 6 etapas com 3 escolhas e uma etapa final com o Professor. Um nó libera nós da próxima etapa na mesma coluna ou nas colunas vizinhas; todos os caminhos têm continuidade e todos chegam ao chefe. Rotas disponíveis, visitadas e bloqueadas ficam indicadas na tela.
+Cada run gera três mapas de 6, 7 e 8 etapas. Um nó libera nós da próxima etapa na mesma coluna ou nas colunas vizinhas. Todos os caminhos chegam ao chefe daquele mundo. Após o Diretor, o ENEM acontece fora do mapa. Rotas disponíveis, visitadas e bloqueadas ficam indicadas na tela.
 
-Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier é sorteado com progressão por etapa; elites recebem um tier adicional, limitado a 5. Depois da primeira etapa há chance de descanso (16%) e, a partir da terceira, de elite (24%). A quinta etapa garante um descanso na coluna central; ele precisa ser alcançado pela rota escolhida.
+Tiers de 1 a 5 são apresentados como Leve, Moderado, Desafiador, Difícil e Extremo. O tier sobe com o mundo e com a etapa. Elites recebem um tier adicional, limitado a 5. Após a primeira etapa há chance de Descanso e, a partir da terceira, de Elite. A penúltima etapa de cada mundo garante um Descanso na coluna central.
 
-Cada encontro comum é montado com 2 a 4 inimigos, escolhidos de pools compatíveis com o tier, em posições sorteadas e limitadas à arena. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. O chefe usa Professor, Sentinela e Alquimista. O descanso recupera 30% da vida máxima (24 HP), sem ultrapassar o máximo.
+Cada encontro comum reúne 2 a 4 inimigos da lista do mundo. Atributos escalam em **+15% de HP e +1 de dano por tier acima de 1**. Todo Elite contém um inimigo difícil da lista do mundo, com 22% de HP extra (mínimo de 6), +2 de dano e ações extras. No Descanso, escolha curar **40% da vida máxima** (32 HP) ou remover uma cópia de uma carta. O Elite oferece pelo menos uma rara entre três opções.
+
+A profundidade total da run acrescenta 0,65% de HP por etapa já passada, arredondado por inimigo, e +1 de dano a cada dez etapas. O Plano Cartesiano tem encontros em que o inimigo da frente muda de altura a cada dois turnos. Na Sala de Aula podem aparecer espelhos. Na Diretoria, espelhos e barreiras podem aparecer juntos. A chance de cada regra aumenta ao avançar no mapa.
+
+Os nós marcados com **Espelho** têm um segmento refletor fixo. Compasso, Alunos, Diretor e ENEM também podem colocar espelhos com duração sorteada de 4 a 12 turnos do jogador. O contato reflete o trecho restante do percurso, inclusive para curvas. A prévia e o disparo usam a mesma trajetória resultante.
+
+Alguns nós de **Evento** abrem o Desafio do Monitor. A questão e a ordem das respostas são reproduzíveis pela semente do nó. Acertar abre a oferta de cartas. Aceitar o treino abre um combate comum no mesmo nó, que é concluído após a vitória.
+
+O slot da run guarda a posição atual no mapa e o estado de entrada dos encontros. Se uma vitória já tiver sido registrada, a retomada abre a recompensa pendente com as mesmas opções.
+
+Alunos, Diretor e ENEM têm duas ações em dois de cada três turnos. A ação adicional é de defesa ou suporte. As intenções são anunciadas na ordem de execução. O Professor age uma vez por turno.
 
 O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na run. Entrar em um nó ou retornar da recompensa não muda os encontros restantes. É impossível selecionar um nó bloqueado usando apenas o ID. A semente exibida permite reproduzir o mapa pela API `GameManager.prepare_run(modo, semente)` em testes.
 
@@ -66,16 +81,16 @@ O mapa é gerado uma única vez e suas sementes de encontro ficam armazenadas na
 
 | Arquétipo | Comportamento anunciado |
 | --- | --- |
-| Cubo | Defende, ataca, acumula força e prepara golpe forte |
-| Fantasma | Protege o grupo, ataca e aplica fraqueza |
-| Calculadora | Alterna fraqueza, ataque e golpe forte; pode curar quando ferida |
-| Slime | Alterna veneno, ataque e defesa |
+| Cubo | Reduz o dano comum enquanto tem escudo. Perfuração evita a redução |
+| Fantasma | Protege os aliados e fica exposto enquanto levanta os escudos |
+| Calculadora | Reduz em 5 o dano de disparos com menos de duas cartas matemáticas |
+| Slime | Aplica veneno e recebe +4 de dano por acerto enquanto está envenenado |
 | Sentinela (novo) | Protege aliados, carrega força e usa golpe forte |
 | Alquimista (novo) | Usa veneno/fraqueza e anuncia cura quando aliados estão feridos |
 | Sanguessuga (novo) | Drena vida com base no dano realmente causado e pressiona quando está ferida |
 | Professor | Teleporta, protege o grupo e alterna ataques/veneno; muda a sequência com menos de 50% de HP |
 
-As intenções são escolhidas antes do turno do jogador e executadas sem novo sorteio oculto. A vida, o escudo, o veneno e a vulnerabilidade são mostrados junto à intenção. Os três novos arquétipos reaproveitam a arte existente, preservando personagens em preto e branco e diferenciando-se pelo nome e comportamento; não foram produzidos sprites inéditos nesta etapa.
+As intenções são escolhidas antes do turno do jogador e executadas sem novo sorteio oculto. Passe o mouse sobre o inimigo ou a barra de vida para consultar a próxima ação. Os três novos arquétipos reaproveitam a arte existente e se diferenciam pelo nome e comportamento.
 
 ## Revisão da identidade visual
 
@@ -113,7 +128,7 @@ Validação: **10.712 verificações renderizadas, sem falhas**, incluindo soltu
 
 ## Verificação e limites
 
-A suíte cobre importação/compilação dos recursos, 60 sementes de mapa, determinismo das ofertas, conservação das pilhas, apresentação normal/difícil de todas as cartas, arraste real, cancelamento sem efeitos gratuitos, escudo/veneno/perfuração, ações inimigas, resultado único e navegação por sete etapas até o resumo. Uma regressão específica cobre um inimigo liberado enquanto outro ainda executa sua ação.
+A suíte cobre importação/compilação dos recursos, 60 combinações de mundo e semente, determinismo das ofertas, conservação das pilhas, apresentação normal/difícil, arraste real, escudo, veneno, perfuração, ações inimigas e navegação pelas 22 etapas até o resumo. Uma regressão específica cobre um inimigo liberado enquanto outro ainda executa sua ação.
 
 Validação do conteúdo antes da revisão visual, no Godot 4.6.3: **10.530 verificações headless e 10.537 renderizadas, sem falhas ou erros de script/runtime**. As sete verificações extras validam a gravação das capturas. O `git diff --check` também passou. Os totais incluem as verificações repetidas das 60 sementes, não representam essa quantidade de cenários de jogo diferentes. A rodada mais recente da revisão visual está registrada acima.
 

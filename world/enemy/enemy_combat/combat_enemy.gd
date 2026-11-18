@@ -1,6 +1,8 @@
 extends Node2D
 ## As intenções são escolhidas antes do turno e executadas sem novo sorteio oculto.
 
+signal mirror_requested
+
 @export var idle_height := 6.0
 @export var idle_speed := 2.0
 @export var attack_distance := 40.0
@@ -24,9 +26,12 @@ var start_position: Vector2
 var is_attacking := false
 var flip_on_attack := false
 var planned_action := "attack"
+var planned_follow_up := ""
 var rng := RandomNumberGenerator.new()
 var enemy_seed := 1
 var difficulty_tier := 1
+var run_depth := 0
+var elite_unit := false
 var is_dying := false
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var hud: Node2D = $EnemyHud
@@ -40,6 +45,12 @@ func _ready() -> void:
 	rng.seed = enemy_seed
 	max_health = int(max_health * (1.0 + (difficulty_tier - 1) * 0.15))
 	base_damage += difficulty_tier - 1
+	max_health += roundi(max_health * run_depth * 0.0065)
+	base_damage += floori(run_depth / 10.0)
+	if elite_unit:
+		max_health += maxi(6, roundi(max_health * 0.22))
+		base_damage += 2
+		display_name += " (Elite)"
 	health = max_health
 	start_position = position
 	anim_sprite.flip_h = false
@@ -49,8 +60,14 @@ func _ready() -> void:
 	hud.setup(health, max_health)
 	plan_next_action()
 	_refresh_hud()
+	_sync_hud_layout()
 
 func _process(_delta: float) -> void:
+	_sync_hud_layout()
+	if not is_attacking and check_is_alive():
+		position.y = start_position.y + sin(Time.get_ticks_msec() / 1000.0 * idle_speed) * idle_height
+
+func _sync_hud_layout() -> void:
 	hud.scale = Vector2(1.0 / scale.x, 1.0 / scale.y)
 	var texture := anim_sprite.sprite_frames.get_frame_texture(anim_sprite.animation, anim_sprite.frame)
 	var half_height := float(texture.get_height()) * absf(anim_sprite.scale.y * scale.y) * 0.5
@@ -60,8 +77,6 @@ func _process(_delta: float) -> void:
 	header_at.y = maxf(header_at.y, top_limit.y)
 	hud.global_position = header_at
 	hud.track_body(Rect2(anim_sprite.global_position - Vector2(half_width, half_height), Vector2(half_width * 2, half_height * 2)))
-	if not is_attacking and check_is_alive():
-		position.y = start_position.y + sin(Time.get_ticks_msec() / 1000.0 * idle_speed) * idle_height
 
 func check_is_alive() -> bool:
 	return health > 0 and not is_dying
@@ -69,24 +84,58 @@ func check_is_alive() -> bool:
 func choose_action() -> String:
 	return "attack"
 
+func strategy_text() -> String:
+	return ""
+
+func projectile_damage(damage: int, _shot: Dictionary) -> int:
+	return damage
+
 func plan_next_action() -> void:
-	planned_action = choose_action()
+	var slot := turns_taken % 6
+	if elite_unit and slot == 2:
+		planned_action = "fortify"
+	elif elite_unit and slot == 5:
+		planned_action = "pressure"
+	else:
+		planned_action = choose_action()
+	planned_follow_up = choose_follow_up(planned_action)
 	_refresh_hud()
 
+func choose_follow_up(_first: String) -> String:
+	return ""
+
+func action_turn() -> int:
+	if not elite_unit:
+		return turns_taken
+	var slot := turns_taken % 6
+	return floori(turns_taken / 6.0) * 4 + slot - int(slot > 2)
+
 func intent_text() -> String:
-	match planned_action:
+	var first := _action_text(planned_action)
+	if planned_follow_up.is_empty():
+		return first
+	return "%s\nDepois: %s" % [first, _action_text(planned_follow_up)]
+
+func _action_text(action: String) -> String:
+	match action:
 		"attack": return "Ataque %d" % (base_damage + strength)
 		"heavy": return "Ataque forte %d" % ((base_damage + strength) * 2)
 		"drain": return "Drenar %d + cura" % (base_damage + strength)
 		"defend": return "Escudo +%d" % apply_defend
 		"guard_all": return "Protege todos +%d" % apply_block
+		"guard_others": return "Protege os outros +%d" % apply_block
 		"poison": return "Veneno +%d" % poison
 		"heal_all": return "Cura aliados +%d" % heal_amount
 		"heal": return "Cura +%d" % self_heal_amount
 		"weak": return "Fraqueza: 2 turnos"
 		"charge": return "Força +3"
 		"teleport": return "Teleporte + escudo"
-	return planned_action
+		"mirror": return "Posiciona um espelho"
+		"fortify": return "Escudo +%d e Força +2" % apply_defend
+		"pressure": return "Ataque %d e Fraqueza" % (base_damage + strength)
+		"cleanse_self": return "Remove o próprio veneno e a vulnerabilidade"
+		"clock_strike": return "Badalada %d" % (base_damage + strength + mini(turns_taken, 6))
+	return action
 
 func take_turn() -> void:
 	if not check_is_alive():
@@ -99,15 +148,28 @@ func take_turn() -> void:
 		if not check_is_alive():
 			return
 	_refresh_hud()
-	match planned_action:
+	await _take_action(planned_action)
+	if not planned_follow_up.is_empty() and check_is_alive():
+		var player := get_tree().get_first_node_in_group("Player")
+		if is_instance_valid(player) and player.check_is_alive():
+			await _take_action(planned_follow_up)
+	vulnerable = maxi(vulnerable - 1, 0)
+	turns_taken += 1
+	if check_is_alive():
+		plan_next_action()
+
+func _take_action(action: String) -> void:
+	match action:
 		"attack": await attack()
 		"heavy": await _attack_player(false, 2)
+		"clock_strike": await _attack_player(false, 1, mini(turns_taken, 6))
 		"drain":
 			var damage: int = await _attack_player(false)
 			if check_is_alive():
 				await heal(maxi(int(damage / 2.0), 1))
 		"defend": await defend()
 		"guard_all": await defend_all()
+		"guard_others": await defend_all(false)
 		"poison": await apply_poison()
 		"heal": await heal()
 		"heal_all": await apply_all_heal()
@@ -121,10 +183,22 @@ func take_turn() -> void:
 		"teleport":
 			await defend()
 			await after_surviving_hit()
-	vulnerable = maxi(vulnerable - 1, 0)
-	turns_taken += 1
-	if check_is_alive():
-		plan_next_action()
+		"mirror":
+			mirror_requested.emit()
+			await play_effect_animation()
+		"fortify":
+			strength += 2
+			await defend()
+		"pressure":
+			await attack()
+			var player := get_tree().get_first_node_in_group("Player")
+			if is_instance_valid(player) and player.check_is_alive():
+				player.receive_weak(1)
+		"cleanse_self":
+			poison_amount = 0
+			vulnerable = 0
+			_refresh_hud()
+			await play_effect_animation()
 
 func attack() -> void:
 	await _attack_player(false)
@@ -132,7 +206,7 @@ func attack() -> void:
 func apply_poison() -> void:
 	await _attack_player(true)
 
-func _attack_player(with_poison: bool, multiplier: int = 1) -> int:
+func _attack_player(with_poison: bool, multiplier: int = 1, bonus: int = 0) -> int:
 	var player = get_tree().get_first_node_in_group("Player")
 	if is_attacking or not check_is_alive() or not is_instance_valid(player):
 		return 0
@@ -148,7 +222,7 @@ func _attack_player(with_poison: bool, multiplier: int = 1) -> int:
 	if with_poison:
 		player.receive_poison(poison)
 	else:
-		dealt = await player.take_damage((base_damage + strength) * multiplier)
+		dealt = await player.take_damage((base_damage + strength) * multiplier + bonus)
 	tween = create_tween()
 	tween.tween_property(self, "position:x", start_position.x, attack_time)
 	await tween.finished
@@ -177,10 +251,10 @@ func apply_shield(amount: int) -> void:
 func defend() -> void:
 	await apply_shield(apply_defend)
 
-func defend_all() -> void:
+func defend_all(include_self: bool = true) -> void:
 	await play_effect_animation()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if is_instance_valid(enemy) and enemy.check_is_alive():
+		if is_instance_valid(enemy) and (include_self or enemy != self) and enemy.check_is_alive():
 			await enemy.apply_shield(apply_block)
 
 func apply_all_heal() -> void:
@@ -247,9 +321,11 @@ func play_effect_animation() -> void:
 
 func lock() -> void:
 	modulate = Color(1.0, 0.65, 0.65)
+	hud.target_marker.show()
 
 func unlock() -> void:
 	modulate = Color.WHITE
+	hud.target_marker.hide()
 
 func _refresh_hud() -> void:
 	if not is_instance_valid(hud):
@@ -258,6 +334,8 @@ func _refresh_hud() -> void:
 	hud.update_shield(shield)
 	hud.update_poison(poison_amount)
 	hud.update_name(combat_name if not combat_name.is_empty() else display_name)
+	var advice := strategy_text()
+	hud.update_intent(intent_text() if advice.is_empty() else intent_text() + "\n" + advice)
 
 func _play_sound(node_name: String) -> void:
 	var sound := get_node_or_null(node_name) as AudioStreamPlayer

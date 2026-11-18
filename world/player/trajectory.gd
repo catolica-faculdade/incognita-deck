@@ -7,5 +7,5 @@ extends Line2D
 func _ready() -> void:
 	points = PackedVector2Array([Vector2.ZERO])
 
-func show_formula(formula: RefCounted) -> void:
-	points = formula.sample(grid_unity, curve_resolution)
+func sample_formula(formula: RefCounted) -> PackedVector2Array:
+	return formula.sample(grid_unity, curve_resolution)

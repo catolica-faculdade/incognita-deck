@@ -2,6 +2,8 @@ extends CanvasLayer
 
 const Style = preload("res://interface/ui_style.gd")
 const CARD_SCENE = preload("res://card/card.tscn")
+const CHOICE_KEYS := [KEY_1, KEY_2, KEY_3]
+const KEYPAD_CHOICE_KEYS := [KEY_KP_1, KEY_KP_2, KEY_KP_3]
 var choice_buttons: Array = []
 var offered_cards: Array = []
 var chosen := false
@@ -13,8 +15,12 @@ func _ready() -> void:
 	GameManager.current_context = GameManager.Context.REWARD
 	var root := Control.new()
 	add_child(root)
-	var title := "Professor derrotado!" if GameManager.run_complete else "Vitória!"
-	var content := Style.screen(root, title, "Escolha 1 carta.")
+	var boss_name: String = GameManager.current_encounter.get("boss_name", "")
+	var title := "Vitória contra %s!" % boss_name if not boss_name.is_empty() else "Vitória!"
+	if GameManager.current_node.get("kind", "") == "event" and GameManager.current_encounter.is_empty():
+		title = "Resposta certa!"
+	var elite: bool = GameManager.current_encounter.get("kind", "") == "elite"
+	var content := Style.screen(root, title, "Escolha 1 carta. Recompensa de Elite com rara garantida." if elite else "Escolha 1 carta.")
 	var center := CenterContainer.new()
 	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(center)
@@ -32,13 +38,29 @@ func _ready() -> void:
 		card_center.add_child(card)
 		card.setup(data)
 		offered_cards.append(card)
-		var button := Style.button("Escolher", _choose.bind(int(data.id)))
+		var rarity := Style.readable_label("Rara" if data.get("rare", false) else "", 15)
+		rarity.custom_minimum_size.y = 22
+		rarity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		rarity.add_theme_color_override("font_color", Color("755325"))
+		column.add_child(rarity)
+		var button := Style.button("Escolher  [%d]" % (choice_buttons.size() + 1), _choose.bind(int(data.id)))
 		column.add_child(button)
 		choice_buttons.append(button)
 	var footer := Style.label("%d cartas • HP %d/%d • %s" % [GameManager.get_run_deck().size(), GameManager.player_health, GameManager.max_player_health, "Difícil" if GameManager.hard_mode else "Normal"], 16)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(footer)
 	content.add_child(Style.button("Pular", _choose.bind(-1)))
+
+func _input(event: InputEvent) -> void:
+	if chosen or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	var index := CHOICE_KEYS.find(event.keycode)
+	if index == -1:
+		index = KEYPAD_CHOICE_KEYS.find(event.keycode)
+	if index < 0 or index >= choice_buttons.size():
+		return
+	get_viewport().set_input_as_handled()
+	choice_buttons[index].pressed.emit()
 
 func _choose(card_id: int) -> void:
 	if chosen or not GameManager.claim_reward(card_id):

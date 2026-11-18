@@ -22,13 +22,13 @@ func _on_pressed() -> void:
 		if event <= 40:
 			GameManager.start_combat(_random_combat())
 		elif event <= 80:
-			GameManager.complete_rest()
+			GameManager.open_rest()
 		else:
 			# O protótipo não possui recompensa: evento vazio avança sem inventar conteúdo.
 			GameManager.level += 1
 			GameManager.return_to_map()
 	elif is_in_group("rest"):
-		GameManager.complete_rest()
+		GameManager.open_rest()
 	elif is_in_group("test"):
 		GameManager.start_combat("res://world/combat/test_%d.tscn" % randi_range(1, 3))
 	else:

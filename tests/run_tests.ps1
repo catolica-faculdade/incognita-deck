@@ -7,7 +7,8 @@ param(
 
 $projectDirectory = Split-Path -Parent $PSScriptRoot
 $runnerScene = if ($Playtest) { 'res://tests/playtest_runner.tscn' } else { 'res://tests/test_runner.tscn' }
-$engineArguments = @('--path', $projectDirectory, $runnerScene, '--max-fps', '120', '--quit-after', '15000')
+$frameBudget = if ($Playtest) { '42000' } else { '15000' }
+$engineArguments = @('--path', $projectDirectory, $runnerScene, '--max-fps', '120', '--quit-after', $frameBudget)
 if ($Render) {
     $engineArguments += @('--rendering-method', 'gl_compatibility', '--windowed', '--resolution', '1280x800')
 } else {

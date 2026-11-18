@@ -1,5 +1,10 @@
 extends RefCounted
 
+const Style = preload("res://interface/ui_style.gd")
+const Generator = preload("res://core/run/run_generator.gd")
+const Doodle = preload("res://world/enemy/enemy_combat/doodle_enemy.gd")
+const DOODLE_SCENE = preload("res://world/enemy/enemy_combat/doodle_enemy.tscn")
+
 const ENEMY_SCENES = {
 	"cube": preload("res://world/enemy/enemy_combat/cube/cube_combat.tscn"),
 	"ghost": preload("res://world/enemy/enemy_combat/ghost/ghost_combat.tscn"),
@@ -16,6 +21,7 @@ static func build(spec: Dictionary) -> Node2D:
 	arena.name = "GeneratedEncounter"
 	var background := TextureRect.new()
 	background.texture = preload("res://assets/backgrounds/background_combat.png")
+	background.modulate = Generator.WORLDS[int(spec.get("world", 0))].tint
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var backdrop := CanvasLayer.new()
@@ -30,12 +36,21 @@ static func build(spec: Dictionary) -> Node2D:
 	player.name = "player"
 	arena.add_child(player)
 	for data in spec.enemies:
-		var enemy = ENEMY_SCENES[data.archetype].instantiate()
+		var scene: PackedScene = ENEMY_SCENES.get(data.archetype, DOODLE_SCENE)
+		var enemy = scene.instantiate()
+		if enemy is Doodle:
+			enemy.archetype = data.archetype
 		enemy.position = data.position
 		enemy.scale = Vector2(0.62, 0.62)
 		enemy.enemy_seed = int(data.seed)
 		enemy.difficulty_tier = int(data.tier)
+		enemy.run_depth = data.get("depth", 0)
+		enemy.elite_unit = data.get("elite", false)
 		arena.add_child(enemy)
+	for mirror: PackedVector2Array in spec.get("mirrors", []):
+		draw_mirror(arena, mirror)
+	for segment: PackedVector2Array in spec.get("barriers", []):
+		draw_mirror(arena, segment, 0, true)
 	var music := AudioStreamPlayer.new()
 	music.stream = preload("res://assets/music/incognita_deck_combate.mp3")
 	music.bus = &"Music"
@@ -43,3 +58,33 @@ static func build(spec: Dictionary) -> Node2D:
 	music.autoplay = true
 	arena.add_child(music)
 	return arena
+
+static func has_archetype(id: String) -> bool:
+	return ENEMY_SCENES.has(id) or Doodle.PROFILES.has(id)
+
+static func mirror_caption(turns: int) -> String:
+	return "Espelho · %d" % turns if turns > 0 else "Espelho"
+
+static func draw_mirror(arena: Node2D, segment: PackedVector2Array, turns: int = 0, barrier: bool = false) -> Node2D:
+	var outline := Line2D.new()
+	outline.points = segment
+	outline.width = 10.0
+	outline.default_color = Color("6a482c") if barrier else Color("27596a")
+	outline.antialiased = true
+	arena.add_child(outline)
+	var glass := Line2D.new()
+	glass.points = segment
+	glass.width = 4.0
+	glass.default_color = Color("edbc80") if barrier else Color("bdefff")
+	glass.antialiased = true
+	outline.add_child(glass)
+	var label := Style.readable_label("Barreira" if barrier else mirror_caption(turns), 14)
+	label.name = "Caption"
+	label.size.x = 88
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2((segment[0].x + segment[1].x) * 0.5 - label.size.x * 0.5, minf(segment[0].y, segment[1].y) - 24)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_color_override("font_outline_color", Color("fffdf5"))
+	label.add_theme_constant_override("outline_size", 4)
+	outline.add_child(label)
+	return outline
