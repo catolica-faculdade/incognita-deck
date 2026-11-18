@@ -134,6 +134,8 @@ func _select(id: String) -> void:
 	GameManager.select_map_node(id)
 
 func _show_deck() -> void:
+	if not Tutorial.allows("deck"):
+		return
 	add_child(load("res://interface/deck_viewer.gd").new())
 
 func _input(event: InputEvent) -> void:

@@ -111,8 +111,15 @@ func setup(data: Dictionary, hide_illustrations: bool = GameManager.hard_mode) -
 	var key: String = card_data.get("icon", card_data.type)
 	symbol.texture = SYMBOLS.get(key)
 	target_label.text = "NOS ALVOS" if Catalog.hits_targets(card_data) else ("EM VOCÊ" if card_data.type == "effect" else "TRAJETÓRIA")
-	tooltip_text = "%s • Energia: %d\n%s" % [card_data.name, card_data.energy_cost, Catalog.description(card_data)]
+	var target := "Alvo: inimigos atingidos" if Catalog.hits_targets(card_data) else ("Alvo: você" if card_data.type == "effect" else "Modifica a trajetória")
+	var details := Catalog.description(card_data)
+	if card_data.type != "effect":
+		details = Catalog.math_text(card_data) + "\n\n" + details
+	tooltip_text = "%s\nCusto: %d de energia • %s\n\n%s" % [card_data.name, card_data.energy_cost, target, details]
 	set_hard_mode(hide_illustrations)
+
+func _make_custom_tooltip(for_text: String) -> Object:
+	return preload("res://interface/analysis_hover.gd").make_panel(for_text)
 
 func _fit_text(label: Label, maximum: int, minimum: int) -> void:
 	label.autowrap_mode = TextServer.AUTOWRAP_OFF

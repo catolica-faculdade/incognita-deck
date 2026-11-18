@@ -21,6 +21,7 @@ GameSettings="*res://settings/game_settings.gd"
 GameManager="*res://settings/game_manager.gd"
 PauseMenu="*res://interface/pause_menu.gd"
 DamageNumberSpawner="*res://world/damage_number_spawner.gd"
+Tutorial="*res://interface/tutorial.gd"
 
 [display]
 

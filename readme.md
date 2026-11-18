@@ -46,7 +46,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 ## Jogar
 
 1. Abra `project.godot` no Godot 4.6.3 e pressione **F5**, ou abra o executável caso esteja utilizando o pacote Windows.
-2. Clique em iniciar e escolha **Normal** ou **Difícil** antes de cada run. Difícil esconde as ilustrações das cartas e mantém fórmulas, alvos e custos.
+2. Clique em iniciar e escolha **Tutorial**, **Modo normal** ou **Modo difícil**. Tutorial abre o treino guiado; os outros modos iniciam a campanha diretamente. Difícil esconde as ilustrações das cartas e mantém fórmulas, alvos e custos.
 3. No mapa, escolha um nó disponível. Os encontros têm dificuldades sorteadas e composições geradas. Apenas rotas adjacentes ficam disponíveis.
 4. Arraste cartas para a área de preparo acima da mão para montar trajetória e efeitos. O número amarelo é o custo em energia. Devolva cartas ou use **Limpar** para desfazer.
 5. Clique em **Fim do turno**, selecione até duas cartas não jogadas para manter e clique em **Continuar**. Manter cartas não custa energia. Se a mão estiver vazia, o turno é resolvido diretamente. O projétil segue a prévia e aplica efeitos ofensivos ao atingir inimigos. Cura e bloqueio afetam o jogador mesmo sem acerto.
@@ -90,9 +90,16 @@ A apresentação utiliza os backgrounds, papéis, botões e ícones originais. O
 ## Limitações da versão atual
 
 - Melhorias de cartas continuam fora do escopo da versão atual.
-- O jogo ainda não possui tutorial interno. Utilize as orientações deste guia para iniciar e jogar.
 - O evento disponível é o **Desafio do Monitor**; uma variedade maior de eventos permanece como possibilidade de expansão.
 - O salvamento não preserva o turno em andamento: ao continuar um combate, o encontro reinicia no primeiro turno, com a vida registrada na entrada.
+
+## Tutorial guiado
+
+Na tela inicial da partida, escolha **Tutorial** entre as três opções disponíveis: **Tutorial**, **Modo normal** e **Modo difícil**. O Monitor acompanha um treino com falas escritas, destaques visuais e ações práticas: abrir o baralho, escolher um caminho no mapa, passar o mouse no inimigo e em uma carta, conferir a trajetória, combinar ataque e escudo, limpar a jogada, manter cartas entre turnos e escolher uma recompensa.
+
+O treino utiliza uma mão e um encontro preparados, com as ilustrações das cartas visíveis. As etapas avançam conforme você realiza a atividade indicada. Ao concluir, começa uma campanha nova no modo Normal, com vida e baralho iniciais. Também é possível sair do tutorial e começar a campanha diretamente.
+
+O treino não grava progresso nem altera uma partida salva existente. Começar a campanha após o treino substitui o slot anterior, como qualquer nova run.
 
 ## Continuar uma run
 

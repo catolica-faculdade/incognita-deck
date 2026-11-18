@@ -56,6 +56,7 @@ func _ready() -> void:
 		is_boss_fight = spec.boss
 	add_child(scenario_container)
 	_name_enemies()
+	Tutorial.prepare_battle(self)
 	player = scenario_container.get_node("player")
 	trajectory = player.trajectory
 	preview_shot = _make_shot(25.0)

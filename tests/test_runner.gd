@@ -53,6 +53,7 @@ func _run() -> void:
 	await _test_event()
 	await _test_checkpoint()
 	await _test_keyboard()
+	await _test_tutorial()
 	await _test_full_run()
 	await _clear_scene()
 	print("REGRESSAO: %d verificações, %d falhas" % [checks, failures])
@@ -68,6 +69,113 @@ func _resources(directory: String) -> void:
 	for child in DirAccess.get_directories_at(directory):
 		if not child.begins_with(".") and child != "addons":
 			_resources(directory.path_join(child))
+
+func _test_tutorial() -> void:
+	for hard in [false, true]:
+		GameManager.begin_run(false, 4321)
+		await get_tree().scene_changed
+		var saved := FileAccess.get_file_as_bytes(GameManager.save_path)
+		var setup = await _show_scene("res://interface/run_setup.tscn")
+		await _capture("tutorial-setup.png")
+		if hard:
+			Tutorial.start(true)
+		else:
+			setup.tutorial_button.pressed.emit()
+		await get_tree().scene_changed
+		check(Tutorial.active and GameManager.hard_mode == hard, "tutorial respeita modo escolhido")
+		check(not GameManager.has_checkpoint() and FileAccess.get_file_as_bytes(GameManager.save_path) == saved, "treino preserva save anterior")
+		check(not GameManager.select_map_node(GameManager.available_nodes[0]), "mapa aguarda explicação e baralho")
+		Tutorial.advance()
+		get_tree().current_scene._show_deck()
+		check(Tutorial.step == "deck_read" and get_tree().paused, "tutorial reconhece abertura real do baralho")
+		var viewer = get_tree().current_scene.get_children().filter(func(node: Node): return "card_views" in node)[0]
+		await get_tree().process_frame
+		await get_tree().process_frame
+		for view in viewer.card_views:
+			check(not view.get_global_rect().intersects(Tutorial.panel.get_global_rect()), "narração não cobre cartas do baralho")
+		await _capture("tutorial-deck.png")
+		viewer._close()
+		await get_tree().process_frame
+		check(Tutorial.step == "path", "fechar baralho libera caminho")
+		await _capture("tutorial-map.png")
+		GameManager.select_map_node(GameManager.available_nodes[0])
+		await get_tree().scene_changed
+		await get_tree().process_frame
+		var battle = get_tree().current_scene
+		var ui = battle.combat_ui
+		check(ui.card_container.get_child_count() == 5 and _card(ui, 2) != null and _card(ui, 16) != null, "mão de treino sempre contém cartas necessárias")
+		ui._on_end_turn_requested()
+		check(not ui.choosing_retention, "atalhos não pulam etapas da aula")
+		Tutorial.advance()
+		Tutorial.advance()
+		check(Tutorial.step == "enemy", "não confirma análise sem passar mouse")
+		var enemy = get_tree().get_nodes_in_group("enemies")[0]
+		await _mouse_move(enemy.hud.body_hover.get_global_transform_with_canvas() * (enemy.hud.body_hover.size * 0.5))
+		await get_tree().process_frame
+		Tutorial._process(1.1)
+		check(Tutorial.hover_done, "hover real do inimigo libera leitura")
+		await _capture("tutorial-enemy.png")
+		Tutorial.advance()
+		var card = _card(ui, 2)
+		await _mouse_move(card.get_global_rect().get_center())
+		Tutorial._process(1.1)
+		check(Tutorial.hover_done, "hover real de Elevar libera leitura")
+		Tutorial.advance()
+		ui._on_card_played(_card(ui, 19))
+		check(ui.selection.cards_data().is_empty(), "treino impede carta errada antes da prática livre")
+		ui._on_card_played(_card(ui, 2))
+		check(Tutorial.step == "preview" and battle.current_enemies.size() == 1, "Elevar alcança alvo preparado")
+		Tutorial.advance()
+		ui._on_card_played(_card(ui, 17))
+		check(Tutorial.step == "clear" and ui.selection.current_energy == 3, "efeito de proteção custa energia")
+		ui.return_all_cards_to_hand()
+		check(Tutorial.step == "rebuild" and ui.selection.current_energy == 5, "Limpar devolve cartas e energia")
+		ui._on_card_played(_card(ui, 17))
+		ui._on_card_played(_card(ui, 2))
+		Tutorial._process(0.01)
+		ui._on_end_turn_requested()
+		check(Tutorial.step == "keep", "fim de turno abre aula de retenção")
+		ui._confirm_retention()
+		check(ui.turn_count == 1, "não dispara antes de escolher retenção")
+		ui._toggle_retention(_card(ui, 16))
+		await _capture("tutorial-retention.png")
+		ui._confirm_retention()
+		for frame in range(600):
+			await get_tree().process_frame
+			if ui.turn_count == 2:
+				break
+		Tutorial._process(0.01)
+		check(ui.turn_count == 2 and Tutorial.step == "round", "turno completo chega à segunda explicação")
+		check(enemy.health == 10 and battle.player.health == 80, "ataque real acerta e escudo absorve resposta")
+		check(ui.card_container.get_child_count() == 6 and _card(ui, 16) != null, "carta mantida acompanha nova compra")
+		Tutorial.advance()
+		ui._on_card_played(_card(ui, 2))
+		ui._on_end_turn_requested()
+		ui._confirm_retention()
+		for frame in range(600):
+			await get_tree().process_frame
+			if GameManager.reward_pending:
+				break
+		check(Tutorial.step == "reward" and GameManager.reward_pending, "jogadas reais vencem o treino")
+		await _capture("tutorial-reward.png")
+		battle.get_node("RewardScreen")._choose(int(GameManager.pending_rewards[0].id))
+		await get_tree().scene_changed
+		check(Tutorial.step == "finish" and GameManager.available_nodes.size() > 0, "recompensa retorna a mapa com caminhos liberados")
+		check(FileAccess.get_file_as_bytes(GameManager.save_path) == saved, "vitória e recompensa do treino não alteram save")
+		await _capture("tutorial-finish.png")
+		Tutorial.advance()
+		await get_tree().scene_changed
+		check(not Tutorial.active and GameManager.hard_mode == hard and GameManager.run_deck == Catalog.STARTER_DECK and GameManager.visited_nodes.is_empty(), "conclusão começa campanha limpa no modo escolhido")
+		Tutorial.start(hard)
+		await get_tree().scene_changed
+		Tutorial.finish()
+		await get_tree().scene_changed
+		check(not Tutorial.active and GameManager.has_checkpoint(), "sair do tutorial inicia campanha normal")
+		Tutorial.start(hard)
+		await get_tree().scene_changed
+		GameManager.return_to_menu()
+		await get_tree().scene_changed
+		check(not Tutorial.active and not Tutorial.panel.visible, "retorno ao menu remove guia e bloqueios")
 
 func _test_selection_and_formula() -> void:
 	var model = Selection.new(5)
@@ -435,6 +543,13 @@ func _test_hover_and_pause() -> void:
 	enemy.poison_amount = 0
 	enemy._refresh_hud()
 	check(not enemy.hud.poison_marker.visible, "fim do veneno esconde marcador")
+	await _set_hand(battle.combat_ui, [28, 31, 18, 2, 17])
+	await _mouse_move(_card(battle.combat_ui, 28).get_global_rect().get_center())
+	await get_tree().create_timer(24.0).timeout
+	await _capture("card-analysis-hover.png")
+	await _mouse_move(_card(battle.combat_ui, 31).get_global_rect().get_center())
+	await get_tree().create_timer(24.0).timeout
+	await _capture("card-spiral-hover.png")
 	PauseMenu.pause()
 	check(PauseMenu.run_info_label.visible and "Turno 1" in PauseMenu.run_info_label.text and "Etapa 1/6" in PauseMenu.run_info_label.text and "Desafiador" in PauseMenu.run_info_label.text and "Modo Difícil" in PauseMenu.run_info_label.text, "pause reúne turno, etapa, dificuldade e modo")
 	await _capture("pause-run-info.png")

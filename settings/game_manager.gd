@@ -48,6 +48,7 @@ func _notification(what: int) -> void:
 		save_run()
 
 func reset_run() -> void:
+	Tutorial.cancel()
 	_save_enabled = false
 	_checkpoint.clear()
 	player_health = max_player_health
@@ -69,6 +70,7 @@ func reset_run() -> void:
 	scenario_to_load = ""
 
 func start_run() -> void:
+	Tutorial.cancel()
 	_change_scene("res://interface/run_setup.tscn", Context.SETUP)
 
 func prepare_run(difficult: bool, fixed_seed: int = -1) -> void:
@@ -108,6 +110,8 @@ func get_run_deck() -> Array:
 	return Catalog.STARTER_DECK.duplicate() if run_deck.is_empty() else run_deck.duplicate()
 
 func select_map_node(id: String) -> bool:
+	if not Tutorial.allows("map"):
+		return false
 	if _changing_scene or current_context in [Context.REST, Context.EVENT] or reward_pending or run_complete or not available_nodes.has(id):
 		return false
 	var node := Generator.find_node(map_rows, id)
@@ -120,6 +124,9 @@ func select_map_node(id: String) -> bool:
 		_change_scene(EVENT_SCENE, Context.EVENT)
 	else:
 		current_encounter = Generator.encounter(node)
+		if Tutorial.active:
+			current_encounter = Tutorial.encounter()
+			Tutorial.event("selected")
 		scenario_to_load = ""
 		_change_scene(BATTLE_SCENE, Context.COMBAT)
 	return true
@@ -149,6 +156,8 @@ func complete_combat(boss: bool) -> void:
 	_record_checkpoint(Context.REWARD)
 
 func claim_reward(card_id: int = -1) -> bool:
+	if not Tutorial.allows("reward"):
+		return false
 	if not reward_pending:
 		return false
 	if card_id != -1:
@@ -166,6 +175,7 @@ func claim_reward(card_id: int = -1) -> bool:
 	pending_rewards.clear()
 	current_encounter.clear()
 	current_node.clear()
+	Tutorial.event("claimed")
 	return true
 
 func continue_after_reward() -> void:

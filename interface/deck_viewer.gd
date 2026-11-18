@@ -16,7 +16,17 @@ func _ready() -> void:
 	var content := Style.screen(root, "Baralho desta run", "%d cartas • %s" % [GameManager.get_run_deck().size(), "Modo difícil" if GameManager.hard_mode else "Modo normal"])
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	content.add_child(scroll)
+	if Tutorial.active and Tutorial.step == "deck":
+		var row := HBoxContainer.new()
+		row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		content.add_child(row)
+		scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(scroll)
+		var narration_space := Control.new()
+		narration_space.custom_minimum_size.x = 300
+		row.add_child(narration_space)
+	else:
+		content.add_child(scroll)
 	var grid := HFlowContainer.new()
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation", 16)
@@ -28,8 +38,10 @@ func _ready() -> void:
 		card.setup(Catalog.get_card(id))
 		card_views.append(card)
 	content.add_child(Style.button("Fechar baralho  [Tab]", _close))
+	Tutorial.event("opened")
 
 func _close() -> void:
+	Tutorial.event("closed")
 	get_tree().paused = _was_paused
 	queue_free()
 

@@ -1,6 +1,7 @@
 extends Node2D
 
 const Style = preload("res://interface/ui_style.gd")
+const AnalysisHover = preload("res://interface/analysis_hover.gd")
 
 var health_bar: ProgressBar
 var body_hover: Control
@@ -14,12 +15,13 @@ var name_label: Label
 var poison_marker: Control
 var poison_label: Label
 var target_marker: Label
+var intent_text := ""
 
 func _ready() -> void:
-	body_hover = Control.new()
+	body_hover = AnalysisHover.Surface.new()
 	body_hover.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(body_hover)
-	health_bar = ProgressBar.new()
+	health_bar = AnalysisHover.HealthBar.new()
 	health_bar.size = Vector2(112, 10)
 	health_bar.show_percentage = false
 	health_bar.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -128,15 +130,25 @@ func update_shield(amount: int) -> void:
 
 func update_name(enemy_name: String) -> void:
 	name_label.text = enemy_name
+	_refresh_tooltip()
 
 func update_intent(intent: String) -> void:
-	body_hover.tooltip_text = "Próxima ação: " + intent
-	health_bar.tooltip_text = body_hover.tooltip_text
+	intent_text = intent
+	_refresh_tooltip()
 
 func update_poison(amount: int) -> void:
 	poison_marker.visible = amount > 0
 	poison_label.text = str(amount)
+	_refresh_tooltip()
 
 func _refresh_values() -> void:
 	health_label.text = "%d/%d" % [health, max_health]
 	shield_label.text = str(shield)
+	_refresh_tooltip()
+
+func _refresh_tooltip() -> void:
+	var status := "Vida: %d / %d   •   Escudo: %d" % [health, max_health, shield]
+	if poison_marker.visible:
+		status += "\nVeneno: " + poison_label.text + " cargas"
+	body_hover.tooltip_text = "%s\n%s\n\nPróxima ação: %s" % [name_label.text, status, intent_text]
+	health_bar.tooltip_text = body_hover.tooltip_text

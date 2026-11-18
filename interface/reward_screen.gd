@@ -9,6 +9,8 @@ var offered_cards: Array = []
 var chosen := false
 
 func _ready() -> void:
+	if Tutorial.active:
+		Tutorial.set_step("reward")
 	layer = 8
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = true

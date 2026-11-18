@@ -54,6 +54,8 @@ var hand_panel: Panel
 func _ready() -> void:
 	_build_ui()
 	deck.setup(GameManager.get_run_deck(), GameManager.run_seed + int(GameManager.current_encounter.get("seed", 101)))
+	if Tutorial.active:
+		deck.draw_pile = [2, 17, 19, 18, 16, 2, 17, 2, 19, 17, 18, 16]
 	_draw_hand()
 	_refresh_cards()
 	get_viewport().size_changed.connect(_layout)
@@ -285,6 +287,8 @@ func set_player_turn(enabled: bool) -> void:
 	_refresh_cards()
 
 func _on_end_turn_requested() -> void:
+	if not Tutorial.allows("end"):
+		return
 	if not selection.enabled or choosing_retention:
 		return
 	if card_container.get_child_count() == 0:
@@ -295,8 +299,11 @@ func _on_end_turn_requested() -> void:
 	clear_button.disabled = true
 	confirm_keep_button.show()
 	_refresh_cards()
+	Tutorial.event("ending")
 
 func _toggle_retention(card: Control) -> void:
+	if not Tutorial.allows("retain", int(card.card_data.id)):
+		return
 	if not choosing_retention or card.get_parent() != card_container:
 		return
 	if retained_cards.has(card):
@@ -304,9 +311,13 @@ func _toggle_retention(card: Control) -> void:
 	elif retained_cards.size() < RETENTION_LIMIT:
 		retained_cards.append(card)
 	_refresh_cards()
+	Tutorial.event("retained")
 
 func _confirm_retention() -> void:
+	if not Tutorial.allows("confirm"):
+		return
 	if choosing_retention:
+		Tutorial.event("confirmed")
 		end_turn_requested.emit()
 
 func commit_selection() -> Array:
@@ -335,6 +346,9 @@ func start_new_player_round() -> void:
 	_refresh_cards()
 
 func _on_card_played(card: Control) -> void:
+	if not Tutorial.allows("play", int(card.card_data.id)):
+		card.return_to_slot()
+		return
 	if choosing_retention or card.get_parent() != card_container or not selection.try_play(card.get_instance_id(), card.card_data):
 		card.return_to_slot()
 		return
@@ -342,8 +356,12 @@ func _on_card_played(card: Control) -> void:
 	card.reparent(played_container, false)
 	_refresh_cards()
 	selection_changed.emit(selection.cards_data())
+	Tutorial.event("played")
 
 func _on_card_removed(card: Control) -> void:
+	if not Tutorial.allows("remove"):
+		card.return_to_slot()
+		return
 	if choosing_retention or card.get_parent() != played_container or not selection.try_remove(card.get_instance_id()):
 		card.return_to_slot()
 		return
@@ -353,6 +371,8 @@ func _on_card_removed(card: Control) -> void:
 	selection_changed.emit(selection.cards_data())
 
 func return_all_cards_to_hand() -> void:
+	if not Tutorial.allows("clear"):
+		return
 	if choosing_retention or not selection.clear():
 		return
 	for card in played_container.get_children():
@@ -360,6 +380,7 @@ func return_all_cards_to_hand() -> void:
 		_restore_hand_position(card)
 	_refresh_cards()
 	selection_changed.emit(selection.cards_data())
+	Tutorial.event("cleared")
 
 func _restore_hand_position(card: Control) -> void:
 	card.reparent(card_container, false)
@@ -443,6 +464,8 @@ func update_player_status(status: Dictionary) -> void:
 	buff_label.visible = not active.is_empty()
 
 func _show_deck() -> void:
+	if not Tutorial.allows("deck"):
+		return
 	add_child(load("res://interface/deck_viewer.gd").new())
 
 func _input(event: InputEvent) -> void:
