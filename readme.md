@@ -78,7 +78,9 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 - Projétil animado que acelera ao longo da trajetória, com acertos resolvidos na ordem do percurso e marcação dos alvos previstos.
 - Evento **Desafio do Monitor**, recompensas com escolha de cartas e descanso com cura ou remoção de uma cópia do baralho.
 - Modos **Normal** e **Difícil**, com as mesmas regras de combate. O modo Difícil oculta as ilustrações das cartas e mantém as informações necessárias para jogar.
+- Tutorial opcional com falas escritas do Monitor, destaques visuais e ações práticas.
 - Painel de orientações e efeitos no combate, indicadores das cartas mantidas e atalhos visíveis na interface.
+- Hovers de cartas e inimigos com texto ampliado, fundo opaco e informações organizadas para análise.
 - Configurações de volume separadas para música e efeitos sonoros, pausa e alternância entre janela e tela cheia.
 
 As mudanças da entrega base estão no [registro do protótipo final](final-prototype.md), que complementa o GDD com as regras implementadas.
@@ -99,7 +101,18 @@ Na tela inicial da partida, escolha **Tutorial** entre as três opções dispon�
 
 O treino utiliza uma mão e um encontro preparados, com as ilustrações das cartas visíveis. As etapas avançam conforme você realiza a atividade indicada. Ao concluir, começa uma campanha nova no modo Normal, com vida e baralho iniciais. Também é possível sair do tutorial e começar a campanha diretamente.
 
+A aula acompanha o ciclo completo de uma batalha: preparação, disparo, resposta do inimigo, compra do próximo turno, vitória e recompensa. Na visualização do baralho, a narração possui espaço reservado para não cobrir as cartas. As cartas e recompensas do treino não são transferidas para a campanha.
+
 O treino não grava progresso nem altera uma partida salva existente. Começar a campanha após o treino substitui o slot anterior, como qualquer nova run.
+
+## Análise de cartas e inimigos
+
+Mantenha o mouse sobre uma carta, um inimigo ou sua barra de vida para abrir o painel de análise. Os hovers usam **fundo opaco, alto contraste, fonte maior e títulos destacados**, com espaçamento, quebra de linhas e altura ajustada ao conteúdo.
+
+- **Cartas:** nome, custo de energia, alvo, fórmula e descrição dos efeitos. As informações também ficam disponíveis no modo Difícil, sem mostrar ilustrações.
+- **Inimigos:** nome, vida atual e máxima, escudo, cargas de veneno quando presentes, próxima ação e dicas estratégicas.
+
+Use essas informações antes de confirmar o turno para conferir o efeito das cartas e planejar sua resposta ao inimigo.
 
 ## Continuar uma run
 
