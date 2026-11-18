@@ -39,7 +39,7 @@ Jogo de cartas, estratégia por turnos e composição de funções em **Godot 4.
 
 ### Utilizando o executável
 
-1. Caso haja uma versão executável publicada, abra a seção [Releases do repositório](https://github.com/catolica-faculdade/incognita-deck/releases), o release deve ser o "Final Prototype" ([Url direta](https://github.com/catolica-faculdade/incognita-deck/releases#release-Release)) e baixe o pacote para Windows referente à entrega.
+1. Caso haja uma versão executável publicada, abra a seção [Releases do repositório](https://github.com/catolica-faculdade/incognita-deck/releases), o release "Protótipo Final" ([Url direta](https://github.com/catolica-faculdade/incognita-deck/releases/tag/Prototipo_final)) e baixe o pacote para Windows referente à entrega.
 2. Extraia o pacote completo para uma pasta no computador, mantendo todos os arquivos juntos.
 3. Abra o arquivo com extensão `.exe` do jogo com dois cliques e divirta-se! Não é necessário abrir o Godot. Caso não haja um executável disponível, utilize uma das opções de baixar ou clonar o projeto.
 
